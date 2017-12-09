@@ -8,8 +8,13 @@ class IndexController extends PublicController {
     public function index(){
     	//如果缓存首页没有数据，那么就读取数据库
     	/***********获取首页顶部轮播图************/
-    	$ggtop=M('guanggao')->order('sort desc,id asc')->field('id,name,photo')->limit(10)->select();
+    	$ggtop=M('guanggao')->order('sort desc,id asc')->field('id,name,photo,action')->limit(10)->select();
 		foreach ($ggtop as $k => $v) {
+            if($v['action'] != '' && M('product')->where('id='.$v['action'])->find()){
+                $ggtop[$k]['link'] = '../product/detail?productId='.$v['action'];
+            }else{
+                $ggtop[$k]['link'] = "#";
+            }
 			$ggtop[$k]['photo']=__DATAURL__.$v['photo'];
 			$ggtop[$k]['name']=urlencode($v['name']);
 		}
