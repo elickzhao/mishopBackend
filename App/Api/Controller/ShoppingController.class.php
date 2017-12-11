@@ -38,7 +38,8 @@ class ShoppingController extends PublicController {
         foreach ($cart as $k => $v) {
         	$pro_info = $product->where('id='.intval($v['pid']))->field('name,photo_x')->find();
         	$cart[$k]['pro_name']=$pro_info['name'];
-        	$cart[$k]['photo_x']=__DATAURL__.$pro_info['photo_x'];
+			$cart[$k]['photo_x']=__DATAURL__.$pro_info['photo_x'];
+			$cart[$k]['selected']=1;
         }
 
 		echo json_encode(array('status'=>1,'cart'=>$cart));
