@@ -533,7 +533,6 @@ class OrderController extends PublicController{
 		if($res['return_code'] == "SUCCESS" && $res['result_code'] == "SUCCESS"){
 			//$res['cash_refund_fee'] 这里的金额是现金退款金额. 因为微信存在现金和代金券 
 			\Think\Log::write('[Wechat Transaction] 订单:'.$back_info['order_sn'].' 退款成功. 商户订单号:'.$res['out_trade_no'].' 微信订单号:'.$res['transaction_id'].' 微信退款单号:'.$res['refund_id'].' 金额:'.$res['cash_refund_fee'],'INFO ');
-			$this->error('申请退款成功!');
 		}elseif($res['return_code'] != "SUCCESS"){
 			\Think\Log::write('[Wechat Transaction] 订单:'.$back_info['order_sn'].' 退款失败. 失败信息:'.$res['return_msg'],'INFO ');
 			$this->error('申请退款失败! 请稍后再试!');
