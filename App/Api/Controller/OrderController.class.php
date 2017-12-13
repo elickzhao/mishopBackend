@@ -515,7 +515,7 @@ class OrderController extends PublicController {
 		 * trade_state 交易状态 (SUCCESS—支付成功 REFUND—转入退款 NOTPAY—未支付 CLOSED—已关闭 REVOKED—已撤销（刷卡支付） USERPAYING--用户支付中 PAYERROR--支付失败(其他原因，如银行返回失败))
 		 */
 
-		if($res['return_code'] !="SUCCESS" || $res['result_code'] != "SUCCESS" || $res['trade_state'] != "SUCCESS"]){
+		if($res['return_code'] !="SUCCESS" || $res['result_code'] != "SUCCESS" || $res['trade_state'] != "SUCCESS"){
 	    	echo json_encode(array('status'=>0,'err'=>'申请退款失败!'.__LINE__));
 	    	exit();
 		}
