@@ -3,6 +3,16 @@
 namespace Api\Controller;
 use Think\Controller;
 class OrderController extends PublicController {
+	
+	//构造函数
+    public function _initialize(){
+    	//parent::__construct();
+    	//php 判断http还是https
+    	$this->http_type = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https')) ? 'https://' : 'http://';
+		vendor('WeiXinpay.wxpay');
+	}
+
+
 	//***************************
 	//  用户获取订单信息接口
 	//***************************
@@ -247,11 +257,26 @@ class OrderController extends PublicController {
 	    $order_id=intval($_REQUEST['id']);
 	    $type=$_REQUEST['type'];
 
-	    $check_id = $orders->where('id='.intval($order_id).' AND del=0')->getField('id');
-	    if (!$check_id || !$type) {
+	    $transaction_id = $orders->where('id='.intval($order_id).' AND del=0 AND back=0')->getField('trade_no');
+
+	    if (!$transaction_id || !$type) {
 	    	echo json_encode(array('status'=>0,'err'=>'订单信息错误.'.__LINE__));
 	    	exit();
 	    }
+
+		$input = new \WxPayOrderQuery();
+		$input->SetTransaction_id($transaction_id);
+		$res = \WxPayApi::orderQuery($input);
+		/**
+		 * return_code 此字段是通信标识(SUCCESS/FAIL )
+		 * result_code 业务结果 (SUCCESS/FAIL )
+		 * trade_state 交易状态 (SUCCESS—支付成功 REFUND—转入退款 NOTPAY—未支付 CLOSED—已关闭 REVOKED—已撤销（刷卡支付） USERPAYING--用户支付中 PAYERROR--支付失败(其他原因，如银行返回失败))
+		 */
+
+		if($res['return_code' !="SUCCESS" && 'result_code' != "SUCCESS" && 'trade_state' != "SUCCESS"]){
+	    	echo json_encode(array('status'=>0,'err'=>'申请退款失败!'.__LINE__));
+	    	exit();
+		}
 
 	    $data = array();
 	    if ($type==='cancel') {
