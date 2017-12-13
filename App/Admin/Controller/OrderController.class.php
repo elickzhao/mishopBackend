@@ -247,11 +247,51 @@ class OrderController extends PublicController{
 	*  确认退款  修改退款状态
 	*/
 	public function back(){
+	   vendor('WeiXinpay.wxpay');
+
 	   $id =(int)$_GET['oid'];
+
 	   $back_info = $this->order->where('id='.intval($id))->find();
+
 	   if(!$back_info || intval($back_info['back'])!=1) {
+
 	   		$this->error('订单信息错误.');
+
 	   }
+
+	   \Think\Log::write('[Wechat Transaction] 订单:'.$back_info['order_sn'].' 申请退款. 金额:'.$back_info['price_h'],'INFO ');
+
+		$out_trade_no = $back_info['order_sn'];					//订单号
+		$total_fee = $back_info['price_h'] * 100;		//订单总金额 单位分
+		$refund_fee = $back_info['price_h'] * 100;		//退款总金额 单位分
+
+
+		$input = new \WxPayRefund();
+		$input->SetOut_trade_no($out_trade_no);
+		$input->SetTotal_fee($total_fee);
+		$input->SetRefund_fee($refund_fee);
+	    $input->SetOut_refund_no(\WxPayConfig::MCHID.date("YmdHis"));
+	    $input->SetOp_user_id(\WxPayConfig::MCHID);
+	    $res = \WxPayApi::refund($input);
+
+
+		/**
+		 * return_code 此字段是通信标识(SUCCESS/FAIL )
+		 * result_code 业务结果 (SUCCESS/FAIL SUCCESS退款申请接收成功，结果通过退款查询接口查询 / FAIL 提交业务失败)
+		 * 
+		 */
+		if($res['return_code'] == "SUCCESS" && $res['result_code'] == "SUCCESS"){
+			//$res['cash_refund_fee'] 这里的金额是现金退款金额. 因为微信存在现金和代金券 
+			\Think\Log::write('[Wechat Transaction] 订单:'.$back_info['order_sn'].' 退款成功. 商户订单号:'.$res['out_trade_no'].' 微信订单号:'.$res['transaction_id'].' 微信退款单号:'.$res['refund_id'].' 金额:'.$res['cash_refund_fee'],'INFO ');
+			$this->error('申请退款成功!');
+		}elseif($res['return_code'] != "SUCCESS"){
+			\Think\Log::write('[Wechat Transaction] 订单:'.$back_info['order_sn'].' 退款失败. 失败信息:'.$res['return_msg'],'INFO ');
+			$this->error('申请退款失败! 请稍后再试!');
+		}elseif ($res['result_code'] != "SUCCESS") {
+			\Think\Log::write('[Wechat Transaction] 订单:'.$back_info['order_sn'].' 退款失败. 错误代码:'.$res['err_code'].' 错误信息:'.$res['err_code_des'],'INFO ');
+			$this->error('申请退款失败! 请查看支付账号金额!');
+		}
+		
 
 	   $data = array();
 	   $data['back']=2;

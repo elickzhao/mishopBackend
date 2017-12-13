@@ -9,11 +9,8 @@ ini_set('date.timezone','Asia/Shanghai');
 error_reporting(E_ERROR);
 require_once "../lib/WxPay.Api.php";
 require_once "../lib/WxPay.Data.php";
+require_once "../lib/WxPay.Config.php";
 require_once 'log.php';
-
-4200000020201712122991163110
-
-2017121253515552
 
 //初始化日志
 $logHandler= new CLogFileHandler("./logs/".date('Y-m-d').'.log');

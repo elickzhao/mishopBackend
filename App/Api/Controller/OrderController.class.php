@@ -4,15 +4,6 @@ namespace Api\Controller;
 use Think\Controller;
 class OrderController extends PublicController {
 	
-	//构造函数
-    public function _initialize(){
-    	//parent::__construct();
-    	//php 判断http还是https
-    	$this->http_type = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https')) ? 'https://' : 'http://';
-		vendor('WeiXinpay.wxpay');
-	}
-
-
 	//***************************
 	//  用户获取订单信息接口
 	//***************************
@@ -252,7 +243,8 @@ class OrderController extends PublicController {
 	//  用户订单编辑接口
 	//***************************
 	public function orders_edit(){
-		
+		vendor('WeiXinpay.wxpay');
+
 	    $orders=M("order");
 	    $order_id=intval($_REQUEST['id']);
 	    $type=$_REQUEST['type'];
@@ -265,7 +257,7 @@ class OrderController extends PublicController {
 	    }
 
 		$input = new \WxPayOrderQuery();
-		$input->SetTransaction_id($transaction_id);
+		$input->SetTransaction_id($transaction_id);		//微信订单id
 		$res = \WxPayApi::orderQuery($input);
 		/**
 		 * return_code 此字段是通信标识(SUCCESS/FAIL )
@@ -273,7 +265,7 @@ class OrderController extends PublicController {
 		 * trade_state 交易状态 (SUCCESS—支付成功 REFUND—转入退款 NOTPAY—未支付 CLOSED—已关闭 REVOKED—已撤销（刷卡支付） USERPAYING--用户支付中 PAYERROR--支付失败(其他原因，如银行返回失败))
 		 */
 
-		if($res['return_code' !="SUCCESS" && 'result_code' != "SUCCESS" && 'trade_state' != "SUCCESS"]){
+		if($res['return_code'] !="SUCCESS" || $res['result_code'] != "SUCCESS" || $res['trade_state'] != "SUCCESS"]){
 	    	echo json_encode(array('status'=>0,'err'=>'申请退款失败!'.__LINE__));
 	    	exit();
 		}
