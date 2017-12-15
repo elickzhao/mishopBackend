@@ -91,10 +91,10 @@ class GuanggaoController extends PublicController{
 		    }else{// 上传成功 获取上传文件信息
 			    $this->guanggao->photo = 'UploadFiles/'.$info['savepath'].$info['savename'];
 			    //生成国定大小的缩略图
-			    /*$path_url = './Data/UploadFiles/'.$info['savepath'].$info['savename'];
+			    $path_url = './Data/UploadFiles/'.$info['savepath'].$info['savename'];
 			    $image = new \Think\Image();
 			    $image->open($path_url);
-			    $image->thumb(310, 120,\Think\Image::IMAGE_THUMB_FIXED)->save($path_url);*/
+			    $image->thumb(500, 175,\Think\Image::IMAGE_THUMB_FIXED)->save($path_url);
 			    if (intval($_POST['adv_id'])) {
 					$check_url = $this->guanggao->where('id='.intval($_POST['adv_id']))->getField('photo');
 					$url = "Data/".$check_url;

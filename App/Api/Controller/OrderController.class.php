@@ -4,12 +4,8 @@
 
 namespace Api\Controller;
 
-use Think\Controller;
-
 class OrderController extends PublicController
 {
-
-
     //***************************
 
     //  用户获取订单信息接口
@@ -21,30 +17,24 @@ class OrderController extends PublicController
         $uid = intval($_REQUEST['uid']);
 
         if (!$uid) {
-            echo json_encode(array('status'=>0,'err'=>'登录状态异常'));
+            echo json_encode(array('status' => 0, 'err' => '登录状态异常'));
 
             exit();
         }
 
-
-
         //分页
 
-        $pages=intval($_REQUEST['page']);
+        $pages = intval($_REQUEST['page']);
 
         if (!$pages) {
-            $pages=0;
+            $pages = 0;
         }
 
+        $orders = M('order');
 
-
-        $orders=M("order");
-
-        $orderp=M("order_product");
+        $orderp = M('order_product');
 
         $shangchang = M('shangchang');
-
-
 
         //按条件查询
 
@@ -62,7 +52,6 @@ class OrderController extends PublicController
 
         if ($order_type) {
             switch ($order_type) {
-
                 case 'pay':
 
                     $condition['status'] = 10;
@@ -89,7 +78,7 @@ class OrderController extends PublicController
 
                 case 'finish':
 
-                    $condition['status'] = array('IN',array(40,50));
+                    $condition['status'] = array('IN', array(40, 50));
 
                     break;
 
@@ -98,27 +87,20 @@ class OrderController extends PublicController
                     $condition['status'] = 10;
 
                     break;
-
             }
         }
-
-
 
         //获取总页数
 
         $count = $orders->where($condition)->count();
 
-        $eachpage=7;
+        $eachpage = 7;
 
-
-
-        $order_status = array('0'=>'已取消','10'=>'待付款','20'=>'待发货','30'=>'待收货','40'=>'待评价','50'=>'交易完成','51'=>'交易关闭');
-
-
+        $order_status = array('0' => '已取消', '10' => '待付款', '20' => '待发货', '30' => '待收货', '40' => '待评价', '50' => '交易完成', '51' => '交易关闭');
 
         $order = $orders->where($condition)->order('id desc')->field('id,order_sn,pay_sn,status,price,type,product_num')->limit($pages.',7')->select();
 
-        foreach ($order as $n=>$v) {
+        foreach ($order as $n => $v) {
             $order[$n]['desc'] = $order_status[$v['status']];
 
             $prolist = $orderp->where('order_id='.intval($v['id']))->find();
@@ -134,14 +116,10 @@ class OrderController extends PublicController
             $order[$n]['pro_count'] = $orderp->where('order_id='.intval($v['id']))->getField('COUNT(id)');
         }
 
-
-
-        echo json_encode(array('status'=>1,'ord'=>$order,'eachpage'=>$eachpage));
+        echo json_encode(array('status' => 1, 'ord' => $order, 'eachpage' => $eachpage));
 
         exit();
     }
-
-
 
     //***************************
 
@@ -154,32 +132,26 @@ class OrderController extends PublicController
         $uid = intval($_REQUEST['uid']);
 
         if (!$uid) {
-            echo json_encode(array('status'=>0,'err'=>'登录状态异常'));
+            echo json_encode(array('status' => 0, 'err' => '登录状态异常'));
 
             exit();
         }
 
-
-
         //分页
 
-        $pages=intval($_REQUEST['page']);
+        $pages = intval($_REQUEST['page']);
 
         if (!$pages) {
-            $pages=2;
+            $pages = 2;
         }
 
-        $limit = $pages*7-7;
+        $limit = $pages * 7 - 7;
 
+        $orders = M('order');
 
-
-        $orders=M("order");
-
-        $orderp=M("order_product");
+        $orderp = M('order_product');
 
         $shangchang = M('shangchang');
-
-
 
         //按条件查询
 
@@ -197,7 +169,6 @@ class OrderController extends PublicController
 
         if ($order_type) {
             switch ($order_type) {
-
                 case 'pay':
 
                     $condition['status'] = 10;
@@ -224,7 +195,7 @@ class OrderController extends PublicController
 
                 case 'finish':
 
-                    $condition['status'] = array('IN',array(40,50));
+                    $condition['status'] = array('IN', array(40, 50));
 
                     break;
 
@@ -233,27 +204,20 @@ class OrderController extends PublicController
                     $condition['status'] = 10;
 
                     break;
-
             }
         }
-
-
 
         //获取总页数
 
         $count = $orders->where($condition)->count();
 
-        $eachpage=7;
+        $eachpage = 7;
 
-
-
-        $order_status = array('0'=>'已取消','10'=>'待付款','20'=>'待发货','30'=>'待收货','40'=>'待评价','50'=>'交易完成','51'=>'交易关闭');
-
-
+        $order_status = array('0' => '已取消', '10' => '待付款', '20' => '待发货', '30' => '待收货', '40' => '待评价', '50' => '交易完成', '51' => '交易关闭');
 
         $order = $orders->where($condition)->order('id desc')->field('id,order_sn,pay_sn,status,price,type,product_num')->limit($limit.',7')->select();
 
-        foreach ($order as $n=>$v) {
+        foreach ($order as $n => $v) {
             $order[$n]['desc'] = $order_status[$v['status']];
 
             $prolist = $orderp->where('order_id='.intval($v['id']))->find();
@@ -269,14 +233,10 @@ class OrderController extends PublicController
             $order[$n]['pro_count'] = $orderp->where('order_id='.intval($v['id']))->getField('COUNT(id)');
         }
 
-
-
-        echo json_encode(array('status'=>1,'ord'=>$order));
+        echo json_encode(array('status' => 1, 'ord' => $order));
 
         exit();
     }
-
-
 
     //***************************
 
@@ -289,50 +249,40 @@ class OrderController extends PublicController
         $uid = intval($_REQUEST['uid']);
 
         if (!$uid) {
-            echo json_encode(array('status'=>0,'err'=>'登录状态异常'));
+            echo json_encode(array('status' => 0, 'err' => '登录状态异常'));
 
             exit();
         }
 
-
-
         //分页
 
-        $pages=intval($_REQUEST['page']);
+        $pages = intval($_REQUEST['page']);
 
         if (!$pages) {
-            $pages=0;
+            $pages = 0;
         }
 
+        $orders = M('order');
 
-
-        $orders=M("order");
-
-        $orderp=M("order_product");
+        $orderp = M('order_product');
 
         $shangchang = M('shangchang');
 
-
-
         $condition = array();
 
-        $condition['back']=array('gt','0');
+        $condition['back'] = array('gt', '0');
 
         //获取总页数
 
         $count = $orders->where($condition)->count();
 
-        $the_page = ceil($count/6);
+        $the_page = ceil($count / 6);
 
-
-
-        $refund_status = array('1'=>'退款申请中','2'=>'已退款','3'=>'处理中','4'=>'已拒绝');
-
-
+        $refund_status = array('1' => '退款申请中', '2' => '已退款', '3' => '处理中', '4' => '已拒绝');
 
         $order = $orders->where($condition)->order('back_addtime desc')->field('id,price,order_sn,product_num,back,back_addtime')->limit($pages.',6')->select();
 
-        foreach ($order as $n=>$v) {
+        foreach ($order as $n => $v) {
             $order[$n]['desc'] = $refund_status[$v['back']];
 
             $prolist = $orderp->where('order_id='.intval($v['id']))->find();
@@ -345,19 +295,15 @@ class OrderController extends PublicController
 
             $order[$n]['price_yh'] = $prolist['price'];
 
-            $order[$n]['back_addtime'] = date("Y-m-d H:i", $v['back_addtime']);
+            $order[$n]['back_addtime'] = date('Y-m-d H:i', $v['back_addtime']);
 
             $order[$n]['pro_count'] = $orderp->where('order_id='.intval($v['id']))->getField('COUNT(id)');
         }
 
-
-
-        echo json_encode(array('status'=>1,'ord'=>$order));
+        echo json_encode(array('status' => 1, 'ord' => $order));
 
         exit();
     }
-
-
 
     //***************************
 
@@ -370,52 +316,42 @@ class OrderController extends PublicController
         $uid = intval($_REQUEST['uid']);
 
         if (!$uid) {
-            echo json_encode(array('status'=>0,'err'=>'登录状态异常'));
+            echo json_encode(array('status' => 0, 'err' => '登录状态异常'));
 
             exit();
         }
 
-
-
         //分页
 
-        $pages=intval($_REQUEST['page']);
+        $pages = intval($_REQUEST['page']);
 
         if (!$pages) {
-            $pages=2;
+            $pages = 2;
         }
 
-        $limit = $pages*6-6;
+        $limit = $pages * 6 - 6;
 
+        $orders = M('order');
 
-
-        $orders=M("order");
-
-        $orderp=M("order_product");
+        $orderp = M('order_product');
 
         $shangchang = M('shangchang');
 
-
-
         $condition = array();
 
-        $condition['back']=array('gt','0');
+        $condition['back'] = array('gt', '0');
 
         //获取总页数
 
         $count = $orders->where($condition)->count();
 
-        $the_page = ceil($count/6);
+        $the_page = ceil($count / 6);
 
-
-
-        $refund_status = array('1'=>'退款申请中','2'=>'已退款','3'=>'处理中','4'=>'已拒绝');
-
-
+        $refund_status = array('1' => '退款申请中', '2' => '已退款', '3' => '处理中', '4' => '已拒绝');
 
         $order = $orders->where($condition)->order('back_addtime desc')->field('id,price,order_sn,product_num,back,back_addtime')->limit($limit.',6')->select();
 
-        foreach ($order as $n=>$v) {
+        foreach ($order as $n => $v) {
             $order[$n]['desc'] = $refund_status[$v['back']];
 
             $prolist = $orderp->where('order_id='.intval($v['id']))->find();
@@ -428,21 +364,15 @@ class OrderController extends PublicController
 
             $order[$n]['price_yh'] = $prolist['price'];
 
-            $order[$n]['back_addtime'] = date("Y-m-d H:i", $v['back_addtime']);
+            $order[$n]['back_addtime'] = date('Y-m-d H:i', $v['back_addtime']);
 
             $order[$n]['pro_count'] = $orderp->where('order_id='.intval($v['id']))->getField('COUNT(id)');
         }
 
-
-
-        echo json_encode(array('status'=>1,'ord'=>$order));
+        echo json_encode(array('status' => 1, 'ord' => $order));
 
         exit();
     }
-
-
-
-
 
     //***************************
 
@@ -454,35 +384,31 @@ class OrderController extends PublicController
     {
         vendor('WeiXinpay.wxpay');
 
-        $orders=M("order");
+        $orders = M('order');
 
-        $order_id=intval($_REQUEST['id']);
+        $order_id = intval($_REQUEST['id']);
 
-        $type=$_REQUEST['type'];
-
+        $type = $_REQUEST['type'];
 
         $order_sn = $orders->where('id='.intval($order_id)." AND del=0 AND back='0'")->getField('	order_sn');
 
         if (!$order_sn || !$type) {
-            echo json_encode(array('status'=>0,'err'=>'订单信息错误.'.__LINE__));
+            echo json_encode(array('status' => 0, 'err' => '订单信息错误.'.__LINE__));
 
             exit();
         }
 
-
-
-
         $data = array();
 
-        if ($type==='cancel') {
+        if ('cancel' === $type) {
             $data['status'] = 0;
-        } elseif ($type==='receive') {
+        } elseif ('receive' === $type) {
             $data['status'] = 40;
-        } elseif ($type==='refund') {
+        } elseif ('refund' === $type) {
             $transaction_id = $orders->where('id='.intval($order_id)." AND del=0 AND back='0'")->getField('trade_no');
 
             if (!$transaction_id) {
-                echo json_encode(array('status'=>0,'err'=>'订单信息错误.'.__LINE__));
+                echo json_encode(array('status' => 0, 'err' => '订单信息错误.'.__LINE__));
 
                 exit();
             }
@@ -490,14 +416,14 @@ class OrderController extends PublicController
             $input = new \WxPayOrderQuery();
             $input->SetTransaction_id($transaction_id);
             $res = \WxPayApi::orderQuery($input);
-            /**
+            /*
              * return_code 此字段是通信标识(SUCCESS/FAIL )
              * result_code 业务结果 (SUCCESS/FAIL )
              * trade_state 交易状态 (SUCCESS—支付成功 REFUND—转入退款 NOTPAY—未支付 CLOSED—已关闭 REVOKED—已撤销（刷卡支付） USERPAYING--用户支付中 PAYERROR--支付失败(其他原因，如银行返回失败))
              */
 
-            if ($res['return_code'] !="SUCCESS" || $res['result_code'] != "SUCCESS" || $res['trade_state'] != "SUCCESS") {
-                echo json_encode(array('status'=>0,'err'=>'申请退款失败!'.__LINE__));
+            if ('SUCCESS' != $res['return_code'] || 'SUCCESS' != $res['result_code'] || 'SUCCESS' != $res['trade_state']) {
+                echo json_encode(array('status' => 0, 'err' => '申请退款失败!'.__LINE__));
                 exit();
             }
 
@@ -506,28 +432,24 @@ class OrderController extends PublicController
             $data['back_remark'] = $_REQUEST['back_remark'];
         }
 
-
-
         if ($data) {
             $result = $orders->where('id='.intval($order_id))->save($data);
 
-            if ($result !== false) {
-                echo json_encode(array('status'=>1));
+            if (false !== $result) {
+                echo json_encode(array('status' => 1));
 
                 exit();
             } else {
-                echo json_encode(array('status'=>0,'err'=>'操作失败.'.__LINE__));
+                echo json_encode(array('status' => 0, 'err' => '操作失败.'.__LINE__));
 
                 exit();
             }
         } else {
-            echo json_encode(array('status'=>0,'err'=>'订单信息错误.'.__LINE__));
+            echo json_encode(array('status' => 0, 'err' => '订单信息错误.'.__LINE__));
 
             exit();
         }
     }
-
-
 
     //***************************
 
@@ -541,37 +463,31 @@ class OrderController extends PublicController
 
         //订单详情
 
-        $orders=M("order");
+        $orders = M('order');
 
-        $product_dp=M("product_dp");
+        $product_dp = M('product_dp');
 
-        $orderp=M("order_product");
+        $orderp = M('order_product');
 
-        $id=intval($_REQUEST['id']);
+        $id = intval($_REQUEST['id']);
 
-        $qz=C('DB_PREFIX');	//前缀
-
-
+        $qz = C('DB_PREFIX');	//前缀
 
         $order_info = $orders->where('id='.intval($order_id.' AND del=0'))->field('id,order_sn,shop_id,status,addtime,price,type,post,tel,receiver,address_xq,remark')->find();
 
         if (!$order_info) {
-            echo json_encode(array('status'=>0,'err'=>'订单信息错误.'));
+            echo json_encode(array('status' => 0, 'err' => '订单信息错误.'));
 
             exit();
         }
 
-
-
         //订单状态
 
-        $order_status=array('0'=>'已取消','10'=>'待付款','20'=>'待发货','30'=>'待收货','40'=>'已收货','50'=>'交易完成');
+        $order_status = array('0' => '已取消', '10' => '待付款', '20' => '待发货', '30' => '待收货', '40' => '已收货', '50' => '交易完成');
 
         //支付类型
 
-        $pay_type = array('cash'=>'现金支付','alipay'=>'支付宝','weixin'=>'微信支付');
-
-
+        $pay_type = array('cash' => '现金支付', 'alipay' => '支付宝', 'weixin' => '微信支付');
 
         $order_info['shop_name'] = M('shangchang')->where('id='.intval($order_info['shop_id']))->getField('name');
 
@@ -587,8 +503,6 @@ class OrderController extends PublicController
             $order_info['yunfei'] = M('post')->where('id='.intval($order_info['post']))->getField('price');
         }
 
-
-
         //获取产品
 
         $pro = $orderp->where('order_id='.intval($order_info['id']))->select();
@@ -597,16 +511,10 @@ class OrderController extends PublicController
             $pro[$k]['photo_x'] = __DATAURL__.$v['photo_x'];
         }
 
-
-
-
-
-        echo json_encode(array('status'=>1,'pro'=>$pro,'ord'=>$order_info));
+        echo json_encode(array('status' => 1, 'pro' => $pro, 'ord' => $order_info));
 
         exit();
     }
-
-
 
     //***************************
 
@@ -616,20 +524,18 @@ class OrderController extends PublicController
 
     public function order_comment()
     {
-        $id=explode(',', $_GET['id']);
+        $id = explode(',', $_GET['id']);
 
-
-
-        $orderid = (int)$_GET['orderid'];
+        $orderid = (int) $_GET['orderid'];
 
         $order_product = M('order_product');
 
-        $order   = M('order');
+        $order = M('order');
 
-        $orderr  = $order->where('id='.$orderid)->select();
+        $orderr = $order->where('id='.$orderid)->select();
 
         foreach ($id as $key => $value) {
-            $result[$key]  = $order_product->where('`order`='.$orderid.' and pid='.$value)->select();
+            $result[$key] = $order_product->where('`order`='.$orderid.' and pid='.$value)->select();
         }
 
         $this->assign('result', $result);
@@ -639,8 +545,6 @@ class OrderController extends PublicController
         $this->display();
     }
 
-
-
     //***************************
 
     //  用户订单评论接口
@@ -649,36 +553,36 @@ class OrderController extends PublicController
 
     public function addMessage()
     {
-        $product_dp      = M('product_dp');
+        $product_dp = M('product_dp');
 
-        $order_product   = M("order_product");
+        $order_product = M('order_product');
 
-        $order       = M("order");
+        $order = M('order');
 
         //获取商品的ID
 
-        $id              = $_POST['pid'];
+        $id = $_POST['pid'];
 
-        $id              = explode(",", $id);
+        $id = explode(',', $id);
 
         $data['orderid'] = $_POST['orderid'];
 
-        $data['type']    = 1;
+        $data['type'] = 1;
 
-        $status['mstatus']=1;
+        $status['mstatus'] = 1;
 
-        $data['uid']     = $_SESSION['ID'];
+        $data['uid'] = $_SESSION['ID'];
 
         $data['addtime'] = time();
 
         foreach ($id as $key => $value) {
-            $data['pid']     = $value;
+            $data['pid'] = $value;
 
             $data['concent'] = $_POST['content'.$data['pid']];
 
-            $data['num']     = $_POST['pingfen'.$data['pid']];
+            $data['num'] = $_POST['pingfen'.$data['pid']];
 
-            $result   = $product_dp->add($data);
+            $result = $product_dp->add($data);
         }
 
         /*$meresult = $product_dp->where('uid='.$_SESSION['ID'].' and orderid='.$_POST['orderid'].' and pid='.$_POST['id'])->select();
@@ -691,12 +595,10 @@ class OrderController extends PublicController
 
         }*/
 
-
-
         if ($result) {
             $order->where('id='.$_POST['orderid'])->save($status);
 
-            $this->success('评价成功', U('User/orders', array('key'=>$_POST['key'])));
+            $this->success('评价成功', U('User/orders', array('key' => $_POST['key'])));
         } else {
             $this->error('评价失败');
         }

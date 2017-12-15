@@ -1,24 +1,27 @@
 <?php
+
 namespace Api\Controller;
-use Think\Controller;
-class IndexController extends PublicController {
-	//***************************
-	//  首页数据接口
-	//***************************
-    public function index(){
-    	//如果缓存首页没有数据，那么就读取数据库
-    	/***********获取首页顶部轮播图************/
-    	$ggtop=M('guanggao')->order('sort desc,id asc')->field('id,name,photo,action')->limit(10)->select();
-		foreach ($ggtop as $k => $v) {
-            if($v['action'] != '' && M('product')->where('id='.$v['action'])->find()){
+
+class IndexController extends PublicController
+{
+    //***************************
+    //  首页数据接口
+    //***************************
+    public function index()
+    {
+        //如果缓存首页没有数据，那么就读取数据库
+        /***********获取首页顶部轮播图************/
+        $ggtop = M('guanggao')->order('sort desc,id asc')->field('id,name,photo,action')->limit(10)->select();
+        foreach ($ggtop as $k => $v) {
+            if (!empty($v['action']) && M('product')->find($v['action'])) {
                 $ggtop[$k]['link'] = '../product/detail?productId='.$v['action'];
-            }else{
-                $ggtop[$k]['link'] = "#";
+            } else {
+                $ggtop[$k]['link'] = 'index';
             }
-			$ggtop[$k]['photo']=__DATAURL__.$v['photo'];
-			$ggtop[$k]['name']=urlencode($v['name']);
-		}
-    	/***********获取首页顶部轮播图 end************/
+            $ggtop[$k]['photo'] = __DATAURL__.$v['photo'];
+            $ggtop[$k]['name'] = urlencode($v['name']);
+        }
+        /***********获取首页顶部轮播图 end************/
 
         //======================
         //首页推荐品牌 20个
@@ -36,13 +39,13 @@ class IndexController extends PublicController {
             $course[$k]['photo'] = __DATAURL__.$v['photo'];
         }
 
-    	//======================
-    	//首页推荐产品
-    	//======================
-    	$pro_list = M('product')->where('del=0 AND pro_type=1 AND is_down=0 AND type=1')->order('sort desc,id desc')->field('id,name,intro,photo_x,price_yh,price,shiyong')->limit(8)->select();
-    	foreach ($pro_list as $k => $v) {
-    		$pro_list[$k]['photo_x'] = __DATAURL__.$v['photo_x'];
-    	}
+        //======================
+        //首页推荐产品
+        //======================
+        $pro_list = M('product')->where('del=0 AND pro_type=1 AND is_down=0 AND type=1')->order('sort desc,id desc')->field('id,name,intro,photo_x,price_yh,price,shiyong')->limit(16)->select();
+        foreach ($pro_list as $k => $v) {
+            $pro_list[$k]['photo_x'] = __DATAURL__.$v['photo_x'];
+        }
 
         //======================
         //首页分类 自己组建数组
@@ -69,36 +72,53 @@ class IndexController extends PublicController {
         $procat[3]['link'] = 'other';
         $procat[3]['ptype'] = 'gywm';
 
-    	echo json_encode(array('ggtop'=>$ggtop,'procat'=>$procat,'prolist'=>$pro_list,'brand'=>$brand,'course'=>$course));
-    	exit();
+        echo json_encode(array('ggtop' => $ggtop, 'procat' => $procat, 'prolist' => $pro_list, 'brand' => $brand, 'course' => $course));
+        exit();
     }
 
     //***************************
     //  首页产品 分页
     //***************************
-    public function getlist(){
+    public function getlist()
+    {
         $page = intval($_REQUEST['page']);
-        $limit = intval($page*8)-8;
+        $limit = intval($page * 16) - 16;
 
-        $pro_list = M('product')->where('del=0 AND pro_type=1 AND is_down=0 AND type=1')->order('sort desc,id desc')->field('id,name,photo_x,price_yh,shiyong')->limit($limit.',8')->select();
+        $pro_list = M('product')->where('del=0 AND pro_type=1 AND is_down=0 AND type=1')->order('sort desc,id desc')->field('id,name,photo_x,price_yh,shiyong')->limit($limit.',16')->select();
         foreach ($pro_list as $k => $v) {
             $pro_list[$k]['photo_x'] = __DATAURL__.$v['photo_x'];
         }
-
-        echo json_encode(array('prolist'=>$pro_list));
+        echo json_encode(array('prolist' => $pro_list));
         exit();
     }
 
-    public function ceshi(){
-        $str = null;
-        $strPol = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz";
-        $max = strlen($strPol)-1;
+    //***************************
+    //  首页产品 修改成热销 分页
+    //***************************
+    // public function getlist()
+    // {
+    //     $page = intval($_REQUEST['page']);
+    //     $limit = intval($page * 8) - 8;
 
-        for($i=0;$i<32;$i++){
-            $str.=$strPol[rand(0,$max)];//rand($min,$max)生成介于min和max两个数之间的一个随机整数
+    //     $pro_list = M('product')->where('del=0 AND pro_type=1 AND is_down=0 AND type=1')->order('sort desc,id desc')->field('id,name,photo_x,price_yh,shiyong')->limit($limit.',8')->select();
+    //     foreach ($pro_list as $k => $v) {
+    //         $pro_list[$k]['photo_x'] = __DATAURL__.$v['photo_x'];
+    //     }
+
+    //     echo json_encode(array('prolist' => $pro_list));
+    //     exit();
+    // }
+
+    public function ceshi()
+    {
+        $str = null;
+        $strPol = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz';
+        $max = strlen($strPol) - 1;
+
+        for ($i = 0; $i < 32; ++$i) {
+            $str .= $strPol[rand(0, $max)]; //rand($min,$max)生成介于min和max两个数之间的一个随机整数
         }
 
         echo $str;
     }
-
 }
