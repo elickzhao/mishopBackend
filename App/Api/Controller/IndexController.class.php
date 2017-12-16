@@ -11,7 +11,7 @@ class IndexController extends PublicController
     {
         //如果缓存首页没有数据，那么就读取数据库
         /***********获取首页顶部轮播图************/
-        $ggtop = M('guanggao')->order('sort desc,id asc')->field('id,name,photo,action')->limit(10)->select();
+        $ggtop = M('guanggao')->where('position=1')->order('sort desc,id asc')->field('id,name,photo,action')->limit(10)->select();
         foreach ($ggtop as $k => $v) {
             if (!empty($v['action']) && M('product')->find($v['action'])) {
                 $ggtop[$k]['link'] = '../product/detail?productId='.$v['action'];
@@ -48,6 +48,21 @@ class IndexController extends PublicController
         }
 
         //======================
+        //首页热销产品
+        //======================
+        $hot_list = M('product')->where('del=0 AND pro_type=1 AND is_down=0 AND is_hot=1')->order('sort desc,id desc')->field('id,name,intro,photo_x,price_yh,price,shiyong')->limit(4)->select();
+        foreach ($hot_list as $k => $v) {
+            $hot_list[$k]['photo_x'] = __DATAURL__.$v['photo_x'];
+        }
+
+        //======================
+        //首页第一栏广告
+        //======================
+        $ad_1 = M('guanggao')->where('position=2')->order('sort desc,id desc')->field('action,photo')->limit(1)->find();
+        $ad_1['photo'] = __DATAURL__.$ad_1['photo'];
+
+
+        //======================
         //首页分类 自己组建数组
         //======================
         $indeximg = M('indeximg')->where('1=1')->order('id asc')->field('photo')->select();
@@ -72,7 +87,7 @@ class IndexController extends PublicController
         $procat[3]['link'] = 'other';
         $procat[3]['ptype'] = 'gywm';
 
-        echo json_encode(array('ggtop' => $ggtop, 'procat' => $procat, 'prolist' => $pro_list, 'brand' => $brand, 'course' => $course));
+        echo json_encode(array('ggtop' => $ggtop, 'procat' => $procat, 'prolist' => $pro_list, 'brand' => $brand, 'course' => $course,'hotlist'=>$hot_list,'ad1'=>$ad_1));
         exit();
     }
 
@@ -92,22 +107,6 @@ class IndexController extends PublicController
         exit();
     }
 
-    //***************************
-    //  首页产品 修改成热销 分页
-    //***************************
-    // public function getlist()
-    // {
-    //     $page = intval($_REQUEST['page']);
-    //     $limit = intval($page * 8) - 8;
-
-    //     $pro_list = M('product')->where('del=0 AND pro_type=1 AND is_down=0 AND type=1')->order('sort desc,id desc')->field('id,name,photo_x,price_yh,shiyong')->limit($limit.',8')->select();
-    //     foreach ($pro_list as $k => $v) {
-    //         $pro_list[$k]['photo_x'] = __DATAURL__.$v['photo_x'];
-    //     }
-
-    //     echo json_encode(array('prolist' => $pro_list));
-    //     exit();
-    // }
 
     public function ceshi()
     {
