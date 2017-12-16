@@ -92,6 +92,7 @@ class ProductController extends PublicController{
 				'is_hot'=>intval($_POST['is_hot']),//是否热卖
 				'is_show'=>intval($_POST['is_show']),//是否新品
 				'is_sale'=>intval($_POST['is_sale']),//是否折扣
+				'shiyong'=>intval($_POST['shiyong']),//销量
 			);
 			  
 			//判断产品详情页图片是否有设置宽度，去掉重复的100%
