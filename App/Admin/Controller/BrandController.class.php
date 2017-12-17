@@ -26,7 +26,7 @@ class BrandController extends PublicController{
 
 		//分页
 		$count   = $this->Brand->where($condition)->count();// 查询满足要求的总记录数
-		$Page    = new \Think\Page($count,5);// 实例化分页类 传入总记录数和每页显示的记录数(25)
+		$Page    = new \Think\Page($count,25);// 实例化分页类 传入总记录数和每页显示的记录数(25)
 
 		//头部描述信息，默认值 “共 %TOTAL_ROW% 条记录”
 		$Page->setConfig('header', '<li class="rows">共<b>%TOTAL_ROW%</b>条&nbsp;第<b>%NOW_PAGE%</b>页/共<b>%TOTAL_PAGE%</b>页</li>');
@@ -128,6 +128,12 @@ class BrandController extends PublicController{
 		if (!$check_info) {
 			$this->error('参数错误！');
 			die();
+		}
+
+		$count = M('product')->where(['brand_id'=>$id,'del'=>0])->count();
+
+		if($count != 0){
+			$this->error('删除错误!该品牌下有产品.','index',5);
 		}
 
 		//修改对应的显示状态

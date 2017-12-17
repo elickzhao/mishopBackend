@@ -26,7 +26,7 @@ class ProductController extends PublicController{
 		$tuijian!=='' ? $where.=" AND type=$tuijian" : null;
 		$shop_id>0 ? $where.=" AND shop_id=$shop_id" : null;
 		$name!='' ? $where.=" AND name like '%$name%'" : null;
-		define('rows',5);
+		define('rows',50);
 		$count=M('product')->where($where)->count();
 		$rows=ceil($count/rows);
 		$page=(int)$_GET['page'];
@@ -199,7 +199,7 @@ class ProductController extends PublicController{
 
 			//规格操作
 			if($sql){//name="guige_name[]
-				$this->success('操作成功.');
+				$this->success('操作成功.','index');
 				exit();
 			}else{
 				throw new \Exception('操作失败.');

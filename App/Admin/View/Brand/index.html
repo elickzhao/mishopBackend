@@ -57,7 +57,7 @@
                 <td class="obj_1">
                     <a href="{:U('set_tj')}?id={$b.id}" >推荐</a> |
                     <a href="{:U('add')}?id={$b.id}" >修改</a>
-                    | <a onclick="del_id_url({$b.id})">删除</a>
+                    | <a onclick="del_id_url2({$b.id})">删除</a>
                 </td>
             </tr>
         </volist>
@@ -90,7 +90,7 @@
     function del_id_url2(id){
         if(confirm("确认删除吗？"))
         {
-            location='&did='+id;
+            location='{:U("del")}?did='+id;
         }
     }
 
