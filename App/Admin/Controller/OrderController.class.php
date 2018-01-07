@@ -2,731 +2,564 @@
 
 namespace Admin\Controller;
 
-use Think\Controller;
+class OrderController extends PublicController
+{
+    /*
+    *
+    * 构造函数，用于导入外部文件和公共方法
+    */
 
-class OrderController extends PublicController{
+    public function _initialize()
+    {
+        $this->order = M('Order');
 
+        $this->order_product = M('Order_product');
 
+        // $order_status = array('10' => '待付款', '20' => '待发货', '30' => '待收货', '40' => '已收货', '50' => '交易完成');
 
-	/*
+        $order_status = array('0' => '已取消', '10' => '待付款', '20' => '待发货', '30' => '待收货', '40' => '待评价', '50' => '交易完成', '51' => '交易关闭');
 
-	*
+        $this->assign('order_status', $order_status);
+    }
 
-	* 构造函数，用于导入外部文件和公共方法
+    /*
 
-	*/
+    *
 
-	public function _initialize(){
+    * 获取、查询所有订单数据
 
-		$this->order = M('Order');
+    */
 
-		$this->order_product = M('Order_product');
+    public function index()
+    {
+        //搜索
 
+        //获取商家id
 
+        if (4 != intval($_SESSION['admininfo']['qx'])) {
+            $shop_id = intval(M('adminuser')->where('id='.intval($_SESSION['admininfo']['id']))->getField('shop_id'));
 
-		$order_status = array('10'=>'待付款','20'=>'待发货','30'=>'待收货','40'=>'已收货','50'=>'交易完成');
+            if (0 == $shop_id) {
+                $this->error('非法操作.');
+            }
+        } else {
+            $shop_id = intval($_REQUEST['shop_id']);
+        }
 
-		$this->assign('order_status',$order_status);
+        $pay_type = trim($_REQUEST['pay_type']); //支付类型
 
-	}
+        $pay_status = intval($_REQUEST['pay_status']); //订单状态
 
+        $start_time = intval(strtotime($_REQUEST['start_time'])); //订单状态
 
+        $end_time = intval(strtotime($_REQUEST['end_time'])); //订单状态
 
+        //构建搜索条件
 
+        $condition = array();
 
-	/*
+        $condition['del'] = 0;
 
-	*
+        $where = '1=1 AND del=0';
 
-	* 获取、查询所有订单数据
+        //根据支付类型搜索
 
-	*/
+        if ($pay_type) {
+            $condition['type'] = $pay_type;
 
-	public function index(){
+            $where .= ' AND type=\''.$pay_type.'\'';
 
-		//搜索
+            //搜索内容输出
 
-		//获取商家id
+            $this->assign('pay_type', $pay_type);
+        }
 
-		if (intval($_SESSION['admininfo']['qx'])!=4) {
+        //根据订单状态搜索
 
-			$shop_id = intval(M('adminuser')->where('id='.intval($_SESSION['admininfo']['id']))->getField('shop_id'));
+        if ($pay_status) {
+            if ($pay_status < 10) {
+                //小于10的为退款
 
-			if ($shop_id==0) {
+                $condition['back'] = $pay_status;
 
-				$this->error('非法操作.');
+                $where .= ' AND back='.intval($pay_status);
+            } else {
+                //大于10的为正常订单
 
-			}
+                $condition['status'] = $pay_status;
 
-		}else{
+                $where .= ' AND status='.intval($pay_status);
+            }
 
-			$shop_id = intval($_REQUEST['shop_id']);
+            //搜索内容输出
 
-		}
+            $this->assign('pay_status', $pay_status);
+        }
 
-		
+        //根据下单时间搜索
 
-		$pay_type = trim($_REQUEST['pay_type']);//支付类型
+        if ($start_time) {
+            $condition['addtime'] = array('gt', $start_time);
 
-		$pay_status = intval($_REQUEST['pay_status']); //订单状态
+            $where .= ' AND addtime>'.$start_time;
 
-		$start_time = intval(strtotime($_REQUEST['start_time'])); //订单状态
+            //搜索内容输出
 
-		$end_time = intval(strtotime($_REQUEST['end_time'])); //订单状态
+            $this->assign('start_time', date('Y-m-d', $start_time));
+        }
 
-		//构建搜索条件
+        //根据下单时间搜索
 
-		$condition = array();
+        if ($end_time) {
+            $condition['addtime'] = array('lt', $end_time);
 
-		$condition['del'] = 0; 
+            $where .= ' AND addtime<'.$end_time;
 
-		$where = '1=1 AND del=0';
+            //搜索内容输出
 
-		//根据支付类型搜索
+            $this->assign('end_time', date('Y-m-d', $end_time));
+        }
 
-		if ($pay_type) {
+        /*if ($start_time && $end_time) {
 
-			$condition['type'] = $pay_type;
+            $condition['addtime'] = array('eq','addtime>'.$start_time.' AND addtime<='.$end_time);
 
-			$where .=' AND type=\''.$pay_type.'\'';
+        }*/
 
-			//搜索内容输出
+        //分页
 
-			$this->assign('pay_type',$pay_type);
+        $count = $this->order->where($where)->count(); // 查询满足要求的总记录数
 
-		}
+        $Page = new \Think\Page($count, 25); // 实例化分页类 传入总记录数和每页显示的记录数(25)
 
-		//根据订单状态搜索
+        //分页跳转的时候保证查询条件
 
-		if ($pay_status) {
+        foreach ($condition as $key => $val) {
+            $Page->parameter[$key] = urlencode($val);
+        }
 
-			if ($pay_status<10) {
+        if ($start_time && $end_time) {
+            $addtime = 'addtime>'.$start_time.' AND addtime<'.$end_time;
 
-				//小于10的为退款
+            $Page->parameter['addtime'] = urlencode($addtime);
+        }
 
-				$condition['back'] = $pay_status;
+        //头部描述信息，默认值 “共 %TOTAL_ROW% 条记录”
 
-				$where .=' AND back='.intval($pay_status);
+        $Page->setConfig('header', '<li class="rows">共<b>%TOTAL_ROW%</b>条&nbsp;第<b>%NOW_PAGE%</b>页/共<b>%TOTAL_PAGE%</b>页</li>');
 
-			}else{
+        //上一页描述信息
 
-				//大于10的为正常订单
+        $Page->setConfig('prev', '上一页');
 
-				$condition['status'] = $pay_status;
+        //下一页描述信息
 
-				$where .=' AND status='.intval($pay_status);
+        $Page->setConfig('next', '下一页');
 
-			}
+        //首页描述信息
 
-			
+        $Page->setConfig('first', '首页');
 
-			//搜索内容输出
+        //末页描述信息
 
-			$this->assign('pay_status',$pay_status);
+        $Page->setConfig('last', '末页');
 
-		}
+        /*
 
-		//根据下单时间搜索
+        * 分页主题描述信息
 
-		if ($start_time) {
+        * %FIRST%  表示第一页的链接显示
 
-			$condition['addtime'] = array('gt',$start_time);
+        * %UP_PAGE%  表示上一页的链接显示
 
-			$where .=' AND addtime>'.$start_time;
+        * %LINK_PAGE%  表示分页的链接显示
 
-			//搜索内容输出
+        * %DOWN_PAGE%  表示下一页的链接显示
 
-			$this->assign('start_time',date("Y-m-d",$start_time));
+        * %END%   表示最后一页的链接显示
 
-		}
+        */
 
-		//根据下单时间搜索
+        $Page->setConfig('theme', '%FIRST%%UP_PAGE%%LINK_PAGE%%DOWN_PAGE%%END%%HEADER%');
 
-		if ($end_time) {
+        $show = $Page->show(); // 分页显示输出
 
-			$condition['addtime'] = array('lt',$end_time);
+        // 进行分页数据查询 注意limit方法的参数要使用Page类的属性
 
-			$where .=' AND addtime<'.$end_time;
+        $order_list = $this->order->where($where)->order('id desc')->limit($Page->firstRow.','.$Page->listRows)->select();
 
-			//搜索内容输出
+        foreach ($order_list as $k => $v) {
+            $order_list[$k]['u_name'] = M('user')->where('id='.intval($v['uid']))->getField('name');
+        }
 
-			$this->assign('end_time',date("Y-m-d",$end_time));
+        //echo $where;
 
-		}
+        $this->assign('order_list', $order_list); // 赋值数据集
 
-		/*if ($start_time && $end_time) {
+        $this->assign('page', $show); // 赋值分页输出
 
-			$condition['addtime'] = array('eq','addtime>'.$start_time.' AND addtime<='.$end_time);
+        $this->assign('admin_qx', $_SESSION['admininfo']['qx']); //后台用户权限，目前设置为超级管理员权限
 
-		}*/
+        $this->display(); // 输出模板
+    }
 
+    /*
 
+    *
 
-		//分页
+    * 选择商家里面的省市联动
 
-		$count   = $this->order->where($where)->count();// 查询满足要求的总记录数
+    */
 
+    public function get_city()
+    {
+        $id = (int) $_GET['id'];
 
-		$Page    = new \Think\Page($count,25);// 实例化分页类 传入总记录数和每页显示的记录数(25)
+        $data = M('china_city')->where('tid='.intval($id))->field('id,name')->select();
 
+        $i = 0;
 
+        $array = array();
 
-		//分页跳转的时候保证查询条件
+        foreach ($data as $v) {
+            $array[$i]['id'] = $v['id'];
 
-		foreach($condition as $key=>$val) {
+            $array[$i]['name'] = $v['name'];
 
-			$Page->parameter[$key]  =  urlencode($val);
+            $i += 1;
+        }
 
-		}
+        echo json_encode($array);
+    }
 
-		if ($start_time && $end_time) {
+    /*
 
-			$addtime = 'addtime>'.$start_time.' AND addtime<'.$end_time;
+    *
 
-			$Page->parameter['addtime']  =  urlencode($addtime);
+    * 查看订单详情
 
-		}
+    */
 
+    public function show()
+    {
+        //获取传递过来的id
 
+        $order_id = intval($_GET['oid']);
 
-		//头部描述信息，默认值 “共 %TOTAL_ROW% 条记录”
+        if (!$order_id) {
+            $this->error('系统错误.');
+        }
 
-		$Page->setConfig('header', '<li class="rows">共<b>%TOTAL_ROW%</b>条&nbsp;第<b>%NOW_PAGE%</b>页/共<b>%TOTAL_PAGE%</b>页</li>');
+        //根据订单id获取订单数据还有商品信息
 
-		//上一页描述信息
+        $order_info = $this->order->where('id='.intval($order_id))->find();
 
-	    $Page->setConfig('prev', '上一页');
+        $order_pro = $this->order_product->where('order_id='.intval($order_id))->select();
 
-	    //下一页描述信息
+        if (!$order_info || !$order_pro) {
+            $this->error('订单信息错误.');
+        }
 
-	    $Page->setConfig('next', '下一页');
+        foreach ($order_pro as $k => $v) {
+            $data = array();
 
-	    //首页描述信息
+            $data = unserialize($v['pro_guide']);
 
-	    $Page->setConfig('first', '首页');
+            if ($data) {
+                $order_pro[$k]['g_name'] = $data['gname'];
+            } else {
+                $order_pro[$k]['g_name'] = '无';
+            }
+        }
 
-	    //末页描述信息
+        $post_info = array();
 
-	    $Page->setConfig('last', '末页');
+        if (intval($order_info['post'])) {
+            $post_info = M('post')->where('id='.intval($order_info['post']))->find();
+        }
 
-	    /*
+        $this->assign('post_info', $post_info);
 
-	    * 分页主题描述信息 
+        $this->assign('order_info', $order_info);
 
-	    * %FIRST%  表示第一页的链接显示  
+        $this->assign('order_pro', $order_pro);
 
-	    * %UP_PAGE%  表示上一页的链接显示   
+        $this->display();
+    }
 
-	    * %LINK_PAGE%  表示分页的链接显示
+    /*
 
-	    * %DOWN_PAGE% 	表示下一页的链接显示
+    *
 
-	    * %END%   表示最后一页的链接显示
+    * 修改订单状态，添加物流名称、物流单号
 
-	    */
+    */
 
-	    $Page->setConfig('theme', '%FIRST%%UP_PAGE%%LINK_PAGE%%DOWN_PAGE%%END%%HEADER%');
+    public function sms_up()
+    {
+        $oid = intval($_POST['oid']);
 
+        $o_info = $this->order->where('id='.intval($oid))->find();
 
+        if (!$o_info) {
+            $arr = array();
 
-		$show    = $Page->show();// 分页显示输出
+            $arr = array('returns' => 0, 'message' => '没有找到相关订单.');
 
-		// 进行分页数据查询 注意limit方法的参数要使用Page类的属性
+            echo json_encode($arr);
 
-		$order_list = $this->order->where($where)->order('id desc')->limit($Page->firstRow.','.$Page->listRows)->select();
+            exit();
+        }
 
-		foreach ($order_list as $k => $v) {
+        //接收ajax传过来的值
 
-			$order_list[$k]['u_name'] = M('user')->where('id='.intval($v['uid']))->getField('name');
+        $order_status = intval($_POST['order_status']);
 
-		}
+        $kuaidi_name = $_POST['kuaidi_name'];
 
+        $kuaidi_num = $_POST['kuaidi_num'];
 
-		//echo $where;
+        if ($o_info['kuaidi_name'] == $kuaidi_name && $o_info['kuaidi_num'] == $kuaidi_num && intval($o_info['status']) == $order_status) {
+            $arr = array();
 
-		$this->assign('order_list',$order_list);// 赋值数据集
+            $arr = array('returns' => 0, 'message' => '修改信息未发生变化.');
 
-		$this->assign('page',$show);// 赋值分页输出
+            echo json_encode($arr);
 
-		$this->assign('admin_qx',$_SESSION['admininfo']['qx']);//后台用户权限，目前设置为超级管理员权限
+            exit();
+        }
 
-		$this->display(); // 输出模板
+        try {
+            if (('' == $kuaidi_name || '' == $kuaidi_num) && 30 == $order_status) {
+                throw new Exception('参数不正确');
+            }
 
+            /*$msg = '您的订单（编号:%s）,已发货，送货快递:%s，运单号:%s 【%s】';
 
+            $msg = sprintf($msg,$id,$kuaidi_name,$kuaidi_num,$partner_info['name']);*/
 
-	}
+            //修改快递信息
 
+            $data = array();
 
+            if ($order_status) {
+                $data['status'] = $order_status;
+            }
 
-	/*
+            if ($kuaidi_name) {
+                $data['kuaidi_name'] = $kuaidi_name;
+            }
 
-	*
+            if ($kuaidi_num) {
+                $data['kuaidi_num'] = $kuaidi_num;
+            }
 
-	* 选择商家里面的省市联动
+            $up = $this->order->where('id='.intval($oid))->save($data);
 
-	*/
+            $json = array();
 
-	public function get_city(){
+            if ($up) {
+                $json['message'] = '操作成功.';
 
-		$id=(int)$_GET['id'];
+                $json['returns'] = 1;
+            } else {
+                $json['message'] = '操作失败.';
 
+                $json['returns'] = 0;
+            }
+        } catch (Exception $e) {
+            $json = array('returns' => 0, 'message' => $e->getMessage());
+        }
 
+        echo json_encode($json);
 
-		$data=M('china_city')->where('tid='.intval($id))->field('id,name')->select();
+        exit();
+    }
 
-		$i=0;
+    /*
 
-		$array=array();
+    *
 
-		foreach ($data as $v) {
+    *  确认退款  修改退款状态
 
-		   $array[$i]['id']=$v['id'];
+    */
 
-		   $array[$i]['name']=$v['name'];
+    public function back()
+    {
+        vendor('WeiXinpay.wxpay');
 
-		   $i+=1;
+        $id = (int) $_GET['oid'];
 
-		}
+        $back_info = $this->order->where('id='.intval($id))->find();
 
-		echo json_encode($array);
+        if (!$back_info || 1 != intval($back_info['back'])) {
+            $this->error('订单信息错误.');
+        }
 
-	}
+        \Think\Log::write('[Wechat Transaction] 订单:'.$back_info['order_sn'].' 申请退款. 金额:'.$back_info['price_h'], 'INFO ');
 
+        $out_trade_no = $back_info['order_sn'];					//订单号
+        $total_fee = $back_info['price_h'] * 100;		//订单总金额 单位分
+        $refund_fee = $back_info['price_h'] * 100;		//退款总金额 单位分
 
+        $input = new \WxPayRefund();
+        $input->SetOut_trade_no($out_trade_no);
+        $input->SetTotal_fee($total_fee);
+        $input->SetRefund_fee($refund_fee);
+        $input->SetOut_refund_no(\WxPayConfig::MCHID.date('YmdHis'));
+        $input->SetOp_user_id(\WxPayConfig::MCHID);
+        $res = \WxPayApi::refund($input);
 
+        /*
+         * return_code 此字段是通信标识(SUCCESS/FAIL )
+         * result_code 业务结果 (SUCCESS/FAIL SUCCESS退款申请接收成功，结果通过退款查询接口查询 / FAIL 提交业务失败)
+         *
+         */
+        if ('SUCCESS' == $res['return_code'] && 'SUCCESS' == $res['result_code']) {
+            //$res['cash_refund_fee'] 这里的金额是现金退款金额. 因为微信存在现金和代金券
+            \Think\Log::write('[Wechat Transaction] 订单:'.$back_info['order_sn'].' 退款成功. 商户订单号:'.$res['out_trade_no'].' 微信订单号:'.$res['transaction_id'].' 微信退款单号:'.$res['refund_id'].' 金额:'.$res['cash_refund_fee'], 'INFO ');
+        } elseif ('SUCCESS' != $res['return_code']) {
+            \Think\Log::write('[Wechat Transaction] 订单:'.$back_info['order_sn'].' 退款失败. 失败信息:'.$res['return_msg'], 'INFO ');
+            $this->error('申请退款失败! 请稍后再试!');
+        } elseif ('SUCCESS' != $res['result_code']) {
+            \Think\Log::write('[Wechat Transaction] 订单:'.$back_info['order_sn'].' 退款失败. 错误代码:'.$res['err_code'].' 错误信息:'.$res['err_code_des'], 'INFO ');
+            $this->error('申请退款失败! 请查看支付账号金额!');
+        }
 
+        $data = array();
 
-	/*
+        $data['back'] = 2;
 
-	*
+        $up_back = $this->order->where('id='.intval($id))->save($data);
 
-	* 查看订单详情
+        if ($up_back) {
+            $this->success('操作成功.');
+        } else {
+            $this->error('操作失败.');
+        }
+    }
 
-	*/
+    /*
 
-	public function show(){
+    *
 
-		//获取传递过来的id
+    *  订单删除方法
 
-		$order_id = intval($_GET['oid']);
+    */
 
-		if(!$order_id) {
+    public function del()
+    {
+        //以后删除还要加权限登录判断
 
-			$this->error('系统错误.');
+        $id = intval($_GET['did']);
 
-		}
+        $check_info = $this->order->where('id='.intval($id))->find();
 
+        if (!$check_info) {
+            $this->error('系统错误，请稍后再试.');
+        }
 
+        $up = array();
 
-		//根据订单id获取订单数据还有商品信息
+        $up['del'] = 1;
 
-		$order_info = $this->order->where('id='.intval($order_id))->find();
+        $res = $this->order->where('id='.intval($id))->save($up);
 
-		$order_pro = $this->order_product->where('order_id='.intval($order_id))->select();
+        if ($res) {
+            $this->success('操作成功.');
+        } else {
+            $this->error('操作失败.');
+        }
+    }
 
-		if (!$order_info || !$order_pro) {
+    /*
 
-			$this->error('订单信息错误.');
+    *
 
-		}
+    *  订单统计功能
 
-		foreach ($order_pro as $k => $v) {
+    */
 
-			$data=array();
+    public function order_count()
+    {
+        //查询类型 d日视图  m月视图
 
-			$data = unserialize($v['pro_guide']);
+        $type = $_GET['type'];
 
-			if ($data) {
+        //查询商家id
 
-				$order_pro[$k]['g_name'] = $data['gname'];
+        $where = '1=1';
 
-			}else{
+        //获取商家id
 
-				$order_pro[$k]['g_name'] = '无';
+        if (4 != intval($_SESSION['admininfo']['qx'])) {
+            $shop_id = intval(M('adminuser')->where('id='.intval($_SESSION['admininfo']['id']))->getField('shop_id'));
 
-			}
+            if (0 == $shop_id) {
+                $this->error('非法操作.');
+            }
+        } else {
+            $shop_id = intval($_REQUEST['shop_id']);
+        }
 
-		}
+        if ($shop_id) {
+            $where .= ' AND shop_id='.intval($shop_id);
 
+            $shop_name = M('shangchang')->where('id='.intval($shop_id))->getField('name');
 
+            $this->assign('shop_name', $shop_name);
 
-		$post_info = array();
+            $this->assign('shop_id', $shop_id);
+        }
 
-		if (intval($order_info['post'])) {
+        for ($i = 0; $i < 12; ++$i) {
+            //日期
 
-			$post_info = M('post')->where('id='.intval($order_info['post']))->find();
+            if ('m' == $type) {
+                $day = strtotime(date('Y-m')) - 86400 * 30 * (11 - $i);
 
-		}
+                $dayend = $day + 86400 * 30;
 
-		
+                $day_String .= ',"'.date('Y/m', $day).'"';
+            } else {
+                $day = strtotime(date('Y-m-d')) - 86400 * (11 - $i);
 
-		$this->assign('post_info',$post_info);
+                $dayend = $day + 86400;
 
-		$this->assign('order_info',$order_info);
+                $day_String .= ',"'.date('m/d', $day).'"';
+            }
 
-		$this->assign('order_pro',$order_pro);
+            //$hyxl=select('id','aaa_pts_order',"1 $where and addtime>$day and addtime<$dayend",'num');
 
-		$this->display();
+            $hyxl = $this->order->where($where.' AND addtime>'.$day.' AND addtime<'.$dayend)->count('id');
 
-	}
+            $data1 .= ',['.$i.','.$hyxl.']';
+        }
 
+        $this->assign('data1', $data1);
 
+        $this->assign('day_String', $day_String);
 
+        //当天日期的时间戳
 
+        $today = strtotime(date('Y-m-d'));
 
-	/*
+        $this->assign('today', $today);
 
-	*
+        //获取最近订单数据
 
-	* 修改订单状态，添加物流名称、物流单号
+        $order_list = $this->order->where($where)->order('id desc')->limit('0,20')->select();
 
-	*/
+        foreach ($order_list as $k => $v) {
+            $order_list[$k]['shop_name'] = M('shangchang')->where('id='.$v['shop_id'])->getField('name');
+        }
 
-	public function sms_up(){
+        $this->assign('order_list', $order_list);
 
-		$oid = intval($_POST['oid']);
+        $this->assign('type', $type);
 
-		$o_info = $this->order->where('id='.intval($oid))->find();
+        //print_r($where);die();
 
-		if (!$o_info) {
-
-			$arr = array();
-
-			$arr = array('returns'=>0 , 'message'=>'没有找到相关订单.');
-
-			echo json_encode($arr);
-
-			exit();
-
-		}
-
-
-
-		//接收ajax传过来的值
-
-		$order_status = intval($_POST['order_status']);
-
-		$kuaidi_name = $_POST['kuaidi_name'];
-
-		$kuaidi_num = $_POST['kuaidi_num'];
-
-		if ($o_info['kuaidi_name']==$kuaidi_name && $o_info['kuaidi_num']==$kuaidi_num && intval($o_info['status'])==$order_status) {
-
-			$arr = array();
-
-			$arr = array('returns'=>0 , 'message'=>'修改信息未发生变化.');
-
-			echo json_encode($arr);
-
-			exit();
-
-		}
-
-
-
-		try{
-
-			if(($kuaidi_name=='' || $kuaidi_num=='') && $order_status==30) throw new Exception('参数不正确');
-
-			/*$msg = '您的订单（编号:%s）,已发货，送货快递:%s，运单号:%s 【%s】';
-
-			$msg = sprintf($msg,$id,$kuaidi_name,$kuaidi_num,$partner_info['name']);*/
-
-			//修改快递信息
-
-			$data = array();
-
-			if ($order_status) {
-
-				$data['status'] = $order_status;
-
-			}
-
-			if ($kuaidi_name) {
-
-				$data['kuaidi_name'] = $kuaidi_name;
-
-			}
-
-			if ($kuaidi_num) {
-
-				$data['kuaidi_num'] = $kuaidi_num;
-
-			}
-
-			$up = $this->order->where('id='.intval($oid))->save($data);
-
-			$json = array();
-
-			if ($up) {
-
-				$json['message']="操作成功.";
-
-				$json['returns']=1;
-
-			}else{
-
-				$json['message']="操作失败.";
-
-				$json['returns']=0;
-
-			}
-
-		}catch(Exception $e){
-
-			   $json = array('returns'=>0 , 'message'=>$e->getMessage());
-
-		}
-
-		echo json_encode($json);
-
-		exit();
-
-	}
-
-
-
-
-
-	/*
-
-	*
-
-	*  确认退款  修改退款状态
-
-	*/
-
-	public function back(){
-	   vendor('WeiXinpay.wxpay');
-
-	   $id =(int)$_GET['oid'];
-
-	   $back_info = $this->order->where('id='.intval($id))->find();
-
-	   if(!$back_info || intval($back_info['back'])!=1) {
-
-	   		$this->error('订单信息错误.');
-
-	   }
-
-	   \Think\Log::write('[Wechat Transaction] 订单:'.$back_info['order_sn'].' 申请退款. 金额:'.$back_info['price_h'],'INFO ');
-
-		$out_trade_no = $back_info['order_sn'];					//订单号
-		$total_fee = $back_info['price_h'] * 100;		//订单总金额 单位分
-		$refund_fee = $back_info['price_h'] * 100;		//退款总金额 单位分
-
-
-		$input = new \WxPayRefund();
-		$input->SetOut_trade_no($out_trade_no);
-		$input->SetTotal_fee($total_fee);
-		$input->SetRefund_fee($refund_fee);
-	    $input->SetOut_refund_no(\WxPayConfig::MCHID.date("YmdHis"));
-	    $input->SetOp_user_id(\WxPayConfig::MCHID);
-	    $res = \WxPayApi::refund($input);
-
-
-		/**
-		 * return_code 此字段是通信标识(SUCCESS/FAIL )
-		 * result_code 业务结果 (SUCCESS/FAIL SUCCESS退款申请接收成功，结果通过退款查询接口查询 / FAIL 提交业务失败)
-		 * 
-		 */
-		if($res['return_code'] == "SUCCESS" && $res['result_code'] == "SUCCESS"){
-			//$res['cash_refund_fee'] 这里的金额是现金退款金额. 因为微信存在现金和代金券 
-			\Think\Log::write('[Wechat Transaction] 订单:'.$back_info['order_sn'].' 退款成功. 商户订单号:'.$res['out_trade_no'].' 微信订单号:'.$res['transaction_id'].' 微信退款单号:'.$res['refund_id'].' 金额:'.$res['cash_refund_fee'],'INFO ');
-		}elseif($res['return_code'] != "SUCCESS"){
-			\Think\Log::write('[Wechat Transaction] 订单:'.$back_info['order_sn'].' 退款失败. 失败信息:'.$res['return_msg'],'INFO ');
-			$this->error('申请退款失败! 请稍后再试!');
-		}elseif ($res['result_code'] != "SUCCESS") {
-			\Think\Log::write('[Wechat Transaction] 订单:'.$back_info['order_sn'].' 退款失败. 错误代码:'.$res['err_code'].' 错误信息:'.$res['err_code_des'],'INFO ');
-			$this->error('申请退款失败! 请查看支付账号金额!');
-		}
-
-
-	   $data = array();
-
-	   $data['back']=2;
-
-
-	   $up_back = $this->order->where('id='.intval($id))->save($data);
-
-	   if ($up_back) {
-
-	   		$this->success('操作成功.');
-
-	   }else{
-
-	   		$this->error('操作失败.');
-
-	   }
-
-	}
-
-
-
-	/*
-
-	*
-
-	*  订单删除方法
-
-	*/
-
-	public function del(){
-
-		//以后删除还要加权限登录判断
-
-		$id = intval($_GET['did']);
-
-		$check_info = $this->order->where('id='.intval($id))->find();
-
-		if (!$check_info) {
-
-			$this->error('系统错误，请稍后再试.');
-
-		}
-
-
-
-		$up = array();
-
-		$up['del'] = 1;
-
-		$res = $this->order->where('id='.intval($id))->save($up);
-
-		if ($res) {
-
-			$this->success('操作成功.');
-
-		}else{
-
-			$this->error('操作失败.');
-
-		}
-
-	}
-
-
-
-
-
-	/*
-
-	*
-
-	*  订单统计功能
-
-	*/
-
-	public function order_count(){
-
-		//查询类型 d日视图  m月视图
-
-		$type = $_GET['type'];
-
-		//查询商家id
-
-		$where = '1=1';
-
-
-
-		//获取商家id
-
-		if (intval($_SESSION['admininfo']['qx'])!=4) {
-
-			$shop_id = intval(M('adminuser')->where('id='.intval($_SESSION['admininfo']['id']))->getField('shop_id'));
-
-			if ($shop_id==0) {
-
-				$this->error('非法操作.');
-
-			}
-
-		}else{
-
-			$shop_id = intval($_REQUEST['shop_id']);
-
-		}
-
-
-
-		if ($shop_id) {
-
-			$where .= ' AND shop_id='.intval($shop_id);
-
-			$shop_name = M('shangchang')->where('id='.intval($shop_id))->getField('name');
-
-			$this->assign('shop_name',$shop_name);
-
-			$this->assign('shop_id',$shop_id);
-
-		}
-
-
-
-		for($i=0;$i<12;$i++){
-
-		  //日期
-
-		  if($type=='m'){
-
-			 $day = strtotime(date('Y-m')) - 86400*30*(11-$i);
-
-			 $dayend = $day+86400*30;
-
-			 $day_String .= ',"'.date('Y/m',$day).'"';
-
-		  }else{
-
-			 $day = strtotime(date('Y-m-d')) - 86400*(11-$i);
-
-			 $dayend = $day+86400; 
-
-			 $day_String .= ',"'.date('m/d',$day).'"';
-
-		  }
-
-
-
-		  //$hyxl=select('id','aaa_pts_order',"1 $where and addtime>$day and addtime<$dayend",'num');
-
-		  $hyxl = $this->order->where($where.' AND addtime>'.$day." AND addtime<".$dayend)->count('id');
-
-		  $data1.=',['.$i.','.$hyxl.']';
-
-		}
-
-		$this->assign('data1',$data1);
-
-		$this->assign('day_String',$day_String);
-
-		//当天日期的时间戳
-
-		$today = strtotime(date('Y-m-d'));
-
-		$this->assign('today',$today);
-
-
-
-		//获取最近订单数据
-
-		$order_list = $this->order->where($where)->order('id desc')->limit('0,20')->select();
-
-		foreach ($order_list as $k => $v) {
-
-			$order_list[$k]['shop_name'] = M('shangchang')->where('id='.$v['shop_id'])->getField('name');
-
-		}
-
-		$this->assign('order_list',$order_list);
-
-		$this->assign('type',$type);
-
-		//print_r($where);die();
-
-		$this->display();
-
-	}
-
-
-
+        $this->display();
+    }
 }
