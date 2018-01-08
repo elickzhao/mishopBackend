@@ -30,12 +30,12 @@ class LoginController extends PublicController{
 						unset($_SESSION['system']);
 						$_SESSION['admininfo']=$admin;
 						$_SESSION['system']=$system;
-					    echo "<script>alert('登录成功');location.href='".U('Index/index')."'</script>";				
+						$this->success('欢迎回来!',U('Index/index'),2);			
 				}else{
-					$this->error('账号密码错误');
+					$this->error('账号密码错误!','',2);
 				}
 			}else{
-				$this->error('账号不存在或已注销');
+				$this->error('账号不存在或已注销!','',2);
 			}
 		}else{
 			$sysname= M('program')->find();
