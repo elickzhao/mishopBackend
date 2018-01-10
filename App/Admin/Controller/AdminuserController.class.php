@@ -20,7 +20,7 @@ class AdminuserController extends PublicController
             $where.=" AND name like '%$name%'";
         }
 
-        //define('rows', 10);//定义每页显示数量
+        define('rows', 10);//定义每页显示数量
         $count=M('adminuser')->where($where)->count();
         $rows=ceil($count/rows);
 
