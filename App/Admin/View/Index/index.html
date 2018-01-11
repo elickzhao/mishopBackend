@@ -97,13 +97,15 @@
     <include File='Page/adminusermenu' />
 
     <!-- 这个是menu隐藏显示按钮 -->
-    <div class="dislpayArrow hidden-xs"><a class="pngfix" href="javascript:void(0);" onClick="displaynavbar(this)"></a></div>
+    <div class="dislpayArrow hidden-xs">
+        <a class="pngfix" href="javascript:void(0);" onClick="displaynavbar(this)"></a>
+    </div>
     <section class="Hui-article-box">
 
         <div id="iframe_box" class="Hui-article">
             <div class="show_iframe">
-                    <div style="display:none" class="loading"></div>
-                <iframe src='{:U("Page/adminindex")}' id='iframe' name='iframe' olling="yes" frameborder="0"></iframe>
+                <div style="display:none" class="loading"></div>
+                <iframe src='{:U("Page/adminindex")}'  scrolling="yes" frameborder="0" ></iframe>
             </div>
         </div>
     </section>
