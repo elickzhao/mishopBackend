@@ -26,14 +26,53 @@
     <script type="text/javascript" src="__PUBLIC__/admin/js/action.js"></script>
     <title>管理首页</title>
     <style>
-        .main {
-            width: 80%;
-            /* margin: 10px; */
+        .num {
+            font-size: 3rem;
+            color: #444;
+            margin-left: 20px;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .table td {
+            background-color: #fff;
+        }
+
+        .i-circular {
+            display: inline-block;
+            background: #0072D2;
+            border-radius: 50%;
+            width: 8px;
+            height: 8px;
+            margin: -1px 5px 0 0;
+            vertical-align: middle;
+        }
+
+        .info {
+            padding-left: 10px;
+            font-size: 12px;
+            color: #999;
+            font-weight: normal;
+        }
+
+        .goods_sale_count {
+            line-height: 1.2em;
+            font-size: 2.5em;
+            font-weight: normal;
+            overflow: hidden;
+            padding: 0 10px;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            color: #0072D2;
+            display: block;
+            margin: 10px 0;
         }
     </style>
 </head>
 
-<body>
+<body style="background-color:#ECF0F5;">
     <nav class="breadcrumb">
         <i class="Hui-iconfont">&#xe67f;</i> 首页
         <span class="c-gray en">&gt;</span> 管理后台
@@ -43,41 +82,198 @@
             <i class="Hui-iconfont">&#xe68f;</i>
         </a>
     </nav>
-    <!-- <div class="page-container">
-    <ul class="aaa_pts_show_6">
-        <li>用户名：  <font><?php echo $_SESSION["admininfo"]['name'] ?></font></li>
-        <br>
-        <li>小程序：<font class="r1" style="color:#090"><?php echo $_SESSION["system"]['sysname'] ?></font></li>
-
-    </ul>
-</div> -->
-    <div class="main">
-        <div class="row">
-            <div class="col-lg-3 col-md-3 col-sm-6">
-                <div class="panel panel-default">
-                    <div class="panel-header">面板标题</div>
-                    <div class="panel-body">面板内容</div>
+    <div class="page-container">
+        <!-- 第一行 四格统计 开始 -->
+        <div class="row cl">
+            <div class="col-lg-3 col-md-3 col-xs-6 mt-10">
+                <div class="panel panel-secondary">
+                    <div class="panel-header">订单总金额
+                        <span class="label label-default  radius" style="float: right;">今日</span>
+                    </div>
+                    <div class="panel-body text-center">
+                        <i class="Hui-iconfont Hui-iconfont-hongbao" style="font-size:3rem"></i>
+                        <span class="num">&yen;1271</span>
+                    </div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-3 col-sm-6">
-                <div class="panel panel-default">
-                    <div class="panel-header">面板标题</div>
-                    <div class="panel-body">面板内容</div>
+            <div class="col-lg-3 col-md-3 col-xs-6 mt-10">
+                <div class="panel panel-success">
+                    <div class="panel-header">订单数量
+                        <span class="label label-default  radius" style="float: right;">今日</span>
+                    </div>
+                    <div class="panel-body text-center">
+                        <i class="Hui-iconfont Hui-iconfont-order" style="font-size:3rem"></i>
+                        <span class="num">120</span>
+                    </div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-3 col-sm-6">
-                <div class="panel panel-default">
-                    <div class="panel-header">面板标题</div>
-                    <div class="panel-body">面板内容</div>
+            <div class="col-lg-3 col-md-3 col-xs-6 mt-10">
+                <div class="panel panel-warning">
+                    <div class="panel-header">客户人数
+                        <span class="label label-default  radius" style="float: right;">总</span>
+                    </div>
+                    <div class="panel-body text-center">
+                        <i class="Hui-iconfont Hui-iconfont-user2" style="font-size:3rem"></i>
+                        <span class="num">378</span>
+                    </div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-3 col-sm-6">
-                <div class="panel panel-default">
-                    <div class="panel-header">面板标题</div>
-                    <div class="panel-body">面板内容</div>
+            <div class="col-lg-3 col-md-3 col-xs-6 mt-10">
+                <div class="panel panel-danger">
+                    <div class="panel-header">商品数量
+                        <span class="label label-default  radius" style="float: right;">总</span>
+                    </div>
+                    <div class="panel-body text-center">
+                        <i class="Hui-iconfont Hui-iconfont-goods" style="font-size:3rem"></i>
+                        <span class="num">899</span>
+                    </div>
                 </div>
             </div>
         </div>
+        <!-- /第一行 四格统计 结束 -->
+
+        <!-- 第二行 -->
+        <div class="row cl mt-20">
+            <div class="col-lg-8 mt-20">
+                <div class="panel">
+                    <div class="panel-header">
+                        <i class="i-circular"></i>交易提示
+                        <span class="info">您需要立即处理的交易订单</span>
+                    </div>
+                    <div class="panel-body">
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="row cl text-center">
+                                            <div class="col-lg-12">
+                                                <strong class="goods_sale_count">54</strong>
+                                            </div>
+                                            <div class="col-lg-12">待付款</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="row cl text-center">
+                                            <div class="col-lg-12">
+                                                <strong class="goods_sale_count">54</strong>
+                                            </div>
+                                            <div class="col-lg-12">待发货</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="row cl text-center">
+                                            <div class="col-lg-12">
+                                                <strong class="goods_sale_count">54</strong>
+                                            </div>
+                                            <div class="col-lg-12">已发货</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="row cl text-center">
+                                            <div class="col-lg-12">
+                                                <strong class="goods_sale_count">54</strong>
+                                            </div>
+                                            <div class="col-lg-12">已收货</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="row cl text-center">
+                                            <div class="col-lg-12">
+                                                <strong class="goods_sale_count">54</strong>
+                                            </div>
+                                            <div class="col-lg-12">已完成</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="row cl text-center">
+                                            <div class="col-lg-12">
+                                                <strong class="goods_sale_count">54</strong>
+                                            </div>
+                                            <div class="col-lg-12">已关闭</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="row cl text-center">
+                                            <div class="col-lg-12">
+                                                <strong class="goods_sale_count">54</strong>
+                                            </div>
+                                            <div class="col-lg-12">退款中</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4  mt-20">
+                <div class="panel">
+                    <div class="panel-header">
+                        <i class="i-circular"></i>商家帮助
+                        <span class="info">您需要的商家帮助</span>
+                    </div>
+                    <div class="panel-body">
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="row cl text-center">
+                                            <div class="col-lg-12">
+                                                <img src="__PUBLIC__/admin/images/goods_management.png" alt="商品管理" title="商品管理">
+                                            </div>
+                                            <div class="col-lg-12">商品管理</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="row cl text-center">
+                                            <div class="col-lg-12">
+                                                <img src="__PUBLIC__/admin/images/promotions.png" alt="品牌管理" title="品牌管理">
+                                            </div>
+                                            <div class="col-lg-12">品牌管理</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="row cl text-center">
+                                            <div class="col-lg-12">
+                                                <img src="__PUBLIC__/admin/images/order_after.png" alt="分类管理" title="分类管理">
+                                            </div>
+                                            <div class="col-lg-12">分类管理</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /第二行 -->
+
+        <!-- 服务器信息 -->
+        <table class="table table-border table-bordered table-bg mt-20">
+            <thead>
+                <tr>
+                    <th colspan="4" scope="col">
+                        <i class="Hui-iconfont Hui-iconfont-system"></i> 服务器信息</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="active" style="text-align: right;font-size:14px;">服务器操作系统</td>
+                    <td>192.168.1.1</td>
+                    <td class="active" style="text-align: right;font-size:14px;">服务器域名/IP</td>
+                    <td>www.h-ui.net</td>
+                </tr>
+                <tr>
+                    <td class="active" style="text-align: right;font-size:14px;">服务器环境</td>
+                    <td>www.h-ui.net</td>
+                    <td class="active" style="text-align: right;font-size:14px;">PHP版本 </td>
+                    <td>80</td>
+                </tr>
+            </tbody>
+        </table>
+        <!-- /服务器信息 -->
     </div>
 </body>
+
 </html>
