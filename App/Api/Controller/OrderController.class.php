@@ -272,6 +272,8 @@ class OrderController extends PublicController
 
         $condition['back'] = array('gt', '0');
 
+        $condition['uid']=array('eq',intval($uid));
+
         //获取总页数
 
         $count = $orders->where($condition)->count();
@@ -340,6 +342,8 @@ class OrderController extends PublicController
         $condition = array();
 
         $condition['back'] = array('gt', '0');
+
+        $condition['uid']=array('eq',intval($uid));
 
         //获取总页数
 
