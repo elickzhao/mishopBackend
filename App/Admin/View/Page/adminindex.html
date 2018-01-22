@@ -24,6 +24,7 @@
     <![endif]-->
     <script type="text/javascript" src="__PUBLIC__/admin/js/jquery.js"></script>
     <script type="text/javascript" src="__PUBLIC__/admin/js/action.js"></script>
+    <script src="https://cdn.bootcss.com/echarts/3.8.5/echarts.min.js"></script>
     <title>管理首页</title>
     <style>
         .num {
@@ -69,23 +70,26 @@
             display: block;
             margin: 10px 0;
         }
+
+        .pa {
+            position: absolute;
+        }
+
+        .fz-14{
+            font-size: 14px;
+        }
     </style>
 </head>
 
 <body style="background-color:#ECF0F5;">
-    <nav class="breadcrumb">
-        <i class="Hui-iconfont">&#xe67f;</i> 首页
-        <span class="c-gray en">&gt;</span> 管理后台
-        <span class="c-gray en">&gt;</span> 管理首页
-        <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);"
-            title="刷新">
-            <i class="Hui-iconfont">&#xe68f;</i>
-        </a>
-    </nav>
-    <div class="page-container">
+    <!-- 面包屑 -->
+    <include File='Page/nav' />
+    <!-- /面包屑 -->
+
+    <div class="page-container cl">
         <!-- 第一行 四格统计 开始 -->
-        <div class="row cl">
-            <div class="col-lg-3 col-md-3 col-xs-6 mt-10">
+        <div class="row cl mt-20">
+            <div class="col-lg-3 col-md-3 col-xs-6 mt-20">
                 <div class="panel panel-secondary">
                     <div class="panel-header">订单总金额
                         <span class="label label-default  radius" style="float: right;">今日</span>
@@ -96,7 +100,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-3 col-xs-6 mt-10">
+            <div class="col-lg-3 col-md-3 col-xs-6 mt-20">
                 <div class="panel panel-success">
                     <div class="panel-header">订单数量
                         <span class="label label-default  radius" style="float: right;">今日</span>
@@ -107,7 +111,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-3 col-xs-6 mt-10">
+            <div class="col-lg-3 col-md-3 col-xs-6 mt-20">
                 <div class="panel panel-warning">
                     <div class="panel-header">客户人数
                         <span class="label label-default  radius" style="float: right;">总</span>
@@ -118,7 +122,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-3 col-xs-6 mt-10">
+            <div class="col-lg-3 col-md-3 col-xs-6 mt-20">
                 <div class="panel panel-danger">
                     <div class="panel-header">商品数量
                         <span class="label label-default  radius" style="float: right;">总</span>
@@ -135,6 +139,7 @@
         <!-- 第二行 -->
         <div class="row cl mt-20">
             <div class="col-lg-8 mt-20">
+                <!-- 交易提示  -->
                 <div class="panel">
                     <div class="panel-header">
                         <i class="i-circular"></i>交易提示
@@ -205,6 +210,184 @@
                         </table>
                     </div>
                 </div>
+                <!-- /交易提示  -->
+
+                <!-- 店铺及商品提示 -->
+                <div class="panel mt-10">
+                    <div class="panel-header">
+                        <i class="i-circular"></i>交易提示
+                        <span class="info">您需要立即处理的交易订单</span>
+                    </div>
+                    <div class="panel-body">
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="row cl text-center">
+                                            <div class="col-lg-12">
+                                                <strong class="goods_sale_count">54</strong>
+                                            </div>
+                                            <div class="col-lg-12">待付款</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="row cl text-center">
+                                            <div class="col-lg-12">
+                                                <strong class="goods_sale_count">54</strong>
+                                            </div>
+                                            <div class="col-lg-12">待发货</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="row cl text-center">
+                                            <div class="col-lg-12">
+                                                <strong class="goods_sale_count">54</strong>
+                                            </div>
+                                            <div class="col-lg-12">已发货</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="row cl text-center">
+                                            <div class="col-lg-12">
+                                                <strong class="goods_sale_count">54</strong>
+                                            </div>
+                                            <div class="col-lg-12">已收货</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="row cl text-center">
+                                            <div class="col-lg-12">
+                                                <strong class="goods_sale_count">54</strong>
+                                            </div>
+                                            <div class="col-lg-12">已完成</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="row cl text-center">
+                                            <div class="col-lg-12">
+                                                <strong class="goods_sale_count">54</strong>
+                                            </div>
+                                            <div class="col-lg-12">已关闭</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="row cl text-center">
+                                            <div class="col-lg-12">
+                                                <strong class="goods_sale_count">54</strong>
+                                            </div>
+                                            <div class="col-lg-12">退款中</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- /店铺及商品提示 -->
+
+                <!-- 订单总数统计 -->
+                <div class="panel mt-10">
+                    <div class="panel-header">
+                        <i class="i-circular"></i>交易提示
+                        <span class="info">您需要立即处理的交易订单</span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="btn-group pa">
+                            <span class="btn btn-primary radius" onclick="t()">今日</span>
+                            <span class="btn btn-default radius">昨日</span>
+                            <span class="btn btn-default radius" onclick="w()">本周</span>
+                            <span class="btn btn-default radius" onclick="m()">本月</span>
+                        </div>
+                        <div id="main" style="width:100%;height:200px;"></div>
+                    </div>
+                </div>
+                <!-- /订单总数统计 -->
+                <script>
+                    var myChart = echarts.init(document.getElementById('main'));
+                    var data = [1, 5, 7, 8, 12, 6, 4];
+
+                    option = {
+                        color: ['#3398DB'],
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                                type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                            }
+                        },
+                        grid: {
+                            left: '3%',
+                            right: 0,
+                            bottom: 0,
+                            containLabel: true
+                        },
+                        toolbox: {
+                            show: true,
+                            feature: {
+                                magicType: { type: ['bar', 'line'] },
+                                restore: {},
+                                saveAsImage: {}
+                            }
+                        },
+                        xAxis: {
+                            type: 'category',
+                            nameRotate: 20,
+                            axisLabel: {
+                                interval: 0,      //显示所有字段 因为有些设置只针对value类型有效
+                                rotate: 30        //旋转坐标值 否则排列不下  
+                            },
+                            axisTick: {
+                                alignWithLabel: true
+                            },
+                            data: ["星期1", "星期2", "星期3", "星期4", "星期5", "星期6", "星期7"]
+                        },
+                        yAxis: {
+                            type: 'value',
+                            name: '订单统计',           //坐标系名称
+                            nameLocation: 'center',    //显示位置
+                            nameGap: '50',             //与坐标系距离 
+                            //minInterval:5,            //最小间隔数
+                            splitNumber: 3,             //坐标轴的分割段数   值针对value 这个类型有效
+                            axisLabel: {
+                                //formatter: '{value} °C'
+                                interval: 5,
+                                margin: 16,
+                            }
+                        },
+                        series: [
+                            {
+                                name: '订单数量',
+                                type: 'bar',
+                                data: data,
+                                barMaxWidth: 80,     //柱形最大宽度
+                                markPoint: {
+                                    symbolSize: 55,  //标注大小 可能存在的问题是三位数可能装不下
+                                    data: [
+                                        { type: 'max', name: '最大值' },
+                                    ]
+                                }
+                            }
+                        ]
+                    };
+                    myChart.setOption(option);
+                    window.onresize = myChart.resize;     //图表自适应窗口大小
+                    function t() {
+                        option.xAxis.data = ["0:00", "1:00", "2:00", "3:00", "4:00", "5:00", "6:00", "7:00", "8:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"];["1日", "2日", "3日", "4日", "5日", "6日", "7日", "8日", "9日", "10日", "11日", "12日", "13日", "14日", "15日", "16日", "17日", "18日", "19日", "20日", "21日", "22日", "23日", "24日", "25日", "26日", "27日", "28日", "29日", "30日", "31日"];
+                        option.series[0].data = [3, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 7, 0, 0, 0, 0, 0, 12, 0, 0];
+                        //console.log(option);
+                        myChart.setOption(option);
+                    }
+                    function w() {
+                        option.xAxis.data = ["星期1", "星期2", "星期3", "星期4", "星期5", "星期6", "星期7"];
+                        option.series[0].data = [1, 5, 7, 8, 12, 6, 4];
+                        myChart.setOption(option);
+                    }
+
+                    function m() {
+                        option.xAxis.data = ["1日", "2日", "3日", "4日", "5日", "6日", "7日", "8日", "9日", "10日", "11日", "12日", "13日", "14日", "15日", "16日", "17日", "18日", "19日", "20日", "21日", "22日", "23日", "24日", "25日", "26日", "27日", "28日", "29日", "30日", "31日"];
+                        option.series[0].data = [5, 3, 13, 6, 7, 21, 32, 0, 0, 34, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 21, 0, 0, 0, 25, 0, 15, 0, 0];
+                        myChart.setOption(option);
+                    }
+                </script>
             </div>
             <div class="col-lg-4  mt-20">
                 <div class="panel">
@@ -238,6 +421,69 @@
                                                 <img src="__PUBLIC__/admin/images/order_after.png" alt="分类管理" title="分类管理">
                                             </div>
                                             <div class="col-lg-12">分类管理</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="panel mt-10">
+                    <div class="panel-header">
+                        <i class="i-circular"></i>销售情况统计按周期统计
+                        <span class="info">商家店铺的订单量和订单金额</span>
+                    </div>
+                    <div class="panel-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <td class="fz-14" colspan="2">昨日销量</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="row cl text-center">
+                                            <div class="col-lg-12 fz-14" >
+                                                0
+                                            </div>
+                                            <div class="col-lg-12 fz-14">订单量(件)</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="row cl text-center">
+                                            <div class="col-lg-12 fz-14">
+                                                0.00
+                                            </div>
+                                            <div class="col-lg-12 fz-14">订单金额(元)</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <td class="fz-14" colspan="2">本月销量</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="row cl text-center">
+                                            <div class="col-lg-12 fz-14" >
+                                                0
+                                            </div>
+                                            <div class="col-lg-12 fz-14">订单量(件)</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="row cl text-center">
+                                            <div class="col-lg-12 fz-14">
+                                                0.00
+                                            </div>
+                                            <div class="col-lg-12 fz-14">订单金额(元)</div>
                                         </div>
                                     </td>
                                 </tr>

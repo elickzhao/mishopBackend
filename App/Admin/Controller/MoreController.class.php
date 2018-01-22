@@ -290,6 +290,8 @@ class MoreController extends PublicController{
 			}
 			
 		}else{
+			$bc = ['综合管理','小程序配置'];
+			$this->assign('bc', $bc);
 			$this->assign('info',M('program')->where('id=1')->find());
 			$this->display();
 		}
