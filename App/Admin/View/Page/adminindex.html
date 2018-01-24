@@ -75,8 +75,34 @@
             position: absolute;
         }
 
-        .fz-14{
+        .count {
+            font-size: 16px;
+            color: #333333;
+            font-weight: normal;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            /* line-height: 3em; */
+        }
+
+        .count-title {
             font-size: 14px;
+            display: block;
+            margin-top: 10px;
+            color: #999999;
+
+        }
+
+        .list-shop-table {
+            table-layout: fixed;
+        }
+
+        .table-ellipsis {
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+            /* width:"40%"; */
+            /* width: 12rem; */
         }
     </style>
 </head>
@@ -302,8 +328,28 @@
                     </div>
                 </div>
                 <!-- /订单总数统计 -->
+
+                <!-- 订单总数统计 -->
+                <div class="panel mt-10">
+                    <div class="panel-header">
+                        <i class="i-circular"></i>关注人数统计
+                        <span class="info">新增会员</span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="btn-group pa">
+                            <span class="btn btn-primary radius" onclick="t()">今日</span>
+                            <span class="btn btn-default radius">昨日</span>
+                            <span class="btn btn-default radius" onclick="w()">本周</span>
+                            <span class="btn btn-default radius" onclick="m()">本月</span>
+                        </div>
+                        <div id="main1" style="width:100%;height:203px;"></div>
+                    </div>
+                </div>
+                <!-- /订单总数统计 -->
+
                 <script>
                     var myChart = echarts.init(document.getElementById('main'));
+                    var myChart1 = echarts.init(document.getElementById('main1'));
                     var data = [1, 5, 7, 8, 12, 6, 4];
 
                     option = {
@@ -370,6 +416,8 @@
                     };
                     myChart.setOption(option);
                     window.onresize = myChart.resize;     //图表自适应窗口大小
+                    myChart1.setOption(option);
+                    window.onresize = myChart1.resize;     //图表自适应窗口大小
                     function t() {
                         option.xAxis.data = ["0:00", "1:00", "2:00", "3:00", "4:00", "5:00", "6:00", "7:00", "8:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"];["1日", "2日", "3日", "4日", "5日", "6日", "7日", "8日", "9日", "10日", "11日", "12日", "13日", "14日", "15日", "16日", "17日", "18日", "19日", "20日", "21日", "22日", "23日", "24日", "25日", "26日", "27日", "28日", "29日", "30日", "31日"];
                         option.series[0].data = [3, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 7, 0, 0, 0, 0, 0, 12, 0, 0];
@@ -388,8 +436,14 @@
                         myChart.setOption(option);
                     }
                 </script>
+
+
+
+
+
             </div>
             <div class="col-lg-4  mt-20">
+                <!-- 商家帮助 -->
                 <div class="panel">
                     <div class="panel-header">
                         <i class="i-circular"></i>商家帮助
@@ -428,7 +482,9 @@
                         </table>
                     </div>
                 </div>
+                <!-- /商家帮助 -->
 
+                <!-- 销量统计 -->
                 <div class="panel mt-10">
                     <div class="panel-header">
                         <i class="i-circular"></i>销售情况统计按周期统计
@@ -438,25 +494,25 @@
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <td class="fz-14" colspan="2">昨日销量</td>
+                                    <td class="f-14" colspan="2">昨日销量</td>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
                                     <td>
                                         <div class="row cl text-center">
-                                            <div class="col-lg-12 fz-14" >
+                                            <div class="col-lg-12 count">
                                                 0
                                             </div>
-                                            <div class="col-lg-12 fz-14">订单量(件)</div>
+                                            <div class="col-lg-12 count-title">订单量(件)</div>
                                         </div>
                                     </td>
                                     <td>
                                         <div class="row cl text-center">
-                                            <div class="col-lg-12 fz-14">
+                                            <div class="col-lg-12 count">
                                                 0.00
                                             </div>
-                                            <div class="col-lg-12 fz-14">订单金额(元)</div>
+                                            <div class="col-lg-12 count-title">订单金额(元)</div>
                                         </div>
                                     </td>
                                 </tr>
@@ -465,25 +521,25 @@
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <td class="fz-14" colspan="2">本月销量</td>
+                                    <td class="f-14" colspan="2">本月销量</td>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
                                     <td>
                                         <div class="row cl text-center">
-                                            <div class="col-lg-12 fz-14" >
+                                            <div class="col-lg-12 count">
                                                 0
                                             </div>
-                                            <div class="col-lg-12 fz-14">订单量(件)</div>
+                                            <div class="col-lg-12 count-title">订单量(件)</div>
                                         </div>
                                     </td>
                                     <td>
                                         <div class="row cl text-center">
-                                            <div class="col-lg-12 fz-14">
+                                            <div class="col-lg-12 count">
                                                 0.00
                                             </div>
-                                            <div class="col-lg-12 fz-14">订单金额(元)</div>
+                                            <div class="col-lg-12 count-title">订单金额(元)</div>
                                         </div>
                                     </td>
                                 </tr>
@@ -491,6 +547,82 @@
                         </table>
                     </div>
                 </div>
+                <!-- /销量统计 -->
+
+                <!-- 商品排行榜 -->
+                <div class="panel mt-10">
+                    <div class="panel-header">
+                        <i class="i-circular"></i>单品销售排名
+                        <span class="info">按周期统计的订单量和订单金额</span>
+                    </div>
+                    <div class="panel-body">
+                        <table class="table table-border list-shop-table">
+                            <thead>
+                                <tr>
+                                    <td width="15%" class="f-14 text-c">排行</td>
+                                    <td width="70%" class="f-14 text-l">商品信息</td>
+                                    <td width="15%" class="f-14 text-c">销量</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="f-16 text-c c-red">
+                                        <strong>1</strong>
+                                    </td>
+                                    <td title="钻石金属 闪钻镶卡通指环扣懒人防摔折叠粘...钻石金属" class="table-ellipsis">钻石金属 闪钻镶卡通指环扣懒人防摔折叠粘...钻石金属 闪钻镶卡通指环扣懒人防摔折叠粘...</td>
+                                    <td class="f-16 text-c c-red">
+                                        <strong>2</strong>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="f-14 text-c c-orange">
+                                        <strong>2</strong>
+                                    </td>
+                                    <td title="钻石金属 闪钻镶卡通指环扣懒人防摔折叠粘...钻石金属" class="table-ellipsis">钻石金属 闪钻镶卡通指环扣懒人防摔折叠粘...钻石金属 闪钻镶卡通指环扣懒人防摔折叠粘...</td>
+                                    <td class="f-14 text-c c-orange">
+                                        <strong>1</strong>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="f-14 text-c c-blue">3</td>
+                                    <td title="钻石金属 闪钻镶卡通指环扣懒人防摔折叠粘...钻石金属" class="table-ellipsis">钻石金属 闪钻镶卡通指环扣懒人防摔折叠粘...钻石金属 闪钻镶卡通指环扣懒人防摔折叠粘...</td>
+                                    <td class="f-14 text-c c-blue">0</td>
+                                </tr>
+                                <tr>
+                                    <td class="f-14 text-c">4</td>
+                                    <td title="钻石金属 闪钻镶卡通指环扣懒人防摔折叠粘...钻石金属" class="table-ellipsis">钻石金属 闪钻镶卡通指环扣懒人防摔折叠粘...钻石金属 闪钻镶卡通指环扣懒人防摔折叠粘...</td>
+                                    <td class="f-14 text-c">0</td>
+                                </tr>
+                                <tr>
+                                    <td class="f-14 text-c">4</td>
+                                    <td title="钻石金属 闪钻镶卡通指环扣懒人防摔折叠粘...钻石金属" class="table-ellipsis">钻石金属 闪钻镶卡通指环扣懒人防摔折叠粘...钻石金属 闪钻镶卡通指环扣懒人防摔折叠粘...</td>
+                                    <td class="f-14 text-c">0</td>
+                                </tr>
+                                <tr>
+                                    <td class="f-14 text-c">4</td>
+                                    <td title="钻石金属 闪钻镶卡通指环扣懒人防摔折叠粘...钻石金属" class="table-ellipsis">钻石金属 闪钻镶卡通指环扣懒人防摔折叠粘...钻石金属 闪钻镶卡通指环扣懒人防摔折叠粘...</td>
+                                    <td class="f-14 text-c">0</td>
+                                </tr>
+                                <tr>
+                                    <td class="f-14 text-c">4</td>
+                                    <td title="钻石金属 闪钻镶卡通指环扣懒人防摔折叠粘...钻石金属" class="table-ellipsis">钻石金属 闪钻镶卡通指环扣懒人防摔折叠粘...钻石金属 闪钻镶卡通指环扣懒人防摔折叠粘...</td>
+                                    <td class="f-14 text-c">0</td>
+                                </tr>
+                                <tr>
+                                    <td class="f-14 text-c">4</td>
+                                    <td title="钻石金属 闪钻镶卡通指环扣懒人防摔折叠粘...钻石金属" class="table-ellipsis">钻石金属 闪钻镶卡通指环扣懒人防摔折叠粘...钻石金属 闪钻镶卡通指环扣懒人防摔折叠粘...</td>
+                                    <td class="f-14 text-c">0</td>
+                                </tr>
+                                <tr>
+                                    <td class="f-14 text-c">4</td>
+                                    <td title="钻石金属 闪钻镶卡通指环扣懒人防摔折叠粘...钻石金属" class="table-ellipsis">钻石金属 闪钻镶卡通指环扣懒人防摔折叠粘...钻石金属 闪钻镶卡通指环扣懒人防摔折叠粘...</td>
+                                    <td class="f-14 text-c">0</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- /商品排行榜 -->
             </div>
         </div>
         <!-- /第二行 -->
@@ -514,6 +646,12 @@
                     <td class="active" style="text-align: right;font-size:14px;">服务器环境</td>
                     <td>www.h-ui.net</td>
                     <td class="active" style="text-align: right;font-size:14px;">PHP版本 </td>
+                    <td>80</td>
+                </tr>
+                <tr>
+                    <td class="active" style="text-align: right;font-size:14px;">文件上传限制</td>
+                    <td>2M</td>
+                    <td class="active" style="text-align: right;font-size:14px;">PHP运行方式 </td>
                     <td>80</td>
                 </tr>
             </tbody>
