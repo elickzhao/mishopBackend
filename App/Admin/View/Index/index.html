@@ -52,10 +52,10 @@
                                     <a href="javascript:;" onClick="myselfinfo()">个人信息</a>
                                 </li> -->
                                 <li>
-                                    <a href="javascript:;" onClick="logout()">加入收藏</a>
+                                    <a href="javascript:;" onClick="addFavorite()">加入收藏</a>
                                 </li>
                                 <li>
-                                    <a href="javascript:;" onClick="logout()">清理缓存</a>
+                                    <a href="javascript:;" onClick="clearCache()">清理缓存</a>
                                 </li>
                                 <li>
                                     <a href="javascript:;" onClick="logout()">退出登录</a>
@@ -157,6 +157,63 @@
         //     });
         // }
 
+
+        /* 清理缓存 */
+        function clearCache() {
+            var url = "{:U('Index/clearCache')}";
+            $.ajax({
+                type: 'POST',
+                url: url,
+                success: function (res) {
+                    if (res == 1) {
+                          layer.open({
+                            title :false,
+                            icon: 1,
+                            content: '缓存清理完毕', //这里content是一个普通的String
+                            time:2000
+                        });
+                    } else {
+                        layer.open({
+                            title :false,
+                            icon: 2,
+                            content: '清理缓存出错!', //这里content是一个普通的String
+                            time:3000
+                        });
+                    }
+                },
+                error: function (e) {
+                    console.log(e);
+                }
+            });
+        }
+
+        /* 收藏网页 */
+        function addFavorite() {
+            var url = window.location;
+            var title = document.title;
+            var ua = navigator.userAgent.toLowerCase();
+            if (ua.indexOf("360se") > -1) {
+                alert("由于360浏览器功能限制，请按 Ctrl+D 手动收藏！");
+            }
+            else if (ua.indexOf("msie 8") > -1) {
+                window.external.AddToFavoritesBar(url, title); //IE8
+            }
+            else if (document.all) {
+                try {
+                    window.external.addFavorite(url, title);
+                } catch (e) {
+                    alert('您的浏览器不支持,请按 Ctrl+D 手动收藏!');
+                }
+            }
+            else if (window.sidebar) {
+                window.sidebar.addPanel(title, url, "");
+            }
+            else {
+                alert('您的浏览器不支持,请按 Ctrl+D 手动收藏!');
+            }
+        }
+
+        /* 退出 */
         function logout() {
             layer.confirm('确定要退出？', {
                 title: false,
