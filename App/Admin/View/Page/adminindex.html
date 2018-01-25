@@ -175,73 +175,18 @@
                         <table class="table">
                             <tbody>
                                 <volist name="orderStatus" id="vo">
-                                        <td>
-                                                <div class="row cl text-center">
-                                                    <div class="col-lg-12">
-                                                        <strong class="goods_sale_count">{$vo.count}</strong>
-                                                    </div>
-                                                    <div class="col-lg-12">{$vo.title}</div>
-                                                </div>
-                                            </td>
+                                    <td>
+                                        <div class="row cl text-center">
+                                            <div class="col-lg-12">
+                                                <!-- pay_type=&pay_status=10&start_time=&end_time= -->
+                                                <a href="{:U('Order/index?pay_status='.$vo['key'])}" style="text-decoration: none;">
+                                                    <strong class="goods_sale_count">{$vo.count}</strong>
+                                                </a>
+                                            </div>
+                                            <div class="col-lg-12">{$vo.title}</div>
+                                        </div>
+                                    </td>
                                 </volist>
-                                <!-- <tr>
-                                    <td>
-                                        <div class="row cl text-center">
-                                            <div class="col-lg-12">
-                                                <strong class="goods_sale_count">54</strong>
-                                            </div>
-                                            <div class="col-lg-12">待付款</div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="row cl text-center">
-                                            <div class="col-lg-12">
-                                                <strong class="goods_sale_count">54</strong>
-                                            </div>
-                                            <div class="col-lg-12">待发货</div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="row cl text-center">
-                                            <div class="col-lg-12">
-                                                <strong class="goods_sale_count">54</strong>
-                                            </div>
-                                            <div class="col-lg-12">已发货</div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="row cl text-center">
-                                            <div class="col-lg-12">
-                                                <strong class="goods_sale_count">54</strong>
-                                            </div>
-                                            <div class="col-lg-12">已收货</div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="row cl text-center">
-                                            <div class="col-lg-12">
-                                                <strong class="goods_sale_count">54</strong>
-                                            </div>
-                                            <div class="col-lg-12">已完成</div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="row cl text-center">
-                                            <div class="col-lg-12">
-                                                <strong class="goods_sale_count">54</strong>
-                                            </div>
-                                            <div class="col-lg-12">已关闭</div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="row cl text-center">
-                                            <div class="col-lg-12">
-                                                <strong class="goods_sale_count">54</strong>
-                                            </div>
-                                            <div class="col-lg-12">退款中</div>
-                                        </div>
-                                    </td>
-                                </tr> -->
                             </tbody>
                         </table>
                     </div>

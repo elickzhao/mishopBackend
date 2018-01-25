@@ -109,52 +109,13 @@ class PageController extends PublicController
         foreach ($order_status as $k => $v) {
             if ($k == 'back') {
                 $count = $this->order->where(['back'=>'1'])->cache(true, 60)->count();
+                $k = 1;
             } else {
                 $count =  $this->order->where(['status'=>$k])->cache(true, 60)->count();
             }
 
-            $list[] = ['title'=>$v,'count'=>$count];
+            $list[] = ['title'=>$v,'count'=>$count,'key'=>$k];
         }
         return $list;
     }
-
-    /**
-     * array(7) {
-  [0] => array(3) {
-    ["title"] => string(9) "待付款"
-    ["count"] => string(2) "26"
-    ["key"] => int(10)
-  }
-  [1] => array(3) {
-    ["title"] => string(9) "待发货"
-    ["count"] => string(2) "95"
-    ["key"] => int(20)
-  }
-  [2] => array(3) {
-    ["title"] => string(9) "待收货"
-    ["count"] => string(1) "0"
-    ["key"] => int(30)
-  }
-  [3] => array(3) {
-    ["title"] => string(9) "待评价"
-    ["count"] => string(1) "2"
-    ["key"] => int(40)
-  }
-  [4] => array(3) {
-    ["title"] => string(12) "交易完成"
-    ["count"] => string(3) "163"
-    ["key"] => int(50)
-  }
-  [5] => array(3) {
-    ["title"] => string(12) "交易关闭"
-    ["count"] => string(1) "4"
-    ["key"] => int(51)
-  }
-  [6] => array(3) {
-    ["title"] => string(9) "退款中"
-    ["count"] => string(1) "2"
-    ["key"] => string(4) "back"
-  }
-}
-     */
 }
