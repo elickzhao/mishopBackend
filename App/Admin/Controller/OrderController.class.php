@@ -16,7 +16,7 @@ class OrderController extends PublicController
         $this->order_product = M('Order_product');
 
         // $order_status = array('10' => '待付款', '20' => '待发货', '30' => '待收货', '40' => '已收货', '50' => '交易完成');
-
+        //这个已取消其实是已删除
         $order_status = array('0' => '已取消', '10' => '待付款', '20' => '待发货', '30' => '待收货', '40' => '待评价', '50' => '交易完成', '51' => '交易关闭');
 
         $this->assign('order_status', $order_status);
@@ -50,9 +50,9 @@ class OrderController extends PublicController
 
         $pay_status = intval($_REQUEST['pay_status']); //订单状态
 
-        $start_time = intval(strtotime($_REQUEST['start_time'])); //订单状态
+        $receiver = $_REQUEST['receiver']; //订单状态
 
-        $end_time = intval(strtotime($_REQUEST['end_time'])); //订单状态
+        $tel = intval($_REQUEST['tel']); //订单状态
 
         //构建搜索条件
 
@@ -98,26 +98,26 @@ class OrderController extends PublicController
 
         //根据下单时间搜索
 
-        if ($start_time) {
-            $condition['addtime'] = array('gt', $start_time);
+        if ($receiver) {
+            //$condition['receiver'] = array('gt', $receiver);
 
-            $where .= ' AND addtime>'.$start_time;
+            $where .= ' AND receiver = " '.$receiver.'"';
 
             //搜索内容输出
 
-            $this->assign('start_time', date('Y-m-d', $start_time));
+            $this->assign('receiver', $receiver);
         }
 
         //根据下单时间搜索
 
-        if ($end_time) {
-            $condition['addtime'] = array('lt', $end_time);
+        if ($tel) {
+            //$condition['tel'] = array('lt', $tel);
 
-            $where .= ' AND addtime<'.$end_time;
+            $where .= ' AND tel ='.$tel;
 
             //搜索内容输出
 
-            $this->assign('end_time', date('Y-m-d', $end_time));
+            $this->assign('tel', $tel);
         }
 
         /*if ($start_time && $end_time) {
@@ -186,7 +186,9 @@ class OrderController extends PublicController
 
         // 进行分页数据查询 注意limit方法的参数要使用Page类的属性
 
-        $order_list = $this->order->where($where)->order('id desc')->limit($Page->firstRow.','.$Page->listRows)->select();
+         $order_list = $this->order->where($where)->order('id desc')->limit($Page->firstRow.','.$Page->listRows)->select();
+
+        //echo $this->order->getlastsql();
 
         foreach ($order_list as $k => $v) {
             $order_list[$k]['u_name'] = M('user')->where('id='.intval($v['uid']))->getField('name');
