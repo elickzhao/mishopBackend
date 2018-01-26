@@ -22,7 +22,7 @@ class PageController extends PublicController
         $this->mysqlDate =  new MysqlDate();
         $this->order = M("Order");
         $this->user = M("User");
-        $this->product =M('Product');
+        $this->product = M("Product");
     }
 
     public function adminindex()
@@ -33,9 +33,16 @@ class PageController extends PublicController
         $userCount = $this->userCount();        //用户统计
         $productCount = $this->productCount();  //商品统计  //XXX 这个统计包括删除的商品
         
-
         $orderStatus = $this->orderStatus();    //订单状态统计
         $productStatus = $this->productStatus();//商品状态统计
+
+        $yesterdayAmount = $this->yesterdayAmount(); //昨日销售金额
+        $yesterdayCount = $this->yesterdayCount(); //昨日销量总数
+        $monthAmount = $this->monthAmount(); //本月销售金额
+        $monthCount = $this->monthCount(); //本月销量总数
+
+        $topList = $this->topProduct(); //一周商品销售排行
+        
 
         $this->assign('todayAmount', $todayAmount);
         $this->assign('todayCount', $todayCount);
@@ -43,6 +50,11 @@ class PageController extends PublicController
         $this->assign('productCount', $productCount);
         $this->assign('orderStatus', $orderStatus);
         $this->assign('productStatus', $productStatus);
+        $this->assign('yesterdayAmount', $yesterdayAmount);
+        $this->assign('yesterdayCount', $yesterdayCount);
+        $this->assign('monthAmount', $monthAmount);
+        $this->assign('monthCount', $monthCount);
+        $this->assign('topList', $topList);
         $this->display();
     }
     public function shopindex()
@@ -57,7 +69,7 @@ class PageController extends PublicController
     public function todayAmount()
     {
         $map['addtime']  = array('between',$this->mysqlDate->todadyPeriod());
-        $sum = $this->order->where($map)->cache(true, 60)->sum('price');
+        $sum = $this->order->where($map)->cache(true, 3600)->sum('price');
         return $sum ? cutMoney($sum) : 0;
     }
 
@@ -68,7 +80,7 @@ class PageController extends PublicController
     public function todayCount()
     {
         $map['addtime']  = array('between',$this->mysqlDate->todadyPeriod());
-        $count = $this->order->where($map)->cache(true, 60)->count();
+        $count = $this->order->where($map)->cache(true, 3600)->count();
         return $count;
     }
 
@@ -78,8 +90,7 @@ class PageController extends PublicController
      */
     public function userCount()
     {
-        //$map['addtime']  = array('between',$this->mysqlDate->todadyPeriod());
-        $count = $this->user->cache(true, 60)->count();
+        $count = $this->user->cache(true, 3600)->count();
         return $count;
     }
 
@@ -89,8 +100,7 @@ class PageController extends PublicController
      */
     public function productCount()
     {
-        //$map['addtime']  = array('between',$this->mysqlDate->todadyPeriod());
-        $count = $this->product->cache(true, 60)->count();
+        $count = $this->product->cache(true, 3600)->count();
         return $count;
     }
 
@@ -140,25 +150,76 @@ class PageController extends PublicController
         $list = [];
 
         //出售中
-        $count  = $this->product->where(['del'=>0])->count();
+        $count  = $this->product->where(['del'=>0])->cache(true, 3600)->count();
         $list[] = ['title'=>'出售中','count'=>$count];
 
         //推荐中
-        $count  = $this->product->where(['type'=>1])->count();
+        $count  = $this->product->where(['type'=>1])->cache(true, 3600)->count();
         $list[] = ['title'=>'推荐中','count'=>$count];
 
         //新品
-        $count  = $this->product->where(['is_show'=>1])->count();
+        $count  = $this->product->where(['is_show'=>1])->cache(true, 3600)->count();
         $list[] = ['title'=>'新品','count'=>$count];
 
         //热卖
-        $count  = $this->product->where(['is_hot'=>1])->count();
+        $count  = $this->product->where(['is_hot'=>1])->cache(true, 3600)->count();
         $list[] = ['title'=>'热卖','count'=>$count];
 
         //已删除
-        $count  = $this->product->where(['del'=>1])->count();
+        $count  = $this->product->where(['del'=>1])->cache(true, 3600)->count();
         $list[] = ['title'=>'已删除','count'=>$count];
 
+        return $list;
+    }
+
+    /**
+     * [yesterdayAmount 昨天销售总额]
+     * @return [int/string] [金额]
+     */
+    public function yesterdayAmount()
+    {
+        $map['addtime']  = array('between',$this->mysqlDate->yesterdayPeriod());
+        $sum = $this->order->where($map)->cache(true, 3600)->sum('price');
+        return $sum ? cutMoney($sum) : 0;
+    }
+
+    /**
+     * [yesterdayCount 昨天销量总数]
+     * @return [int] [总数]
+     */
+    public function yesterdayCount()
+    {
+        $map['addtime']  = array('between',$this->mysqlDate->yesterdayPeriod());
+        $count = $this->order->where($map)->cache(true, 3600)->count();
+        return $count;
+    }
+
+    /**
+     * [monthAmount 本月销售总额]
+     * @return [int/string] [金额]
+     */
+    public function monthAmount()
+    {
+        $map['addtime']  = array('between',$this->mysqlDate->monthPeriod());
+        $sum = $this->order->where($map)->cache(true, 3600)->sum('price');
+        return $sum ? cutMoney($sum) : 0;
+    }
+
+    /**
+     * [monthCount 本月销量总数]
+     * @return [int] [总数]
+     */
+    public function monthCount()
+    {
+        $map['addtime']  = array('between',$this->mysqlDate->monthPeriod());
+        $count = $this->order->where($map)->cache(true, 3600)->count();
+        return $count;
+    }
+
+    public function topProduct()
+    {
+        $map['addtime']  = array('between',$this->mysqlDate->weekPeriod());
+        $list  = M('order_product')->field('NAME,SUM(num) AS count ')->where($map)->group('pid')->order('count desc')->limit(9)->cache(true, 3600)->select();
         return $list;
     }
 }
