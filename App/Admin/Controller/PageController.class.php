@@ -13,7 +13,8 @@ class PageController extends PublicController
 {
     private $order;     //订单模型类
     private $mysqlDate; //时间段类
-    private $user;
+    private $user;      //用户模型
+    private $product;       //用户模
 
     public function __construct()
     {
@@ -21,6 +22,7 @@ class PageController extends PublicController
         $this->mysqlDate =  new MysqlDate();
         $this->order = M("Order");
         $this->user = M("User");
+        $this->product =M('Product');
     }
 
     public function adminindex()
@@ -29,15 +31,18 @@ class PageController extends PublicController
         $todayAmount = $this->todayAmount();    //今日销售金额
         $todayCount = $this->todayCount();      //今日销量总数
         $userCount = $this->userCount();        //用户统计
-        $productCount = $this->productCount();  //商品统计
+        $productCount = $this->productCount();  //商品统计  //XXX 这个统计包括删除的商品
+        
 
-        $orderStatus = $this->orderStatus();
+        $orderStatus = $this->orderStatus();    //订单状态统计
+        $productStatus = $this->productStatus();//商品状态统计
 
         $this->assign('todayAmount', $todayAmount);
         $this->assign('todayCount', $todayCount);
         $this->assign('userCount', $userCount);
         $this->assign('productCount', $productCount);
         $this->assign('orderStatus', $orderStatus);
+        $this->assign('productStatus', $productStatus);
         $this->display();
     }
     public function shopindex()
@@ -85,7 +90,7 @@ class PageController extends PublicController
     public function productCount()
     {
         //$map['addtime']  = array('between',$this->mysqlDate->todadyPeriod());
-        $count = M('Product')->cache(true, 60)->count();
+        $count = $this->product->cache(true, 60)->count();
         return $count;
     }
 
@@ -105,7 +110,8 @@ class PageController extends PublicController
             - 还有个问题是在于 当订单多的时候 考虑改成时间段读取 要不多去所有订单实在太耗资源了
          */
         
-        $order_status = array('10' => '待付款', '20' => '待发货', '30' => '待收货', '40' => '待评价', '50' => '交易完成', '51' => '交易关闭' ,'back'=>'退款中');
+        $order_status = C('ORDER_STATUS');  //订单状态数组
+
         foreach ($order_status as $k => $v) {
             if ($k == 'back') {
                 $count = $this->order->where(['back'=>'1'])->cache(true, 60)->count();
@@ -116,6 +122,43 @@ class PageController extends PublicController
 
             $list[] = ['title'=>$v,'count'=>$count,'key'=>$k];
         }
+        return $list;
+    }
+
+
+    /**
+     * [productStatus 商品状态]
+     * @return [array] [状态统计]
+     */
+    public function productStatus()
+    {
+        /**
+            TODO:
+            - 因为数据库的问题 所以跳转到筛选页面还没做 以后有机会调整吧
+         */
+        
+        $list = [];
+
+        //出售中
+        $count  = $this->product->where(['del'=>0])->count();
+        $list[] = ['title'=>'出售中','count'=>$count];
+
+        //推荐中
+        $count  = $this->product->where(['type'=>1])->count();
+        $list[] = ['title'=>'推荐中','count'=>$count];
+
+        //新品
+        $count  = $this->product->where(['is_show'=>1])->count();
+        $list[] = ['title'=>'新品','count'=>$count];
+
+        //热卖
+        $count  = $this->product->where(['is_hot'=>1])->count();
+        $list[] = ['title'=>'热卖','count'=>$count];
+
+        //已删除
+        $count  = $this->product->where(['del'=>1])->count();
+        $list[] = ['title'=>'已删除','count'=>$count];
+
         return $list;
     }
 }

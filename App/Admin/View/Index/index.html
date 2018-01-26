@@ -29,6 +29,16 @@
     <script>DD_belatedPNG.fix('*');</script>
     <![endif]-->
     <title>{$_SESSION['system']['sysname']?$_SESSION['system']['sysname']:'小程序商城'} · 后台管理</title>
+    <style>
+        .menu-li {
+            min-width: 150px;
+            padding: 10px;
+            text-indent: 15px;
+            transition: background 0.3s;
+            -webkit-transition: background 0.3s;
+        }
+    </style>
+
 </head>
 
 <body>
@@ -47,18 +57,25 @@
                             <a href="#" class="dropDown_A">{:$_SESSION['admininfo']['name']}
                                 <i class="Hui-iconfont">&#xe6d5;</i>
                             </a>
+                            <!-- todo 这里存在一个bug是当缩小的时候 会有侧边栏的menu 却没有这三个  这样会没法退出的 -->
                             <ul class="dropDown-menu menu radius box-shadow">
                                 <!-- <li>
                                     <a href="javascript:;" onClick="myselfinfo()">个人信息</a>
                                 </li> -->
-                                <li>
-                                    <a href="javascript:;" onClick="addFavorite()">加入收藏</a>
+                                <li class="menu-li">
+                                    <a class="va-m" style="line-height: 2.2;text-align: center;" href="javascript:;" onClick="addFavorite()">
+                                        <img class="f-l" src="__PUBLIC__/admin/images/add_favorites.png" alt="加入收藏"> 加入收藏
+                                    </a>
                                 </li>
-                                <li>
-                                    <a href="javascript:;" onClick="clearCache()">清理缓存</a>
+                                <li class="menu-li">
+                                    <a class="va-m" style="line-height: 2.2;text-align: center;" href="javascript:;" onClick="clearCache()">
+                                        <img class="f-l" src="__PUBLIC__/admin/images/clear_the_cache.png" alt="清理缓存"> 清理缓存
+                                    </a>
                                 </li>
-                                <li>
-                                    <a href="javascript:;" onClick="logout()">退出登录</a>
+                                <li class="menu-li">
+                                    <a class="va-m" style="line-height: 2.2;text-align: center;" href="javascript:;" onClick="logout()">
+                                        <img class="f-l" src="__PUBLIC__/admin/images/loout.png" alt="退出登录"> 退出登录
+                                    </a>
                                 </li>
                             </ul>
                         </li>
@@ -166,18 +183,18 @@
                 url: url,
                 success: function (res) {
                     if (res == 1) {
-                          layer.open({
-                            title :false,
+                        layer.open({
+                            title: false,
                             icon: 1,
                             content: '缓存清理完毕', //这里content是一个普通的String
-                            time:2000
+                            time: 2000
                         });
                     } else {
                         layer.open({
-                            title :false,
+                            title: false,
                             icon: 2,
                             content: '清理缓存出错!', //这里content是一个普通的String
-                            time:3000
+                            time: 3000
                         });
                     }
                 },

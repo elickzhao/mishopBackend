@@ -178,7 +178,6 @@
                                     <td>
                                         <div class="row cl text-center">
                                             <div class="col-lg-12">
-                                                <!-- pay_type=&pay_status=10&start_time=&end_time= -->
                                                 <a href="{:U('Order/index?pay_status='.$vo['key'])}" style="text-decoration: none;">
                                                     <strong class="goods_sale_count">{$vo.count}</strong>
                                                 </a>
@@ -196,69 +195,25 @@
                 <!-- 店铺及商品提示 -->
                 <div class="panel mt-10">
                     <div class="panel-header">
-                        <i class="i-circular"></i>交易提示
-                        <span class="info">您需要立即处理的交易订单</span>
+                        <i class="i-circular"></i>商品提示
+                        <span class="info">您需要关注的店铺信息以及待处理事项</span>
                     </div>
                     <div class="panel-body">
                         <table class="table">
                             <tbody>
                                 <tr>
-                                    <td>
-                                        <div class="row cl text-center">
-                                            <div class="col-lg-12">
-                                                <strong class="goods_sale_count">54</strong>
+                                    <volist name="productStatus" id="vo">
+                                        <td>
+                                            <div class="row cl text-center">
+                                                <div class="col-lg-12">
+                                                    <a href="{:U('Product/index')}" style="text-decoration: none;">
+                                                        <strong class="goods_sale_count">{$vo.count}</strong>
+                                                    </a>
+                                                </div>
+                                                <div class="col-lg-12">{$vo.title}</div>
                                             </div>
-                                            <div class="col-lg-12">待付款</div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="row cl text-center">
-                                            <div class="col-lg-12">
-                                                <strong class="goods_sale_count">54</strong>
-                                            </div>
-                                            <div class="col-lg-12">待发货</div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="row cl text-center">
-                                            <div class="col-lg-12">
-                                                <strong class="goods_sale_count">54</strong>
-                                            </div>
-                                            <div class="col-lg-12">已发货</div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="row cl text-center">
-                                            <div class="col-lg-12">
-                                                <strong class="goods_sale_count">54</strong>
-                                            </div>
-                                            <div class="col-lg-12">已收货</div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="row cl text-center">
-                                            <div class="col-lg-12">
-                                                <strong class="goods_sale_count">54</strong>
-                                            </div>
-                                            <div class="col-lg-12">已完成</div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="row cl text-center">
-                                            <div class="col-lg-12">
-                                                <strong class="goods_sale_count">54</strong>
-                                            </div>
-                                            <div class="col-lg-12">已关闭</div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="row cl text-center">
-                                            <div class="col-lg-12">
-                                                <strong class="goods_sale_count">54</strong>
-                                            </div>
-                                            <div class="col-lg-12">退款中</div>
-                                        </div>
-                                    </td>
+                                        </td>
+                                    </volist>
                                 </tr>
                             </tbody>
                         </table>
