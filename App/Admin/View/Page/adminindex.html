@@ -18,93 +18,15 @@
     <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/lib/Hui-iconfont/1.0.8/iconfont.css" />
     <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/skin/default/skin.css" id="skin" />
     <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/css/welcome.css" />
     <!--[if IE 6]>
     <script type="text/javascript" src="__PUBLIC__/admin/lib/DD_belatedPNG_0.0.8a-min.js" ></script>
     <script>DD_belatedPNG.fix('*');</script>
     <![endif]-->
     <script type="text/javascript" src="__PUBLIC__/admin/js/jquery.js"></script>
     <script type="text/javascript" src="__PUBLIC__/admin/js/action.js"></script>
-    <script src="https://cdn.bootcss.com/echarts/3.8.5/echarts.min.js"></script>
     <title>管理首页</title>
-    <style>
-        .num {
-            font-size: 3rem;
-            color: #444;
-            margin-left: 20px;
-        }
 
-        .text-center {
-            text-align: center;
-        }
-
-        .table td {
-            background-color: #fff;
-        }
-
-        .i-circular {
-            display: inline-block;
-            background: #0072D2;
-            border-radius: 50%;
-            width: 8px;
-            height: 8px;
-            margin: -1px 5px 0 0;
-            vertical-align: middle;
-        }
-
-        .info {
-            padding-left: 10px;
-            font-size: 12px;
-            color: #999;
-            font-weight: normal;
-        }
-
-        .goods_sale_count {
-            line-height: 1.2em;
-            font-size: 2.5em;
-            font-weight: normal;
-            overflow: hidden;
-            padding: 0 10px;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            color: #0072D2;
-            display: block;
-            margin: 10px 0;
-        }
-
-        .pa {
-            position: absolute;
-        }
-
-        .count {
-            font-size: 16px;
-            color: #333333;
-            font-weight: normal;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            /* line-height: 3em; */
-        }
-
-        .count-title {
-            font-size: 14px;
-            display: block;
-            margin-top: 10px;
-            color: #999999;
-
-        }
-
-        .list-shop-table {
-            table-layout: fixed;
-        }
-
-        .table-ellipsis {
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            overflow: hidden;
-            /* width:"40%"; */
-            /* width: 12rem; */
-        }
-    </style>
 </head>
 
 <body style="background-color:#ECF0F5;">
@@ -120,7 +42,7 @@
                     <div class="panel-header">订单总金额
                         <span class="label label-default  radius" style="float: right;">今日</span>
                     </div>
-                    <div class="panel-body text-center">
+                    <div class="panel-body text-c">
                         <i class="Hui-iconfont Hui-iconfont-hongbao" style="font-size:3rem"></i>
                         <span class="num">&yen;{$todayAmount}</span>
                     </div>
@@ -131,7 +53,7 @@
                     <div class="panel-header">订单数量
                         <span class="label label-default  radius" style="float: right;">今日</span>
                     </div>
-                    <div class="panel-body text-center">
+                    <div class="panel-body text-c">
                         <i class="Hui-iconfont Hui-iconfont-order" style="font-size:3rem"></i>
                         <span class="num">{$todayCount}</span>
                     </div>
@@ -142,7 +64,7 @@
                     <div class="panel-header">客户人数
                         <span class="label label-default  radius" style="float: right;">总</span>
                     </div>
-                    <div class="panel-body text-center">
+                    <div class="panel-body text-c">
                         <i class="Hui-iconfont Hui-iconfont-user2" style="font-size:3rem"></i>
                         <span class="num">{$userCount}</span>
                     </div>
@@ -153,7 +75,7 @@
                     <div class="panel-header">商品数量
                         <span class="label label-default  radius" style="float: right;">总</span>
                     </div>
-                    <div class="panel-body text-center">
+                    <div class="panel-body text-c">
                         <i class="Hui-iconfont Hui-iconfont-goods" style="font-size:3rem"></i>
                         <span class="num">{$productCount}</span>
                     </div>
@@ -176,7 +98,7 @@
                             <tbody>
                                 <volist name="orderStatus" id="vo">
                                     <td>
-                                        <div class="row cl text-center">
+                                        <div class="row cl text-c">
                                             <div class="col-lg-12">
                                                 <a href="{:U('Order/index?pay_status='.$vo['key'])}" style="text-decoration: none;">
                                                     <strong class="goods_sale_count">{$vo.count}</strong>
@@ -204,7 +126,7 @@
                                 <tr>
                                     <volist name="productStatus" id="vo">
                                         <td>
-                                            <div class="row cl text-center">
+                                            <div class="row cl text-c">
                                                 <div class="col-lg-12">
                                                     <a href="{:U('Product/index')}" style="text-decoration: none;">
                                                         <strong class="goods_sale_count">{$vo.count}</strong>
@@ -224,11 +146,11 @@
                 <!-- 订单总数统计 -->
                 <div class="panel mt-10">
                     <div class="panel-header">
-                        <i class="i-circular"></i>交易提示
-                        <span class="info">您需要立即处理的交易订单</span>
+                        <i class="i-circular"></i>订单总数统计
+                        <span class="info">不同时间段订单总和</span>
                     </div>
                     <div class="panel-body">
-                        <div class="btn-group pa">
+                        <div class="btn-group pos-a" style="z-index:2">
                             <span class="btn btn-primary radius" onclick="t()">今日</span>
                             <span class="btn btn-default radius">昨日</span>
                             <span class="btn btn-default radius" onclick="w()">本周</span>
@@ -246,7 +168,7 @@
                         <span class="info">新增会员</span>
                     </div>
                     <div class="panel-body">
-                        <div class="btn-group pa">
+                        <div class="btn-group pos-a" style="z-index:2">
                             <span class="btn btn-primary radius" onclick="t()">今日</span>
                             <span class="btn btn-default radius">昨日</span>
                             <span class="btn btn-default radius" onclick="w()">本周</span>
@@ -256,101 +178,6 @@
                     </div>
                 </div>
                 <!-- /订单总数统计 -->
-
-                <script>
-                    var myChart = echarts.init(document.getElementById('main'));
-                    var myChart1 = echarts.init(document.getElementById('main1'));
-                    var data = [1, 5, 7, 8, 12, 6, 4];
-
-                    option = {
-                        color: ['#3398DB'],
-                        tooltip: {
-                            trigger: 'axis',
-                            axisPointer: {            // 坐标轴指示器，坐标轴触发有效
-                                type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
-                            }
-                        },
-                        grid: {
-                            left: '3%',
-                            right: 0,
-                            bottom: 0,
-                            containLabel: true
-                        },
-                        toolbox: {
-                            show: true,
-                            feature: {
-                                magicType: { type: ['bar', 'line'] },
-                                restore: {},
-                                saveAsImage: {}
-                            }
-                        },
-                        xAxis: {
-                            type: 'category',
-                            nameRotate: 20,
-                            axisLabel: {
-                                interval: 0,      //显示所有字段 因为有些设置只针对value类型有效
-                                rotate: 30        //旋转坐标值 否则排列不下  
-                            },
-                            axisTick: {
-                                alignWithLabel: true
-                            },
-                            data: ["星期1", "星期2", "星期3", "星期4", "星期5", "星期6", "星期7"]
-                        },
-                        yAxis: {
-                            type: 'value',
-                            name: '订单统计',           //坐标系名称
-                            nameLocation: 'center',    //显示位置
-                            nameGap: '50',             //与坐标系距离 
-                            //minInterval:5,            //最小间隔数
-                            splitNumber: 3,             //坐标轴的分割段数   值针对value 这个类型有效
-                            axisLabel: {
-                                //formatter: '{value} °C'
-                                interval: 5,
-                                margin: 16,
-                            }
-                        },
-                        series: [
-                            {
-                                name: '订单数量',
-                                type: 'bar',
-                                data: data,
-                                barMaxWidth: 80,     //柱形最大宽度
-                                markPoint: {
-                                    symbolSize: 55,  //标注大小 可能存在的问题是三位数可能装不下
-                                    data: [
-                                        { type: 'max', name: '最大值' },
-                                    ]
-                                }
-                            }
-                        ]
-                    };
-                    myChart.setOption(option);
-                    window.onresize = myChart.resize;     //图表自适应窗口大小
-                    myChart1.setOption(option);
-                    window.onresize = myChart1.resize;     //图表自适应窗口大小
-                    function t() {
-                        option.xAxis.data = ["0:00", "1:00", "2:00", "3:00", "4:00", "5:00", "6:00", "7:00", "8:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"];["1日", "2日", "3日", "4日", "5日", "6日", "7日", "8日", "9日", "10日", "11日", "12日", "13日", "14日", "15日", "16日", "17日", "18日", "19日", "20日", "21日", "22日", "23日", "24日", "25日", "26日", "27日", "28日", "29日", "30日", "31日"];
-                        option.series[0].data = [3, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 7, 0, 0, 0, 0, 0, 12, 0, 0];
-                        //console.log(option);
-                        myChart.setOption(option);
-                    }
-                    function w() {
-                        option.xAxis.data = ["星期1", "星期2", "星期3", "星期4", "星期5", "星期6", "星期7"];
-                        option.series[0].data = [1, 5, 7, 8, 12, 6, 4];
-                        myChart.setOption(option);
-                    }
-
-                    function m() {
-                        option.xAxis.data = ["1日", "2日", "3日", "4日", "5日", "6日", "7日", "8日", "9日", "10日", "11日", "12日", "13日", "14日", "15日", "16日", "17日", "18日", "19日", "20日", "21日", "22日", "23日", "24日", "25日", "26日", "27日", "28日", "29日", "30日", "31日"];
-                        option.series[0].data = [5, 3, 13, 6, 7, 21, 32, 0, 0, 34, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 21, 0, 0, 0, 25, 0, 15, 0, 0];
-                        myChart.setOption(option);
-                    }
-                </script>
-
-
-
-
-
             </div>
             <div class="col-lg-4  mt-20">
                 <!-- 商家帮助 -->
@@ -364,7 +191,7 @@
                             <tbody>
                                 <tr>
                                     <td>
-                                        <div class="row cl text-center">
+                                        <div class="row cl text-c">
                                             <a href="{:U('product/index')}">
                                                 <div class="col-lg-12">
                                                     <img src="__PUBLIC__/admin/images/goods_management.png" alt="商品管理" title="商品管理">
@@ -374,7 +201,7 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <div class="row cl text-center">
+                                        <div class="row cl text-c">
                                             <a href="{:U('Brand/index')}">
                                                 <div class="col-lg-12">
                                                     <img src="__PUBLIC__/admin/images/promotions.png" alt="品牌管理" title="品牌管理">
@@ -384,7 +211,7 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <div class="row cl text-center">
+                                        <div class="row cl text-c">
                                             <a href="{:U('Category/index')}">
                                                 <div class="col-lg-12">
                                                     <img src="__PUBLIC__/admin/images/order_after.png" alt="分类管理" title="分类管理">
@@ -416,7 +243,7 @@
                             <tbody>
                                 <tr>
                                     <td>
-                                        <div class="row cl text-center">
+                                        <div class="row cl text-c">
                                             <div class="col-lg-12 count">
                                                 {$yesterdayCount}
                                             </div>
@@ -424,7 +251,7 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <div class="row cl text-center">
+                                        <div class="row cl text-c">
                                             <div class="col-lg-12 count">
                                                 {$yesterdayAmount}
                                             </div>
@@ -443,7 +270,7 @@
                             <tbody>
                                 <tr>
                                     <td width="50%">
-                                        <div class="row cl text-center">
+                                        <div class="row cl text-c">
                                             <div class="col-lg-12 count">
                                                 {$monthCount}
                                             </div>
@@ -451,7 +278,7 @@
                                         </div>
                                     </td>
                                     <td width="50%">
-                                        <div class="row cl text-center">
+                                        <div class="row cl text-c">
                                             <div class="col-lg-12 count">
                                                 {$monthAmount}
                                             </div>
@@ -491,7 +318,7 @@
                                         ">
                                             <strong>{$key + 1}</strong>
                                         </td>
-                                        <td class="table-ellipsis f-14" title="{$vo.name}" >{$vo.name}</td>
+                                        <td class="table-ellipsis f-14" title="{$vo.name}">{$vo.name}</td>
                                         <td class="text-c 
                                         <if condition=" $key eq 0 "> f-18  c-red
                                                 <elseif condition="$key eq 1 "/>f-16 c-orange
@@ -524,7 +351,7 @@
                     <td width="10%" class="active" style="text-align: right;font-size:14px;">服务器操作系统</td>
                     <td width="40%">{:php_uname('s')}</td>
                     <td width="10%" class="active" style="text-align: right;font-size:14px;">服务器域名/IP</td>
-                    <td width="40%">{:$_SERVER["HTTP_HOST"]}  [{$_SERVER['REMOTE_ADDR']}]</td>
+                    <td width="40%">{:$_SERVER["HTTP_HOST"]} [{$_SERVER['REMOTE_ADDR']}]</td>
                 </tr>
                 <tr>
                     <td class="active" style="text-align: right;font-size:14px;">服务器环境</td>
@@ -533,7 +360,7 @@
                     <td>{:PHP_VERSION}</td>
                 </tr>
                 <tr>
-                    <td  class="active" style="text-align: right;font-size:14px;">文件上传限制</td>
+                    <td class="active" style="text-align: right;font-size:14px;">文件上传限制</td>
                     <td>2M</td>
                     <td class="active" style="text-align: right;font-size:14px;">运行端口</td>
                     <td>{:$_SERVER['SERVER_PORT']}</td>
@@ -542,6 +369,19 @@
         </table>
         <!-- /服务器信息 -->
     </div>
+    <!-- echarts 加载和请求数据 -->
+    <script src="__PUBLIC__/admin/lib/echarts/echarts.common.min.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/admin/js/welcome.js"></script>
+    <script>
+        var c = ChartsData();
+        c.init('main',"{:U('Index/clearCache')}");
+
+        //ChartsData().init('main1',"{:U('Index/clearCache')}"); //这样写也可以 只不过 使用其他方法不方便
+        var c1 = ChartsData();
+        c.init('main1',"{:U('Index/clearCache')}");
+        //缩放还存在问题
+
+    </script>
 </body>
 
 </html>

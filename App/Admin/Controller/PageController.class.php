@@ -9,6 +9,9 @@ use MysqlDate\MysqlDate;
 vendor("Carbon.Carbon");
 use Carbon\Carbon;
 
+vendor("Underscore.Underscore");
+use Underscore\Types\Arrays;
+
 class PageController extends PublicController
 {
     private $order;     //订单模型类
@@ -23,6 +26,8 @@ class PageController extends PublicController
         $this->order = M("Order");
         $this->user = M("User");
         $this->product = M("Product");
+        $r = $this->orderChartsData();
+        echo $r;
     }
 
     public function adminindex()
@@ -216,10 +221,49 @@ class PageController extends PublicController
         return $count;
     }
 
+    /**
+     * [monthCount 本周商品排行榜]
+     * @return [int] [总数]
+     */
     public function topProduct()
     {
         $map['addtime']  = array('between',$this->mysqlDate->weekPeriod());
         $list  = M('order_product')->field('NAME,SUM(num) AS count ')->where($map)->group('pid')->order('count desc')->limit(9)->cache(true, 3600)->select();
         return $list;
     }
+
+    public function orderChartsData()
+    {
+        //$_GET['id']; // 获取get变量
+        $time = "today";
+        switch ($time) {
+            case 'today':
+                    $map['addtime']  = array('between',$this->mysqlDate->monthPeriod());
+                    $field = 'COUNT(*) AS count,HOUR(FROM_UNIXTIME(ADDTIME)) AS g ';
+                break;
+            
+            default:
+                # code...
+                break;
+        }
+    
+
+        $list  = $this->order->field($field)->where($map)->group('g')->select();
+        
+      
+        $a = Arrays::average(array(1, 2, 3)); // Returns 2
+        dump($a);
+
+        dump($list);
+        //$this->ajaxReturn($list);
+    }
+
+    //  public function formatChartsData($data)
+   //  {
+   //  	$new_data
+        // for ($i=0; $i < 24; $i++) {
+        // 	if
+        // 	$new_data[i]
+        // }
+   //  }
 }

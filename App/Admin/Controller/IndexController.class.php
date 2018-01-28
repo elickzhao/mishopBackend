@@ -98,8 +98,12 @@ class IndexController extends PublicController
      */
     public function clearCache()
     {
-        $cache = new \Think\Cache;
-        //第一个参数为 缓存类型 这里是从配置里读取  第二个参数为清理的文件夹 因为默认清理的是 Temp 这里修改成Cache
-        echo $cache->getInstance(C('DATA_CACHE_TYPE'), ['temp'=>CACHE_PATH])->clear();
+        if (IS_POST) {
+            $cache = new \Think\Cache;
+            //第一个参数为 缓存类型 这里是从配置里读取  第二个参数为清理的文件夹 因为默认清理的是 Temp 这里修改成Cache
+            echo $cache->getInstance(C('DATA_CACHE_TYPE'), ['temp'=>CACHE_PATH])->clear();
+        } else {
+            $this->error('非法请求');
+        }
     }
 }
