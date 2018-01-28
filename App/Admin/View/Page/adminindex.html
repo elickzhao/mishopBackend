@@ -152,7 +152,7 @@
                     <div class="panel-body">
                         <div class="btn-group pos-a" style="z-index:2">
                             <span class="btn btn-primary radius" onclick="t()">今日</span>
-                            <span class="btn btn-default radius">昨日</span>
+                            <span class="btn btn-default radius" onclick="y()">昨日</span>
                             <span class="btn btn-default radius" onclick="w()">本周</span>
                             <span class="btn btn-default radius" onclick="m()">本月</span>
                         </div>
@@ -374,11 +374,12 @@
     <script type="text/javascript" src="__PUBLIC__/admin/js/welcome.js"></script>
     <script>
         var c = ChartsData();
-        c.init('main',"{:U('Index/clearCache')}");
+        c.init('main',"{:U('Page/orderChartsData')}");
 
         //ChartsData().init('main1',"{:U('Index/clearCache')}"); //这样写也可以 只不过 使用其他方法不方便
-        var c1 = ChartsData();
-        c.init('main1',"{:U('Index/clearCache')}");
+        // var c1 = ChartsData();
+        // c.init('main1',"{:U('Page/orderChartsData')}");
+        // c.todo();
         //缩放还存在问题
 
     </script>

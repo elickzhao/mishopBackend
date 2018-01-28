@@ -1,0 +1,83 @@
+/*----------  四格数字  ----------*/
+
+.num {
+    font-size: 3rem;
+    color: #444;
+    margin-left: 20px;
+}
+
+/*----------  表格背景色  ----------*/
+
+.table td {
+    background-color: #fff;
+}
+
+/*----------  信息块标题  ----------*/
+
+.i-circular {
+    display: inline-block;
+    background: #0072D2;
+    border-radius: 50%;
+    width: 8px;
+    height: 8px;
+    margin: -1px 5px 0 0;
+    vertical-align: middle;
+}
+
+/*----------  信息块简介  ----------*/
+
+.info {
+    padding-left: 10px;
+    font-size: 12px;
+    color: #999;
+    font-weight: normal;
+}
+
+/*----------  商品数字统计  ----------*/
+
+.goods_sale_count {
+    line-height: 1.2em;
+    font-size: 2.5em;
+    font-weight: normal;
+    overflow: hidden;
+    padding: 0 10px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: #0072D2;
+    display: block;
+    margin: 10px 0;
+}
+
+/*----------  销量统计数字  ----------*/
+
+.count {
+    font-size: 16px;
+    color: #333333;
+    font-weight: normal;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/*----------  销量统计标题  ----------*/
+
+.count-title {
+    font-size: 14px;
+    display: block;
+    margin-top: 10px;
+    color: #999999;
+}
+
+/*----------  表格固定宽度  ----------*/
+
+.list-shop-table {
+    table-layout: fixed;
+}
+
+/*----------  表格内容折叠 ----------*/
+
+.table-ellipsis {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}

@@ -26,8 +26,6 @@ class PageController extends PublicController
         $this->order = M("Order");
         $this->user = M("User");
         $this->product = M("Product");
-        $r = $this->orderChartsData();
-        echo $r;
     }
 
     public function adminindex()
@@ -232,38 +230,71 @@ class PageController extends PublicController
         return $list;
     }
 
+    /**
+     * [orderChartsData 图表订单数据]
+     * @return [json] [日/周/月的时间段订单数据]
+     */
     public function orderChartsData()
     {
-        //$_GET['id']; // 获取get变量
         $time = "today";
-        switch ($time) {
+        switch ($_GET['time']) {
             case 'today':
-                    $map['addtime']  = array('between',$this->mysqlDate->monthPeriod());
+                    $map['addtime']  = array('between',$this->mysqlDate->todadyPeriod());
                     $field = 'COUNT(*) AS count,HOUR(FROM_UNIXTIME(ADDTIME)) AS g ';
+                    $total = 24; //x时间坐标系 时间段个数  也就是当有时间段内无订单 需要补充为0
                 break;
-            
-            default:
-                # code...
+
+            case 'yesterday':
+                $map['addtime']  = array('between',$this->mysqlDate->yesterdayPeriod());
+                $field = 'COUNT(*) AS count,HOUR(FROM_UNIXTIME(ADDTIME)) AS g ';
+                $total = 24;
+                break;
+
+            case 'week':
+                $map['addtime']  = array('between',$this->mysqlDate->weekPeriod());
+                $field = 'COUNT(*) AS count,HOUR(FROM_UNIXTIME(ADDTIME)) AS g ';
+                $total = 7;
+                break;
+
+            case 'month':
+                $map['addtime']  = array('between',$this->mysqlDate->monthPeriod());
+                $field = 'COUNT(*) AS count,HOUR(FROM_UNIXTIME(ADDTIME)) AS g ';
+                $total = date('t', strtotime('now'));
                 break;
         }
     
 
         $list  = $this->order->field($field)->where($map)->group('g')->select();
         
-      
-        $a = Arrays::average(array(1, 2, 3)); // Returns 2
-        dump($a);
+        $result = $this->formatChartsData($list, $total);
 
-        dump($list);
-        //$this->ajaxReturn($list);
+        $this->ajaxReturn($result);
     }
 
-    //  public function formatChartsData($data)
-   //  {
-   //  	$new_data
-        // for ($i=0; $i < 24; $i++) {
-        // 	if
-        // 	$new_data[i]
-        // }
-   //  }
+    /**
+     * [formatChartsData 处理图表返回数据]
+     * @param  [array] $list  [数据库读出数组]
+     * @param  [int/string] $total [x轴坐标总数]
+     * @return [array]        [处理后数组]
+     */
+    public function formatChartsData($list, $total)
+    {
+
+        //抽取小时为单独数组
+        $h = Arrays::pluck($list, 'g');
+        //dump($h);
+        //抽取小时统计为单独数组
+        $count = Arrays::pluck($list, 'count');
+        //dump($count);
+        //合并以小时为key统计为value的数组
+        $c=Arrays::replaceKeys($count, $h);
+        //dump($c);
+
+        for ($i=0; $i < $total; $i++) {
+            if (!$c[$i]) {
+                $c[$i] = 0;
+            }
+        }
+        return Arrays::sortKeys($c);    //重新排序
+    }
 }
