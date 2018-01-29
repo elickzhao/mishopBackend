@@ -269,7 +269,7 @@ class PageController extends PublicController
         }
     
 
-        $list  = $this->order->field($field)->where($map)->group('g')->select();
+        $list  = $this->order->field($field)->where($map)->group('g')->cache(true, 60)->select();
         
         $result = $this->formatChartsData($list, $total);
 
@@ -309,7 +309,7 @@ class PageController extends PublicController
         }
     
 
-        $list  = $this->user->field($field)->where($map)->group('g')->select();
+        $list  = $this->user->field($field)->where($map)->group('g')->cache(true, 60)->select();
         
         $result = $this->formatChartsData($list, $total);
 

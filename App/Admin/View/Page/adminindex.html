@@ -373,15 +373,19 @@
     </div>
     <!-- echarts 加载和请求数据 -->
     <script src="__PUBLIC__/admin/lib/echarts/echarts.common.min.js"></script>
+    <script src="__PUBLIC__/admin/lib/echarts/walden.js"></script>
     <script type="text/javascript" src="__PUBLIC__/admin/js/welcome.js"></script>
     <script>
         var orderCharts = ChartsData();
         orderCharts.init('order-charts', "{:U('Page/orderChartsData')}");
-        window.onresize = myChart.resize; //图表自适应窗口大小
 
         var userCharts = ChartsData();
         userCharts.init('user-charts', "{:U('Page/userChartsData')}");
 
+        window.onresize = function () {
+            orderCharts.myChart.resize(); //图表自适应窗口大小
+            userCharts.myChart.resize(); //图表自适应窗口大小
+        }
     </script>
 </body>
 

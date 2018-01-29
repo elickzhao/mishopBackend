@@ -1,7 +1,3 @@
-var myChart = {};
-//请求路径
-var getUrl = "";
-
 //x轴下标数组
 var dayArray = ["0:00", "1:00", "2:00", "3:00", "4:00", "5:00", "6:00", "7:00", "8:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"];
 var weekArray = ["星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"];
@@ -69,42 +65,6 @@ option = {
         }
     }]
 };
-//myChart.setOption(option);
-//t();
-window.onresize = myChart.resize; //图表自适应窗口大小
-// myChart1.setOption(option);
-// window.onresize = myChart1.resize; //图表自适应窗口大小
-// console.log("{:U('Index/clearCache')}");
-
-function t(obj) {
-    changeGroupBtn(obj);
-    option.xAxis.data = dayArray;
-    option.series[0].data = getDate(getUrl, 'today'); //[3, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 7, 0, 0, 0, 0, 0, 12, 0, 0];
-    //console.log(option);
-    myChart.setOption(option);
-}
-
-function y(obj) {
-    changeGroupBtn(obj);
-    option.xAxis.data = dayArray;
-    option.series[0].data = getDate(getUrl, 'yesterday');
-    myChart.setOption(option);
-}
-
-function w(obj) {
-    changeGroupBtn(obj);
-    option.xAxis.data = weekArray;
-    option.series[0].data = getDate(getUrl, 'week');
-    myChart.setOption(option);
-}
-
-function m(obj) {
-    changeGroupBtn(obj);
-    option.xAxis.data = monthArray();
-    option.series[0].data = getDate(getUrl, 'month');
-    myChart.setOption(option);
-}
-
 
 /*=============================================
 =            按钮组切换按钮                    =
@@ -181,34 +141,37 @@ var ChartsData = function () {
     return {
         'id': "",
         'url': "",
-        'myChart':{},
+        'myChart': {},
         'init': function (id, url) {
+            this.id = id;
             this.url = url;
-            // getUrl = url;
-            // myChart = echarts.init(document.getElementById(id));
-            this.myChart = echarts.init(document.getElementById(id));
+            this.myChart = echarts.init(document.getElementById(id),'walden');
             this.t();
         },
-        t:function (obj) {
+        //今天
+        t: function (obj) {
             changeGroupBtn(obj);
             option.xAxis.data = dayArray;
             option.series[0].data = getDate(this.url, 'today'); //[3, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 7, 0, 0, 0, 0, 0, 12, 0, 0];
             //console.log(option);
             this.myChart.setOption(option);
         },
-        y:function (obj) {
+        //昨天
+        y: function (obj) {
             changeGroupBtn(obj);
             option.xAxis.data = dayArray;
             option.series[0].data = getDate(this.url, 'yesterday');
             this.myChart.setOption(option);
         },
-        w:function(obj) {
+        //本周
+        w: function (obj) {
             changeGroupBtn(obj);
             option.xAxis.data = weekArray;
             option.series[0].data = getDate(this.url, 'week');
             this.myChart.setOption(option);
         },
-        m:function(obj) {
+        //本月
+        m: function (obj) {
             changeGroupBtn(obj);
             option.xAxis.data = monthArray();
             option.series[0].data = getDate(this.url, 'month');
