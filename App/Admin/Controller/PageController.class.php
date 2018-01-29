@@ -227,6 +227,13 @@ class PageController extends PublicController
     {
         $map['addtime']  = array('between',$this->mysqlDate->weekPeriod());
         $list  = M('order_product')->field('NAME,SUM(num) AS count ')->where($map)->group('pid')->order('count desc')->limit(9)->cache(true, 3600)->select();
+
+        //如果本周销量未达到排行榜9个的需要 就用商品补充
+        if (count($list) < 9) {
+            $a = $this->product->field('name, 0 As count')->where(['del'=>'0'])->order('id desc')->limit(9)->select();
+            $b = Arrays::merge($list, $a);
+            $list = array_slice($b, 0, 9);
+        }
         return $list;
     }
 

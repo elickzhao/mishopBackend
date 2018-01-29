@@ -99,12 +99,12 @@
                                 <volist name="orderStatus" id="vo">
                                     <td>
                                         <div class="row cl text-c">
-                                            <div class="col-lg-12">
-                                                <a href="{:U('Order/index?pay_status='.$vo['key'])}" style="text-decoration: none;">
+                                            <a href="{:U('Order/index?pay_status='.$vo['key'])}" style="text-decoration: none;">
+                                                <div class="col-lg-12">
                                                     <strong class="goods_sale_count">{$vo.count}</strong>
-                                                </a>
-                                            </div>
-                                            <div class="col-lg-12">{$vo.title}</div>
+                                                </div>
+                                                <div class="col-lg-12">{$vo.title}</div>
+                                            </a>
                                         </div>
                                     </td>
                                 </volist>
@@ -127,12 +127,14 @@
                                     <volist name="productStatus" id="vo">
                                         <td>
                                             <div class="row cl text-c">
-                                                <div class="col-lg-12">
-                                                    <a href="{:U('Product/index')}" style="text-decoration: none;">
+                                                <a href="{:U('Product/index')}" style="text-decoration: none;">
+                                                    <div class="col-lg-12">
+
                                                         <strong class="goods_sale_count">{$vo.count}</strong>
-                                                    </a>
-                                                </div>
-                                                <div class="col-lg-12">{$vo.title}</div>
+
+                                                    </div>
+                                                    <div class="col-lg-12">{$vo.title}</div>
+                                                </a>
                                             </div>
                                         </td>
                                     </volist>
@@ -374,14 +376,13 @@
     <script type="text/javascript" src="__PUBLIC__/admin/js/welcome.js"></script>
     <script>
         var c = ChartsData();
-        c.init('main',"{:U('Page/orderChartsData')}");
-
+        c.init('main', "{:U('Page/orderChartsData')}");
+        window.onresize = myChart.resize; //图表自适应窗口大小
         //ChartsData().init('main1',"{:U('Index/clearCache')}"); //这样写也可以 只不过 使用其他方法不方便
-        // var c1 = ChartsData();
-        // c.init('main1',"{:U('Page/orderChartsData')}");
+        //var c1 = ChartsData();
+        c1.init('main1', "{:U('Page/orderChartsData')}");
         // c.todo();
         //缩放还存在问题
-
     </script>
 </body>
 
