@@ -153,12 +153,12 @@
                     </div>
                     <div class="panel-body">
                         <div class="btn-group pos-a" style="z-index:2">
-                            <span class="btn btn-primary radius" onclick="t()">今日</span>
-                            <span class="btn btn-default radius" onclick="y()">昨日</span>
-                            <span class="btn btn-default radius" onclick="w()">本周</span>
-                            <span class="btn btn-default radius" onclick="m()">本月</span>
+                            <span class="btn btn-primary radius" onclick="orderCharts.t(this)">今日</span>
+                            <span class="btn btn-default radius" onclick="orderCharts.y(this)">昨日</span>
+                            <span class="btn btn-default radius" onclick="orderCharts.w(this)">本周</span>
+                            <span class="btn btn-default radius" onclick="orderCharts.m(this)">本月</span>
                         </div>
-                        <div id="main" style="width:100%;height:200px;"></div>
+                        <div id="order-charts" style="width:100%;height:200px;"></div>
                     </div>
                 </div>
                 <!-- /订单总数统计 -->
@@ -171,12 +171,12 @@
                     </div>
                     <div class="panel-body">
                         <div class="btn-group pos-a" style="z-index:2">
-                            <span class="btn btn-primary radius" onclick="t()">今日</span>
-                            <span class="btn btn-default radius">昨日</span>
-                            <span class="btn btn-default radius" onclick="w()">本周</span>
-                            <span class="btn btn-default radius" onclick="m()">本月</span>
+                            <span class="btn btn-primary radius" onclick="userCharts.t(this)">今日</span>
+                            <span class="btn btn-default radius" onclick="userCharts.y(this)">昨日</span>
+                            <span class="btn btn-default radius" onclick="userCharts.w(this)">本周</span>
+                            <span class="btn btn-default radius" onclick="userCharts.m(this)">本月</span>
                         </div>
-                        <div id="main1" style="width:100%;height:203px;"></div>
+                        <div id="user-charts" style="width:100%;height:203px;"></div>
                     </div>
                 </div>
                 <!-- /订单总数统计 -->
@@ -375,14 +375,13 @@
     <script src="__PUBLIC__/admin/lib/echarts/echarts.common.min.js"></script>
     <script type="text/javascript" src="__PUBLIC__/admin/js/welcome.js"></script>
     <script>
-        var c = ChartsData();
-        c.init('main', "{:U('Page/orderChartsData')}");
+        var orderCharts = ChartsData();
+        orderCharts.init('order-charts', "{:U('Page/orderChartsData')}");
         window.onresize = myChart.resize; //图表自适应窗口大小
-        //ChartsData().init('main1',"{:U('Index/clearCache')}"); //这样写也可以 只不过 使用其他方法不方便
-        //var c1 = ChartsData();
-        c1.init('main1', "{:U('Page/orderChartsData')}");
-        // c.todo();
-        //缩放还存在问题
+
+        var userCharts = ChartsData();
+        userCharts.init('user-charts', "{:U('Page/userChartsData')}");
+
     </script>
 </body>
 

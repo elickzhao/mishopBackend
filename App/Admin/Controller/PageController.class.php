@@ -230,9 +230,8 @@ class PageController extends PublicController
 
         //如果本周销量未达到排行榜9个的需要 就用商品补充
         if (count($list) < 9) {
-            $a = $this->product->field('name, 0 As count')->where(['del'=>'0'])->order('id desc')->limit(9)->select();
-            $b = Arrays::merge($list, $a);
-            $list = array_slice($b, 0, 9);
+            $a = $this->product->field('name, 0 As count')->where(['del'=>'0'])->order('id desc')->limit(9)->cache(true, 3600)->select();
+            $list = array_slice(Arrays::merge($list, $a), 0, 9);    //合并数组并剪切成9个
         }
         return $list;
     }
@@ -243,7 +242,6 @@ class PageController extends PublicController
      */
     public function orderChartsData()
     {
-        $time = "today";
         switch ($_GET['time']) {
             case 'today':
                     $map['addtime']  = array('between',$this->mysqlDate->todadyPeriod());
@@ -272,6 +270,46 @@ class PageController extends PublicController
     
 
         $list  = $this->order->field($field)->where($map)->group('g')->select();
+        
+        $result = $this->formatChartsData($list, $total);
+
+        $this->ajaxReturn($result);
+    }
+
+        /**
+     * [orderChartsData 图表用户数据]
+     * @return [json] [日/周/月的时间段用户数据]
+     */
+    public function userChartsData()
+    {
+        switch ($_GET['time']) {
+            case 'today':
+                    $map['addtime']  = array('between',$this->mysqlDate->todadyPeriod());
+                    $field = 'COUNT(*) AS count,HOUR(FROM_UNIXTIME(ADDTIME)) AS g ';
+                    $total = 24; //x时间坐标系 时间段个数  也就是当有时间段内无订单 需要补充为0
+                break;
+
+            case 'yesterday':
+                $map['addtime']  = array('between',$this->mysqlDate->yesterdayPeriod());
+                $field = 'COUNT(*) AS count,HOUR(FROM_UNIXTIME(ADDTIME)) AS g ';
+                $total = 24;
+                break;
+
+            case 'week':
+                $map['addtime']  = array('between',$this->mysqlDate->weekPeriod());
+                $field = 'COUNT(*) AS count,HOUR(FROM_UNIXTIME(ADDTIME)) AS g ';
+                $total = 7;
+                break;
+
+            case 'month':
+                $map['addtime']  = array('between',$this->mysqlDate->monthPeriod());
+                $field = 'COUNT(*) AS count,HOUR(FROM_UNIXTIME(ADDTIME)) AS g ';
+                $total = date('t', strtotime('now'));
+                break;
+        }
+    
+
+        $list  = $this->user->field($field)->where($map)->group('g')->select();
         
         $result = $this->formatChartsData($list, $total);
 

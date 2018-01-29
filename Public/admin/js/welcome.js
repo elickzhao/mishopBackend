@@ -76,30 +76,45 @@ window.onresize = myChart.resize; //图表自适应窗口大小
 // window.onresize = myChart1.resize; //图表自适应窗口大小
 // console.log("{:U('Index/clearCache')}");
 
-function t() {
+function t(obj) {
+    changeGroupBtn(obj);
     option.xAxis.data = dayArray;
     option.series[0].data = getDate(getUrl, 'today'); //[3, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 7, 0, 0, 0, 0, 0, 12, 0, 0];
     //console.log(option);
     myChart.setOption(option);
 }
 
-function y() {
+function y(obj) {
+    changeGroupBtn(obj);
     option.xAxis.data = dayArray;
     option.series[0].data = getDate(getUrl, 'yesterday');
     myChart.setOption(option);
 }
 
-function w() {
+function w(obj) {
+    changeGroupBtn(obj);
     option.xAxis.data = weekArray;
     option.series[0].data = getDate(getUrl, 'week');
     myChart.setOption(option);
 }
 
-function m() {
-    option.xAxis.data = monthArray(); 
+function m(obj) {
+    changeGroupBtn(obj);
+    option.xAxis.data = monthArray();
     option.series[0].data = getDate(getUrl, 'month');
     myChart.setOption(option);
 }
+
+
+/*=============================================
+=            按钮组切换按钮                    =
+=============================================*/
+function changeGroupBtn(obj) {
+    $(obj).siblings().removeClass("btn-primary").addClass("btn-default"); //同胞元素
+    $(obj).removeClass("btn-default").addClass("btn-primary");
+}
+/*=====  End of 按钮组切换按钮  ======*/
+
 
 
 /*=============================================
@@ -164,16 +179,43 @@ function getDate(url, time) {
 //这个不是类的写法 应该就是匿名函数
 var ChartsData = function () {
     return {
-        //初始化
-        init: function (id, url) {
-            getUrl = url;
-            //console.log(url);
-            //myChar 这里定义后 也可以直接在html里用 从这点看 这样真的没有类的隐私方法
-            myChart = echarts.init(document.getElementById(id));
-            t();
+        'id': "",
+        'url': "",
+        'myChart':{},
+        'init': function (id, url) {
+            this.url = url;
+            // getUrl = url;
+            // myChart = echarts.init(document.getElementById(id));
+            this.myChart = echarts.init(document.getElementById(id));
+            this.t();
+        },
+        t:function (obj) {
+            changeGroupBtn(obj);
+            option.xAxis.data = dayArray;
+            option.series[0].data = getDate(this.url, 'today'); //[3, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 7, 0, 0, 0, 0, 0, 12, 0, 0];
+            //console.log(option);
+            this.myChart.setOption(option);
+        },
+        y:function (obj) {
+            changeGroupBtn(obj);
+            option.xAxis.data = dayArray;
+            option.series[0].data = getDate(this.url, 'yesterday');
+            this.myChart.setOption(option);
+        },
+        w:function(obj) {
+            changeGroupBtn(obj);
+            option.xAxis.data = weekArray;
+            option.series[0].data = getDate(this.url, 'week');
+            this.myChart.setOption(option);
+        },
+        m:function(obj) {
+            changeGroupBtn(obj);
+            option.xAxis.data = monthArray();
+            option.series[0].data = getDate(this.url, 'month');
+            this.myChart.setOption(option);
         },
         todo: function () {
-            console.log(this.url);
+            console.log(this.myChart);
         },
 
     }
