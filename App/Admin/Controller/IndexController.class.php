@@ -26,57 +26,6 @@ class IndexController extends PublicController
     //**********************************
     public function index()
     {
-        // $b = vendor("wxpay.wxpay");
-        // //printf("Now: %s", \Carbon\Carbon::now());
-        // $input = new \WxPayUnifiedOrder();
-        // dump($input);
-        // $a = vendor("Carbon.Carbon");
-        // dump($a);
-        // printf("Now: %s", \Carbon\Carbon::now());
-        // echo  Carbon::now()->subDay(1)->timestamp;
-        // echo '前一天开始时间:'.\Carbon\Carbon::now()->yesterday()->startOfDay()->timezone('Asia/Shanghai')->format('Y-m-d H:i:s').'<br />';
-        // echo Carbon::parse('last Mon')->toDateTimeString();
-        // echo Carbon::parse('Sunday')->endOfDay()->toDateTimeString();
-        // echo '本周开始时间:'.\Carbon\Carbon::now()->startOfWeek()->timestamp.'<br />';
-        // echo '本周结束时间:'.\Carbon\Carbon::now()->endOfWeek()->timestamp.'<br />';
-        // echo(strtotime("next Monday") . "<br>");
-        
-        //echo Carbon::now()->startOfDay()->timestamp;
-        // echo "<br>";
-        // echo Carbon::now()->endOfDay()->timestamp;
-
-
-
-        //查询本周订单没问题了
-        // $star = Carbon::now()->startOfWeek()->timestamp;
-        // $end = Carbon::now()->endOfWeek()->timestamp;
-        // $star = Carbon::now()->startOfDay()->timestamp;
-        // $end = Carbon::now()->endOfDay()->timestamp;
-        $o = M("Order");
-        $map['addtime']  = array('between',array($star,$end));
-        $r = $o->where($map)->field('id,addtime')->select(); //详细数据
-        // $r = $o->where($map)->count(); //订单个数
-        $r = $o->where($map)->sum('price'); //总价格
-        // echo $o->getlastsql();
-        // dump($r);
-        // exit();
-        $ds = Carbon::parse('2018-01-11')->startOfDay()->timestamp;
-        $de = Carbon::parse('2018-01-11')->endOfDay()->timestamp;
-        $map['addtime']  = array('between',array($ds,$de));
-        $r = $o->where($map)->field('id,addtime')->select(); //详细数据
-        $arr = [];
-        foreach ($r as $key => $value) {
-            $r[$key]['addtime'] = date('Y-m-d H:i:s', $value['addtime']);
-            $arr[$key] = [$value['addtime'],$value['id']];
-        }
-
-        //echo json_encode($arr);
-        //dump($r);
-        //exit();
-        //
-
-
-
         $menu="";
         $index="";
         $menu="<include File='Page/adminusermenu'/>";

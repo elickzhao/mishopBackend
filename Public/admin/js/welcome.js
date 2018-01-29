@@ -67,17 +67,6 @@ option = {
 };
 
 /*=============================================
-=            按钮组切换按钮                    =
-=============================================*/
-function changeGroupBtn(obj) {
-    $(obj).siblings().removeClass("btn-primary").addClass("btn-default"); //同胞元素
-    $(obj).removeClass("btn-default").addClass("btn-primary");
-}
-/*=====  End of 按钮组切换按钮  ======*/
-
-
-
-/*=============================================
 =            获取当前月份天数                  =
 =============================================*/
 function mGetDate() {
@@ -109,7 +98,6 @@ function monthArray() {
 /*=============================================
 =            获取图标数据类                    =
 =============================================*/
-
 function getDate(url, time) {
     var result;
     $.ajax({
@@ -129,7 +117,6 @@ function getDate(url, time) {
     });
     return result;
 }
-
 /*=====  End of 获取图标数据类   ======*/
 
 

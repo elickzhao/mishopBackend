@@ -21,6 +21,7 @@
     <script type="text/javascript" src="__PUBLIC__/admin/lib/DD_belatedPNG_0.0.8a-min.js" ></script>
     <script>DD_belatedPNG.fix('*');</script>
     <![endif]-->
+    <link rel="stylesheet" href="__PUBLIC__/admin/css/common.css">
     <script type="text/javascript" src="__PUBLIC__/admin/js/jquery.js"></script>
     <script type="text/javascript" src="__PUBLIC__/admin/js/action.js"></script>
 
@@ -31,77 +32,90 @@
 <include File='Page/nav' />
 <!-- /导航 -->
 
-<div class="page-container">
-    <form class="form form-horizontal" action="{:U('More/setup')}" method="post" onsubmit="return ac_from();"  enctype="multipart/form-data">
-        <div class="row cl">
-            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>小程序名称：</label>
-            <div class="formControls col-xs-8 col-sm-3">
-                <input type="text" class="input-text" placeholder="小程序名称" name="title" id="title" value="{$info.title}">
+<div class="page-container cl" >
+        <div class="panel panel-default mt-40">
+                <div class="panel-header">面板标题</div>
+                <div class="panel-body">
+                    
+                        <form class="form form-horizontal" action="{:U('More/setup')}" method="post" onsubmit="return ac_from();"  enctype="multipart/form-data">
+                            <div class="row cl">
+                                <label class="text-l ml-50 col-xs-4 col-sm-2"><span class="c-red"> * </span>小程序名称：</label>
+                                <div class="formControls col-xs-8 col-sm-4">
+                                    <input type="text" class="input-text" placeholder="小程序名称" name="title" id="title" value="{$info.title}">
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="row cl">
+                                <label class=" text-l ml-50  col-xs-4 col-sm-2"><span class="c-red">*</span>负责人</label>
+                                <div class="formControls col-xs-8 col-sm-4">
+                                    <input type="text" class="input-text" placeholder="负责人" name="name" id="name" value="{$info.name}">
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="row cl">
+                                <label class=" text-l ml-50  col-xs-4 col-sm-2"><span class="c-red">*</span>logo图片</label>
+                                <div class="formControls col-xs-8 col-sm-4">
+                                    <input type='hidden' name="logo" id="photo_sj0" value="<?php echo $info['logo']; ?>">
+                                    <!-- <iframe class="pro_2" src="__DATA__/inc/photo_add.php?id=photo_sj0&width=200&height=200" frameborder="0"></iframe> -->
+                                    <?php if ($info['logo']) { ?>
+                                    <img src="__DATA__/<?php echo $info['logo']; ?>" width="100" height="100" /><br /><br />
+                                    <?php } ?>
+                                    <input  type="file"  name="file2" id="logo" >
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="row cl">
+                                <label class=" text-l ml-50  col-xs-4 col-sm-2"><span class="c-red">*</span>小程序简介</label>
+                                <div class="formControls col-xs-8 col-sm-4">
+                                    <input type="text" class="input-text" placeholder="小程序简介" name="describe" id="describe" value="{$info.describe}">
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="row cl">
+                                <label class=" text-l ml-50  col-xs-4 col-sm-2"><span class="c-red">*</span>客服微信号</label>
+                                <div class="formControls col-xs-8 col-sm-4">
+                                    <input type="text" class="input-text" placeholder="客服微信号" name="service_wx" id="service_wx" value="{$info.service_wx}">
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="row cl">
+                                <label class=" text-l ml-50  col-xs-4 col-sm-2"><span class="c-red">*</span>客服电话</label>
+                                <div class="formControls col-xs-8 col-sm-4">
+                                    <input type="text" class="input-text" placeholder="客服电话" name="tel" id="tel" value="{$info.tel}">
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="row cl">
+                                <label class=" text-l ml-50  col-xs-4 col-sm-2"><span class="c-red">*</span>邮    箱</label>
+                                <div class="formControls col-xs-8 col-sm-4">
+                                    <input type="text" class="input-text" placeholder="邮    箱" name="email" id="email" value="{$info.email}">
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="row cl">
+                                <label class=" text-l ml-50  col-xs-4 col-sm-2"><span class="c-red">*</span>版权信息</label>
+                                <div class="formControls col-xs-8 col-sm-4">
+                                    <input type="text" class="input-text" placeholder="版权信息" name="copyright" id="copyright" value="{$info.copyright}">
+                                </div>
+                            </div>
+                    
+                            <div class="hr-line-dashed"></div>
+                            <div class="row cl">
+                                <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+                                    <input class="btn btn-primary radius" type="submit" name="submit" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+                    
+                                </div>
+                            </div>
+                        </form>
+                </div>
             </div>
-        </div>
-        <div class="row cl">
-            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>负责人</label>
-            <div class="formControls col-xs-8 col-sm-3">
-                <input type="text" class="input-text" placeholder="负责人" name="name" id="name" value="{$info.name}">
-            </div>
-        </div>
 
-        <div class="row cl">
-            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>logo图片，图片大小100*100</label>
-            <div class="formControls col-xs-8 col-sm-3">
-                <input type='hidden' name="logo" id="photo_sj0" value="<?php echo $info['logo']; ?>">
-                <!-- <iframe class="pro_2" src="__DATA__/inc/photo_add.php?id=photo_sj0&width=200&height=200" frameborder="0"></iframe> -->
-                <?php if ($info['logo']) { ?>
-                <img src="__DATA__/<?php echo $info['logo']; ?>" width="100" height="100" /><br /><br />
-                <?php } ?>
-                <input  type="file"  name="file2" id="logo" >
-            </div>
-        </div>
-
-        <div class="row cl">
-            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>小程序简介</label>
-            <div class="formControls col-xs-8 col-sm-3">
-                <input type="text" class="input-text" placeholder="小程序简介" name="describe" id="describe" value="{$info.describe}">
-            </div>
-        </div>
-
-        <div class="row cl">
-            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>客服微信号</label>
-            <div class="formControls col-xs-8 col-sm-3">
-                <input type="text" class="input-text" placeholder="客服微信号" name="service_wx" id="service_wx" value="{$info.service_wx}">
-            </div>
-        </div>
-
-        <div class="row cl">
-            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>客服电话</label>
-            <div class="formControls col-xs-8 col-sm-3">
-                <input type="text" class="input-text" placeholder="客服电话" name="tel" id="tel" value="{$info.tel}">
-            </div>
-        </div>
-
-        <div class="row cl">
-            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>邮    箱</label>
-            <div class="formControls col-xs-8 col-sm-3">
-                <input type="text" class="input-text" placeholder="邮    箱" name="email" id="email" value="{$info.email}">
-            </div>
-        </div>
-
-        <div class="row cl">
-            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>版权信息</label>
-            <div class="formControls col-xs-8 col-sm-3">
-                <input type="text" class="input-text" placeholder="版权信息" name="copyright" id="copyright" value="{$info.copyright}">
-            </div>
-        </div>
-
-
-        <div class="row cl">
-            <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
-                <input class="btn btn-primary radius" type="submit" name="submit" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
-
-            </div>
-        </div>
-    </form>
 </div>
+
+<!-- 底部 -->
+<include File='Page/footer' />
+<!-- /底部 -->
+
 <!--_footer 作为公共模版分离出去-->
 <script type="text/javascript" src="__PUBLIC__/admin/lib/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript" src="__PUBLIC__/admin/lib/layer/2.4/layer.js"></script>

@@ -30,7 +30,6 @@ class PageController extends PublicController
 
     public function adminindex()
     {
-        //echo Carbon::now()->startOfDay()->timestamp;
         $todayAmount = $this->todayAmount();    //今日销售金额
         $todayCount = $this->todayCount();      //今日销量总数
         $userCount = $this->userCount();        //用户统计

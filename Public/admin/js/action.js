@@ -35,3 +35,12 @@ function changeClock(){
 	var S=d.getSeconds()>9?d.getSeconds().toString():'0' + d.getSeconds();
 	document.getElementById("addtime").value = d.getFullYear() + "-" + M + "-" + d.getDate() + " " + d.getHours() + ":" + I + ":" + S;
 }
+
+/*=============================================
+=            按钮组切换按钮                    =
+=============================================*/
+function changeGroupBtn(obj) {
+    $(obj).siblings().removeClass("btn-primary").addClass("btn-default"); //同胞元素
+    $(obj).removeClass("btn-default").addClass("btn-primary");
+}
+/*=====  End of 按钮组切换按钮  ======*/
