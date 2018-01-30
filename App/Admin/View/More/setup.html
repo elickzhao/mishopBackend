@@ -1,12 +1,13 @@
 <!DOCTYPE HTML>
 <html>
+
 <head>
     <meta charset="utf-8">
     <meta name="renderer" content="webkit|ie-comp|ie-stand">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
     <meta http-equiv="Cache-Control" content="no-siteapp" />
-    <link rel="Bookmark" href="/favicon.ico" >
+    <link rel="Bookmark" href="/favicon.ico">
     <link rel="Shortcut Icon" href="/favicon.ico" />
     <!--[if lt IE 9]>
     <script type="text/javascript" src="__PUBLIC__/admin/lib/html5shiv.js"></script>
@@ -21,122 +22,271 @@
     <script type="text/javascript" src="__PUBLIC__/admin/lib/DD_belatedPNG_0.0.8a-min.js" ></script>
     <script>DD_belatedPNG.fix('*');</script>
     <![endif]-->
+    <link rel="stylesheet" href="__PUBLIC__/admin/lib/webuploader/0.1.5/webuploader.css">
     <link rel="stylesheet" href="__PUBLIC__/admin/css/common.css">
     <script type="text/javascript" src="__PUBLIC__/admin/js/jquery.js"></script>
     <script type="text/javascript" src="__PUBLIC__/admin/js/action.js"></script>
 
     <title>小程序配置</title>
 </head>
+
 <body>
-<!-- 导航 -->
-<include File='Page/nav' />
-<!-- /导航 -->
+    <!-- 导航 -->
+    <include File='Page/nav' />
+    <!-- /导航 -->
 
-<div class="page-container cl" >
+    <div class="page-container cl">
         <div class="panel panel-default mt-40">
-                <div class="panel-header">面板标题</div>
-                <div class="panel-body">
-                    
-                        <form class="form form-horizontal" action="{:U('More/setup')}" method="post" onsubmit="return ac_from();"  enctype="multipart/form-data">
-                            <div class="row cl">
-                                <label class="text-l ml-50 col-xs-4 col-sm-2"><span class="c-red"> * </span>小程序名称：</label>
-                                <div class="formControls col-xs-8 col-sm-4">
-                                    <input type="text" class="input-text" placeholder="小程序名称" name="title" id="title" value="{$info.title}">
-                                </div>
+            <div class="panel-header">面板标题</div>
+            <div class="panel-body">
+
+                <form class="form form-horizontal" action="{:U('More/setup')}" method="post" id="commentForm" enctype="multipart/form-data">
+                    <div class="row cl">
+                        <label class="text-l ml-50 col-xs-4 col-sm-2">
+                            小程序名称：</label>
+                        <div class="formControls col-xs-8 col-sm-4">
+                            <input type="text" class="input-text" placeholder="小程序名称. 必填字段!" name="title" id="title" value="{$info.title}" minlength="2"
+                                type="text" required>
+                        </div>
+                        <span class="c-red">*</span>
+                    </div>
+                    <div class="hr-line-dashed"></div>
+                    <div class="row cl">
+                        <label class=" text-l ml-50  col-xs-4 col-sm-2">
+                            <!-- <span class="c-red">*</span>-->负责人 : </label>
+                        <div class="formControls col-xs-8 col-sm-4">
+                            <input type="text" class="input-text" placeholder="负责人" name="name" id="name" value="{$info.name}">
+                        </div>
+                    </div>
+                    <div class="hr-line-dashed"></div>
+                    <div class="row cl">
+                        <label class=" text-l ml-50  col-xs-4 col-sm-2">
+                            <!-- <span class="c-red">*</span>-->logo图片 : </label>
+                        <div class="formControls col-xs-8 col-sm-4">
+                            <input type='hidden' name="logo" id="photo_sj0" value="<?php echo $info['logo']; ?>">
+                            <!-- <iframe class="pro_2" src="__DATA__/inc/photo_add.php?id=photo_sj0&width=200&height=200" frameborder="0"></iframe> -->
+                            <?php if ($info['logo']) { ?>
+                            <img src="__DATA__/<?php echo $info['logo']; ?>" width="100" height="100" />
+                            <br />
+                            <br />
+                            <?php } ?>
+                            <!-- <input type="file" name="file2" id="logo"> -->
+                            <div class="uploader-thum-container">
+                                <div id="fileList" class="uploader-list"></div>
+                                <div id="filePicker">选择图片</div>
+                                <button id="btn-star" class="btn btn-default btn-uploadstar radius ml-10">开始上传</button>
                             </div>
-                            <div class="hr-line-dashed"></div>
-                            <div class="row cl">
-                                <label class=" text-l ml-50  col-xs-4 col-sm-2"><span class="c-red">*</span>负责人</label>
-                                <div class="formControls col-xs-8 col-sm-4">
-                                    <input type="text" class="input-text" placeholder="负责人" name="name" id="name" value="{$info.name}">
-                                </div>
-                            </div>
-                            <div class="hr-line-dashed"></div>
-                            <div class="row cl">
-                                <label class=" text-l ml-50  col-xs-4 col-sm-2"><span class="c-red">*</span>logo图片</label>
-                                <div class="formControls col-xs-8 col-sm-4">
-                                    <input type='hidden' name="logo" id="photo_sj0" value="<?php echo $info['logo']; ?>">
-                                    <!-- <iframe class="pro_2" src="__DATA__/inc/photo_add.php?id=photo_sj0&width=200&height=200" frameborder="0"></iframe> -->
-                                    <?php if ($info['logo']) { ?>
-                                    <img src="__DATA__/<?php echo $info['logo']; ?>" width="100" height="100" /><br /><br />
-                                    <?php } ?>
-                                    <input  type="file"  name="file2" id="logo" >
-                                </div>
-                            </div>
-                            <div class="hr-line-dashed"></div>
-                            <div class="row cl">
-                                <label class=" text-l ml-50  col-xs-4 col-sm-2"><span class="c-red">*</span>小程序简介</label>
-                                <div class="formControls col-xs-8 col-sm-4">
-                                    <input type="text" class="input-text" placeholder="小程序简介" name="describe" id="describe" value="{$info.describe}">
-                                </div>
-                            </div>
-                            <div class="hr-line-dashed"></div>
-                            <div class="row cl">
-                                <label class=" text-l ml-50  col-xs-4 col-sm-2"><span class="c-red">*</span>客服微信号</label>
-                                <div class="formControls col-xs-8 col-sm-4">
-                                    <input type="text" class="input-text" placeholder="客服微信号" name="service_wx" id="service_wx" value="{$info.service_wx}">
-                                </div>
-                            </div>
-                            <div class="hr-line-dashed"></div>
-                            <div class="row cl">
-                                <label class=" text-l ml-50  col-xs-4 col-sm-2"><span class="c-red">*</span>客服电话</label>
-                                <div class="formControls col-xs-8 col-sm-4">
-                                    <input type="text" class="input-text" placeholder="客服电话" name="tel" id="tel" value="{$info.tel}">
-                                </div>
-                            </div>
-                            <div class="hr-line-dashed"></div>
-                            <div class="row cl">
-                                <label class=" text-l ml-50  col-xs-4 col-sm-2"><span class="c-red">*</span>邮    箱</label>
-                                <div class="formControls col-xs-8 col-sm-4">
-                                    <input type="text" class="input-text" placeholder="邮    箱" name="email" id="email" value="{$info.email}">
-                                </div>
-                            </div>
-                            <div class="hr-line-dashed"></div>
-                            <div class="row cl">
-                                <label class=" text-l ml-50  col-xs-4 col-sm-2"><span class="c-red">*</span>版权信息</label>
-                                <div class="formControls col-xs-8 col-sm-4">
-                                    <input type="text" class="input-text" placeholder="版权信息" name="copyright" id="copyright" value="{$info.copyright}">
-                                </div>
-                            </div>
-                    
-                            <div class="hr-line-dashed"></div>
-                            <div class="row cl">
-                                <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
-                                    <input class="btn btn-primary radius" type="submit" name="submit" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
-                    
-                                </div>
-                            </div>
-                        </form>
-                </div>
+
+                            <span class="help-block ">
+                                <i class="Hui-iconfont c-danger">&#xe6e0;</i>
+                                <cite class="c-999">图片大小100*100</cite>
+                            </span>
+
+                        </div>
+                    </div>
+                    <div class="hr-line-dashed"></div>
+                    <div class="row cl">
+                        <label class=" text-l ml-50  col-xs-4 col-sm-2">
+                            <!-- <span class="c-red">*</span>-->小程序简介 : </label>
+                        <div class="formControls col-xs-8 col-sm-4">
+                            <input type="text" class="input-text" placeholder="小程序简介" name="describe" id="describe" value="{$info.describe}">
+                        </div>
+
+                    </div>
+                    <div class="hr-line-dashed"></div>
+                    <div class="row cl">
+                        <label class=" text-l ml-50  col-xs-4 col-sm-2">
+                            <!-- <span class="c-red">*</span>-->客服微信号 : </label>
+                        <div class="formControls col-xs-8 col-sm-4">
+                            <input type="text" class="input-text" placeholder="客服微信号" name="service_wx" id="service_wx" value="{$info.service_wx}">
+                        </div>
+                    </div>
+                    <div class="hr-line-dashed"></div>
+                    <div class="row cl">
+                        <label class=" text-l ml-50  col-xs-4 col-sm-2">
+                            <!-- <span class="c-red">*</span>-->客服电话 : </label>
+                        <div class="formControls col-xs-8 col-sm-4">
+                            <input type="text" class="input-text" placeholder="客服电话" name="tel" id="tel" value="{$info.tel}">
+                        </div>
+                    </div>
+                    <div class="hr-line-dashed"></div>
+                    <div class="row cl">
+                        <label class=" text-l ml-50  col-xs-4 col-sm-2">
+                            <!-- <span class="c-red">*</span>-->邮 箱 : </label>
+                        <div class="formControls col-xs-8 col-sm-4">
+                            <input type="text" class="input-text" placeholder="邮    箱" name="email" id="email" value="{$info.email}">
+                        </div>
+                    </div>
+                    <div class="hr-line-dashed"></div>
+                    <div class="row cl">
+                        <label class=" text-l ml-50  col-xs-4 col-sm-2">
+                            <!-- <span class="c-red">*</span>-->版权信息 : </label>
+                        <div class="formControls col-xs-8 col-sm-4">
+                            <input type="text" class="input-text" placeholder="版权信息" name="copyright" id="copyright" value="{$info.copyright}">
+                        </div>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+                    <div class="row cl">
+                        <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+                            <input class="btn btn-primary radius" type="submit" name="submit" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+                        </div>
+                    </div>
+                </form>
             </div>
+        </div>
 
-</div>
-
-<!-- 底部 -->
-<include File='Page/footer' />
-<!-- /底部 -->
-
-<!--_footer 作为公共模版分离出去-->
-<script type="text/javascript" src="__PUBLIC__/admin/lib/jquery/1.9.1/jquery.min.js"></script>
-<script type="text/javascript" src="__PUBLIC__/admin/lib/layer/2.4/layer.js"></script>
-<script type="text/javascript" src="__PUBLIC__/admin/static/h-ui/js/H-ui.min.js"></script>
-<script type="text/javascript" src="__PUBLIC__/admin/static/h-ui.admin/js/H-ui.admin.js"></script> <!--/_footer 作为公共模版分离出去-->
-
-<!--请在下方写此页面业务相关的脚本-->
-<script type="text/javascript" src="__PUBLIC__/admin/lib/My97DatePicker/4.8/WdatePicker.js"></script>
-<script type="text/javascript" src="__PUBLIC__/admin/lib/datatables/1.10.0/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="__PUBLIC__/admin/lib/laypage/1.2/laypage.js"></script>
+    </div>
 
 
-<script>
-    function ac_from(){
-        var title=document.getElementById('title').value;
-        if(!title){
-            alert('请输入小程序名称！');
-            return false;
-        }
-    }
-</script>
+    <!-- 底部 -->
+    <include File='Page/footer' />
+    <!-- /底部 -->
+
+
+
+    <!--_footer 作为公共模版分离出去-->
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/layer/2.4/layer.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/admin/static/h-ui/js/H-ui.min.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/admin/static/h-ui.admin/js/H-ui.admin.js"></script>
+    <!--/_footer 作为公共模版分离出去-->
+
+    <!--请在下方写此页面业务相关的脚本-->
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/My97DatePicker/4.8/WdatePicker.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/datatables/1.10.0/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/laypage/1.2/laypage.js"></script>
+    <script src="__PUBLIC__/admin/lib/jquery.validation/1.14.0/jquery.validate.js"></script>
+    <script src="__PUBLIC__/admin/lib/jquery.validation/1.14.0/messages_zh.js"></script>
+    <script src="__PUBLIC__/admin/lib/webuploader/0.1.5/webuploader.min.js"></script>
+
+
+    <script>
+        $(function () {
+
+            /*=============================================
+            =            Section 表单验证          =
+            =============================================*/
+            $("#commentForm").validate();
+            /*=====  End of Section 表单验证======*/
+
+            $list = $("#fileList"),
+                $btn = $("#btn-star"),
+                state = "pending",
+                uploader;
+
+            var u = "{:U('Public/UploadImage?flag=logo')}";
+            var uploader = WebUploader.create({
+                auto: false,
+                swf: '__PUBLIC__/admin/lib/webuploader/0.1.5/Uploader.swf',
+
+                // 文件接收服务端。
+                //server: '__PUBLIC__/admin/lib/webuploader/0.1.5/server/fileupload.php',
+                server: u,
+
+                // 选择文件的按钮。可选。
+                // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+                pick: {
+                    id: '#filePicker', //选择图标的id 用于改写样式
+                    multiple: true //同时选取多个文件
+                },
+                //fileNumLimit:1, //限制队列数量
+                sendAsBinary :false,
+                // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+                resize: false,
+                // 只允许选择图片文件。
+                accept: {
+                    title: 'Images',
+                    extensions: 'gif,jpg,jpeg,png',
+                    mimeTypes: 'image/*'
+                }
+            });
+            uploader.on('fileQueued', function (file) {
+                console.log($li);
+                var $li = $(
+                        '<div id="' + file.id + '" class="item">' +
+                        '<div class="pic-box"><img></div>' +
+                        '<div class="info">' + file.name + '</div>' +
+                        '<p class="state">等待上传...</p>' +
+                        '</div>'
+                    ),
+                    $img = $li.find('img');
+                //$list.append($li);    //如果想要多个片上传就用这个
+                $list.html($li);
+
+                // 创建缩略图
+                // 如果为非图片文件，可以不用调用此方法。
+                // thumbnailWidth x thumbnailHeight 为 100 x 100
+                uploader.makeThumb(file, function (error, src) {
+                    if (error) {
+                        $img.replaceWith('<span>不能预览</span>');
+                        return;
+                    }
+
+                    $img.attr('src', src);
+                }, 100, 100);
+                //addFile( file );
+            });
+            // 文件上传过程中创建进度条实时显示。
+            uploader.on('uploadProgress', function (file, percentage) {
+                var $li = $('#' + file.id),
+                    $percent = $li.find('.progress-box .sr-only');
+
+                // 避免重复创建
+                if (!$percent.length) {
+                    $percent = $(
+                        '<div class="progress-box"><span class="progress-bar radius"><span class="sr-only" style="width:0%"></span></span></div>'
+                    ).appendTo($li).find('.sr-only');
+                }
+                $li.find(".state").text("上传中");
+                $percent.css('width', percentage * 100 + '%');
+            });
+
+            // 文件上传成功，给item添加成功class, 用样式标记上传成功。
+            uploader.on('uploadSuccess', function (file,response) {
+                $('#' + file.id).addClass('upload-state-success').find(".state").text("已上传");
+                $("#photo_sj0").val('UploadFiles/'+response.savepath+response.savename);
+                //console.log(response);
+            });
+
+            // 文件上传失败，显示上传出错。
+            uploader.on('uploadError', function (file,response) {
+                $('#' + file.id).addClass('upload-state-error').find(".state").text("上传出错");
+                console.log(response);
+            });
+
+            // 完成上传完了，成功或者失败，先删除进度条。
+            uploader.on('uploadComplete', function (file) {
+                $('#' + file.id).find('.progress-box').fadeOut();
+            });
+            uploader.on('all', function (type) {
+                if (type === 'startUpload') {
+                    state = 'uploading';
+                } else if (type === 'stopUpload') {
+                    state = 'paused';
+                } else if (type === 'uploadFinished') {
+                    state = 'done';
+                }
+
+                if (state === 'uploading') {
+                    $btn.text('暂停上传');
+                } else {
+                    $btn.text('开始上传');
+                }
+            });
+
+            $btn.on('click', function () {
+
+                if (state === 'uploading') {
+                    uploader.stop();
+                } else {
+                    uploader.upload();
+                }
+                return false; //这里必须返回false 否则会提交表单
+            });
+        });
+    </script>
 
 </body>
+
 </html>
