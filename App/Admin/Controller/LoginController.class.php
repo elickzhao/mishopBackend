@@ -30,7 +30,7 @@ class LoginController extends PublicController
                     unset($_SESSION['system']);
                     $_SESSION['admininfo']=$admin;
                     $_SESSION['system']=$system;
-                    $this->success('欢迎回来!', U('Index/index'), 2);
+                    $this->success('欢迎回来!', U('Index/index'), 1);   //这里也很奇怪 这里总是比别感觉慢些 而且这里的1秒 弹出框样式改变的bug这里不出现
                 } else {
                     $this->error('账号密码错误!', '', 2);
                 }

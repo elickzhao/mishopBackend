@@ -22,8 +22,9 @@
         <script>
             var message = "<?php  if(isset($message)) {?> <span class='label label-success radius'>成功</span>  <?php echo $message; }else{ ?> <span class='label label-danger radius'>失败</span>  <?php echo $error; } ?>";
             var wait = "<?php echo($waitSecond); ?>"; 
+
             function modalalertdemo() {
-                $.Huimodalalert(message, wait * 1000 - 1000);
+                $.Huimodalalert(message, wait * 1000);  //这里有个奇怪的问题 如果是1秒 样式就变了 所以把原来的写法改了
                 var interval = setInterval(function () {
                     var time = --wait;
                     if (time <= 0) {

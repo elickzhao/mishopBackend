@@ -18,12 +18,12 @@
     <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/lib/Hui-iconfont/1.0.8/iconfont.css" />
     <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/skin/default/skin.css" id="skin" />
     <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/css/style.css" />
+    <link rel="stylesheet" href="__PUBLIC__/admin/lib/webuploader/0.1.5/webuploader.css">
+    <link rel="stylesheet" href="__PUBLIC__/admin/css/common.css">
     <!--[if IE 6]>
     <script type="text/javascript" src="__PUBLIC__/admin/lib/DD_belatedPNG_0.0.8a-min.js" ></script>
     <script>DD_belatedPNG.fix('*');</script>
     <![endif]-->
-    <link rel="stylesheet" href="__PUBLIC__/admin/lib/webuploader/0.1.5/webuploader.css">
-    <link rel="stylesheet" href="__PUBLIC__/admin/css/common.css">
     <script type="text/javascript" src="__PUBLIC__/admin/js/jquery.js"></script>
     <script type="text/javascript" src="__PUBLIC__/admin/js/action.js"></script>
 
@@ -37,7 +37,7 @@
 
     <div class="page-container cl">
         <div class="panel panel-default mt-40">
-            <div class="panel-header">面板标题</div>
+            <div class="panel-header">{$bc[1]}</div>
             <div class="panel-body">
 
                 <form class="form form-horizontal" action="{:U('More/setup')}" method="post" id="commentForm" enctype="multipart/form-data">
@@ -143,24 +143,6 @@
     <include File='Page/footer' />
     <!-- /底部 -->
 
-
-
-    <!--_footer 作为公共模版分离出去-->
-    <script type="text/javascript" src="__PUBLIC__/admin/lib/jquery/1.9.1/jquery.min.js"></script>
-    <script type="text/javascript" src="__PUBLIC__/admin/lib/layer/2.4/layer.js"></script>
-    <script type="text/javascript" src="__PUBLIC__/admin/static/h-ui/js/H-ui.min.js"></script>
-    <script type="text/javascript" src="__PUBLIC__/admin/static/h-ui.admin/js/H-ui.admin.js"></script>
-    <!--/_footer 作为公共模版分离出去-->
-
-    <!--请在下方写此页面业务相关的脚本-->
-    <script type="text/javascript" src="__PUBLIC__/admin/lib/My97DatePicker/4.8/WdatePicker.js"></script>
-    <script type="text/javascript" src="__PUBLIC__/admin/lib/datatables/1.10.0/jquery.dataTables.min.js"></script>
-    <script type="text/javascript" src="__PUBLIC__/admin/lib/laypage/1.2/laypage.js"></script>
-    <script src="__PUBLIC__/admin/lib/jquery.validation/1.14.0/jquery.validate.js"></script>
-    <script src="__PUBLIC__/admin/lib/jquery.validation/1.14.0/messages_zh.js"></script>
-    <script src="__PUBLIC__/admin/lib/webuploader/0.1.5/webuploader.min.js"></script>
-
-
     <script>
         $(function () {
 
@@ -175,14 +157,14 @@
                 state = "pending",
                 uploader;
 
-            var u = "{:U('Public/UploadImage?flag=logo')}";
+            var upUrl = "{:U('Public/UploadImage?flag=logo')}";
             var uploader = WebUploader.create({
                 auto: false,
                 swf: '__PUBLIC__/admin/lib/webuploader/0.1.5/Uploader.swf',
 
                 // 文件接收服务端。
                 //server: '__PUBLIC__/admin/lib/webuploader/0.1.5/server/fileupload.php',
-                server: u,
+                server: upUrl,
 
                 // 选择文件的按钮。可选。
                 // 内部根据当前运行是创建，可能是input元素，也可能是flash.
