@@ -80,15 +80,15 @@ class ProductController extends PublicController
                 'name'=>$_POST['name'] ,
                 'intro'=>$_POST['intro'] ,
                 'shop_id'=> intval($_POST['shop_id']) ,//所属店铺
-                'cid'=> intval($_POST['cid']) ,			//产品分类ID
+                'cid'=> intval($_POST['cid']) ,         //产品分类ID
                 'brand_id'=> intval($_POST['brand_id']) ,//产品品牌ID
-                'pro_number'=>$_POST['pro_number'] ,	//产品编号
+                'pro_number'=>$_POST['pro_number'] ,    //产品编号
                 'sort'=>(int)$_POST['sort'] ,
                 'price'=>(float)$_POST['price'] ,
                 'price_yh'=>(float)$_POST['price_yh'] ,
                 'price_jf'=>(float)$_POST['price_jf'] ,//赠送积分
                 'updatetime'=>time(),
-                'num'=>(int)$_POST['num'] ,			//库存
+                'num'=>(int)$_POST['num'] ,         //库存
                 'content'=>$_POST['content'] ,
                 'company'=>$_POST['company'],  //产品单位
                 'pro_type'=>1,
@@ -97,7 +97,7 @@ class ProductController extends PublicController
                 'is_show'=>intval($_POST['is_show']),//是否新品
                 'is_sale'=>intval($_POST['is_sale']),//是否折扣
                 'shiyong'=>intval($_POST['shiyong']),//销量
-            );
+                );
               
                 //判断产品详情页图片是否有设置宽度，去掉重复的100%
                 if (strpos($array['content'], 'width="100%"')) {
@@ -202,16 +202,19 @@ class ProductController extends PublicController
                 }
 
                 //规格操作
-            if ($sql) {//name="guige_name[]
-                $this->success('操作成功.', 'index');
-                exit();
-            } else {
-                throw new \Exception('操作失败.');
-            }
+                if ($sql) {//name="guige_name[]
+                    $this->success('操作成功.', 'index');
+                    exit();
+                } else {
+                    throw new \Exception('操作失败.');
+                }
             } catch (\Exception $e) {
                 echo "<script>alert('".$e->getMessage()."');location='{:U('index')}?shop_id=".$shop_id."';</script>";
             }
         }
+
+        /*----------  以下为展示页面 上面为添加操作  ----------*/
+        
 
         //=========================
         // 查询所有一级产品分类
@@ -227,7 +230,7 @@ class ProductController extends PublicController
         $shangchang= $pro_allinfo ? M('shangchang')->where('id='.intval($pro_allinfo['shop_id']))->find() : "";
         //产品分类
         $tid = M('category')->where('id='.intval($pro_allinfo['cid']))->getField('tid');
-        $pro_allinfo['tid'] = intval($tid);
+        $pro_allinfo['tid'] = $tid ? intval($tid) : "";
         if ($tid) {
             $catetwo = M('category')->where('tid='.intval($tid))->field('id,name')->select();
             $this->assign('catetwo', $catetwo);
@@ -479,7 +482,7 @@ class ProductController extends PublicController
         }
         $type = $_GET['type'];
         //for一下到今日为止，为数有多少天或者多少个月，然后canvas就绘画出多少天/月来
-        for ($i=0;$i<12;$i++) {
+        for ($i=0; $i<12; $i++) {
             //日期
             if ($type=='m') {
                 $day = strtotime(date('Y-m')) - 86400*30*(11-$i);
