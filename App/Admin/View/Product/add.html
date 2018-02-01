@@ -38,6 +38,26 @@
             list-style-type: none;
         }
 
+        .layui-form-radio>i:hover,
+        .layui-form-radioed>i {
+            color: #1E9FFF;
+        }
+
+        .switch>.layui-form-checkbox {
+            display: none !important;
+            visibility: hidden !important;
+        }
+
+        /* .switch > .layui-icon{
+            display: none !important;
+            visibility:hidden  !important ;
+
+        } */
+
+        /* .has-switch>div.switch-on {
+            display: none;
+        } */
+
         /* .dx1 {
             float: left;
             margin-left: 17px;
@@ -148,7 +168,6 @@
 
                     <!-- 商品分类  -->
                     <div class="row cl">
-
                         <div class="col-xs-4 col-sm-2 ml-30">
                             <label class="layui-form-label">选择分类：</label>
                         </div>
@@ -191,11 +210,14 @@
                     <!-- /商品分类 -->
 
                     <div class="hr-line-dashed"></div>
+
+                    <!-- 商品品牌 -->
                     <div class="row cl">
-                        <label class="text-l ml-50  col-xs-4 col-sm-2">
-                            <span class="c-red">*</span>选择品牌：</label>
+                        <div class="col-xs-4 col-sm-2 ml-30">
+                            <label class="layui-form-label">选择品牌: </label>
+                        </div>
                         <div class="formControls col-xs-8 col-sm-4">
-                            <select class="inp_1" name="brand_id" id="brand_id" style="width:150px;margin-right:5px;">
+                            <select name="brand_id" id="brand_id">
                                 <!-- 遍历 -->
                                 <option value="">选择品牌</option>
                                 <volist name="brand_list" id="v">
@@ -205,97 +227,192 @@
                             </select>
                         </div>
                     </div>
+                    <!-- /商品品牌 -->
 
+                    <div class="hr-line-dashed"></div>
 
-
+                    <!-- 单位 -->
                     <div class="row cl">
-                        <label class="text-l ml-50  col-xs-4 col-sm-2">
-                            <span class="c-red">*</span>单 位：</label>
+                        <div class="col-xs-4 col-sm-2 ml-30">
+                            <label class="layui-form-label">单 位: </label>
+                        </div>
                         <div class="formControls col-xs-8 col-sm-4">
                             <input type="text" class="input-text" placeholder="单 位" name="company" id="company" value="{$pro_allinfo.company}">
-                            <span style="color:red;font-size: 12px;">&nbsp;&nbsp;举例:个/只/件&nbsp;&nbsp;请根据产品来自行添加相应单位</span>
+                            <span class="help-block ">
+                                <i class="Hui-iconfont c-danger">&#xe6e0;</i>
+                                <cite class="c-999">&nbsp;&nbsp;举例:个/只/件&nbsp;&nbsp;请根据产品来自行添加相应单位</cite>
+                            </span>
                         </div>
                     </div>
+                    <!-- /单位 -->
 
+                    <div class="hr-line-dashed"></div>
 
-
+                    <!-- 原价 -->
                     <div class="row cl">
-                        <label class="text-l ml-50  col-xs-4 col-sm-2">
-                            <span class="c-red">*</span>原 价：</label>
+                        <div class="col-xs-4 col-sm-2 ml-30">
+                            <label class="layui-form-label">原 价：</label>
+                        </div>
+
                         <div class="formControls col-xs-8 col-sm-4">
-                            <input type="text" class="input-text" placeholder="原 价" name="price" id="price" value="{$pro_allinfo.price}">
+                            <input type="text" class="input-text " placeholder="原 价" name="price" id="price" value="{$pro_allinfo.price}">
                         </div>
+                        <!-- <label class="layui-form-label">
+                            <span class="c-red text-l">*</span>
+                        </label> -->
                     </div>
+                    <!-- /原价 -->
+
+                    <div class="hr-line-dashed"></div>
+
+                    <!-- 优惠价 -->
                     <div class="row cl">
-                        <label class="text-l ml-50  col-xs-4 col-sm-2">
-                            <span class="c-red">*</span>优惠价：</label>
+                        <div class="col-xs-4 col-sm-2 ml-30">
+                            <label class="layui-form-label">优惠价：</label>
+                        </div>
                         <div class="formControls col-xs-8 col-sm-4">
-                            <input type="text" class="input-text" placeholder="优惠价" name="price_yh" id="price_yh" value="{$pro_allinfo.price_yh}">
+                            <input type="text" class="input-text number" placeholder="优惠价" name="price_yh" id="price_yh" value="{$pro_allinfo.price_yh}"
+                                required>
                         </div>
+                        <label class="layui-form-label">
+                            <span class="c-red text-l">*</span>
+                        </label>
                     </div>
+                    <!-- /优惠价 -->
+
+                    <div class="hr-line-dashed"></div>
+
+                    <!-- 销量 -->
                     <div class="row cl">
-                        <label class="text-l ml-50  col-xs-4 col-sm-2">
-                            <span class="c-red">*</span>销量：</label>
+                        <div class="col-xs-4 col-sm-2 ml-30">
+                            <label class="layui-form-label">销量：</label>
+                        </div>
                         <div class="formControls col-xs-8 col-sm-4">
                             <input type="text" class="input-text" placeholder="销量" name="shiyong" id="shiyong" value="{$pro_allinfo.shiyong}">
                         </div>
                     </div>
-                    <div class="row cl">
+                    <!-- /销量 -->
+
+                    <div class="hr-line-dashed"></div>
+
+                    <!-- <div class="row cl">
                         <label class="text-l ml-50  col-xs-4 col-sm-2">
                             <span class="c-red">*</span>赠送积分：</label>
                         <div class="formControls col-xs-8 col-sm-4">
                             <input type="text" class="input-text" placeholder="赠送积分" name="price_jf" id="price_jf" value="{$pro_allinfo.price_jf}">
                         </div>
-                    </div>
+                    </div> -->
+
+                    <!-- 产品编号 -->
                     <div class="row cl">
-                        <label class="text-l ml-50  col-xs-4 col-sm-2">
-                            <span class="c-red">*</span>产品编号：</label>
+                        <div class="col-xs-4 col-sm-2 ml-30">
+                            <label class="layui-form-label">商品编号：</label>
+                        </div>
                         <div class="formControls col-xs-8 col-sm-4">
-                            <input type="text" class="input-text" placeholder="产品编号" name="pro_number" id="pro_number" value="{$pro_allinfo.pro_number}">
+                            <input type="text" class="input-text number" placeholder="产品编号" name="pro_number" id="pro_number" value="{$pro_allinfo.pro_number}"
+                                required>
+                        </div>
+                        <label class="layui-form-label">
+                            <span class="c-red text-l">*</span>
+                        </label>
+                    </div>
+                    <!-- /产品编号 -->
+
+                    <div class="hr-line-dashed"></div>
+
+                    <!-- 原产地 -->
+                    <div class="row cl">
+                        <div class="col-xs-4 col-sm-2 ml-30">
+                            <label class="layui-form-label">原产地：</label>
+                        </div>
+
+                        <div class="formControls col-xs-8 col-sm-4">
+                            <input type="text" class="input-text" placeholder="原产地" name="intro" id="intro" value="{$pro_allinfo.intro}">
                         </div>
                     </div>
+                    <!-- /原产地 -->
 
+                    <div class="hr-line-dashed"></div>
+
+                    <!-- 库存 -->
                     <div class="row cl">
-                        <label class="text-l ml-50  col-xs-4 col-sm-2">
-                            <span class="c-red">*</span>原产地：</label>
-                        <div class="formControls col-xs-8 col-sm-4">
-                            <input type="text" class="input-text" placeholder="广告语" name="intro" id="intro" value="{$pro_allinfo.intro}">
+                        <div class="col-xs-4 col-sm-2 ml-30">
+                            <label class="layui-form-label">库存：</label>
                         </div>
-                    </div>
 
-                    <div class="row cl">
-                        <label class="text-l ml-50  col-xs-4 col-sm-2">
-                            <span class="c-red">*</span>库存：</label>
                         <div class="formControls col-xs-8 col-sm-4">
-                            <input type="text" class="input-text" placeholder="库存" name="num" id="num" value="<?php echo $pro_allinfo['num']==0 ? 999999 : $pro_allinfo['num']; ?>">
+                            <input type="text" class="input-text number" placeholder="库存" name="num" id="num" value="<?php echo $pro_allinfo['num']==0 ? 999999 : $pro_allinfo['num']; ?>"
+                                required>
                         </div>
+                        <label class="layui-form-label">
+                            <span class="c-red text-l">*</span>
+                        </label>
                     </div>
+                    <!-- /库存 -->
 
+                    <div class="hr-line-dashed"></div>
+
+                    <!-- 缩略图 -->
                     <div class="row cl">
-                        <label class="text-l ml-50  col-xs-4 col-sm-2">
-                            <span class="c-red">*</span>缩略图，图片大小230*230</label>
+                        <div class="col-xs-4 col-sm-2 ml-30">
+                            <label class="layui-form-label">缩略图：</label>
+                        </div>
+
                         <div class="formControls col-xs-8 col-sm-4">
                             <?php if ($pro_allinfo['photo_x']) { ?>
                             <img src="__DATA__/<?php echo $pro_allinfo['photo_x']; ?>" width="80" height="80" style="margin-bottom: 3px;" />
                             <br />
                             <?php } ?>
-                            <input type="file" name="photo_x" id="photo_x" />
+                            <span class="btn-upload form-group">
+                                <input class="input-text upload-url radius" type="text" name="uploadfile-1" id="uploadfile-1" readonly>
+                                <a href="javascript:void();" class="btn btn-primary radius">
+                                    <i class="layui-icon">&#xe64a;</i> 浏览文件</a>
+                                <input type="file" name="photo_x" id="photo_x" class="input-file" lay-verify="upImg">
+                            </span>
+                            <span class="help-block ">
+                                <i class="Hui-iconfont c-danger">&#xe6e0;</i>
+                                <cite class="c-999">必填项! 图片大小230*230</cite>
+                            </span>
                         </div>
+                        <label class="layui-form-label">
+                            <span class="c-red text-l">*</span>
+                        </label>
                     </div>
+                    <!-- /缩略图 -->
 
+                    <div class="hr-line-dashed"></div>
+
+                    <!-- 大图 -->
                     <div class="row cl">
-                        <label class="text-l ml-50  col-xs-4 col-sm-2">
-                            <span class="c-red">*</span>大 图，图片大小600*600</label>
+                        <div class="col-xs-4 col-sm-2 ml-30">
+                            <label class="layui-form-label">大 图：</label>
+                        </div>
+
                         <div class="formControls col-xs-8 col-sm-4">
                             <?php if ($pro_allinfo['photo_d']) { ?>
                             <img src="__DATA__/<?php echo $pro_allinfo['photo_d']; ?>" width="125" height="125" style="margin-bottom: 3px;" />
                             <br />
                             <?php } ?>
-                            <input type="file" name="photo_d" id="photo_d" />
+                            <span class="btn-upload form-group">
+                                <input class="input-text upload-url radius" type="text" name="uploadfile-1" id="uploadfile-1" readonly>
+                                <a href="javascript:void();" class="btn btn-primary radius">
+                                    <i class="layui-icon">&#xe64a;</i> 浏览文件</a>
+                                <input type="file" name="photo_d" id="photo_d" class="input-file" lay-verify="upImg">
+                            </span>
+                            <span class="help-block ">
+                                <i class="Hui-iconfont c-danger">&#xe6e0;</i>
+                                <cite class="c-999">必填项! 图片大小600*600</cite>
+                            </span>
                         </div>
+                        <label class="layui-form-label">
+                            <span class="c-red text-l">*</span>
+                        </label>
                     </div>
+                    <!-- 大图 -->
 
+                    <div class="hr-line-dashed"></div>
 
+                    <!-- 轮播图 -->
                     <div class="row cl">
                         <label class="text-l ml-50  col-xs-4 col-sm-2">
                             <span class="c-red">*</span>上传产品详情轮播图: 600*600的图片</label>
@@ -326,58 +443,90 @@
                             </li>
                         </div>
                     </div>
+                    <!-- 轮播图 -->
 
+                    <div class="hr-line-dashed"></div>
 
-
-
+                    <!-- 产品介绍 -->
                     <div class="row cl">
-                        <label class="text-l ml-50  col-xs-4 col-sm-2">
-                            <span class="c-red">*</span>产品介绍：</label>
-                        <div class="">
-                            <textarea class="inp_1 inp_2" name="content" id="content" />{$pro_allinfo.content}</textarea>
+                        <div class="col-xs-4 col-sm-2 ml-30">
+                            <label class="layui-form-label">产品介绍：</label>
                         </div>
+                        <div class="formControls col-xs-8 col-sm-4">
+                            <textarea class="inp_1 inp_2" name="content" id="content" required/>{$pro_allinfo.content}</textarea>
+                        </div>
+                        <label class="layui-form-label">
+                            <span class="c-red text-l">*</span>
+                        </label>
                     </div>
+                    <!-- /产品介绍 -->
 
+                    <div class="hr-line-dashed"></div>
 
+                    <!-- 人气 -->
                     <div class="row cl">
-                        <label class="text-l ml-50  col-xs-4 col-sm-2">
-                            <span class="c-red">*</span>人气：</label>
+                        <div class="col-xs-4 col-sm-2 ml-30">
+                            <label class="layui-form-label">人气：</label>
+                        </div>
+
                         <div class="formControls col-xs-8 col-sm-4">
                             <input type="text" class="input-text" placeholder="人气" name="renqi" id="renqi" value="<?php echo (int)$pro_allinfo['renqi']; ?>">
                         </div>
                     </div>
+                    <!-- /人气 -->
 
+                    <div class="hr-line-dashed"></div>
 
+                    <!-- 新上市 -->
                     <div class="row cl">
-                        <label class="text-l ml-50  col-xs-4 col-sm-2">
-                            <span class="c-red">*</span>新上市：</label>
+                        <div class="col-xs-4 col-sm-2 ml-30">
+                            <label class="layui-form-label">新上市：</label>
+                        </div>
+
                         <div class="formControls col-xs-8 col-sm-4">
-                            <input type="radio" name="is_show" value="1" <?php echo $pro_allinfo[ 'is_show']==1 ? 'checked="checked"' : null?>/> 是 &nbsp;
+                            <input class="layui-btn layui-btn-normal" type="radio" name="is_show" value="1" <?php echo $pro_allinfo[ 'is_show']==1 ?
+                                'checked="checked"' : null?>/> 是 &nbsp;&nbsp;&nbsp;&nbsp;
                             <input type="radio" name="is_show" value="0" <?php echo $pro_allinfo[ 'is_show']!=1 ? 'checked="checked"' : null?> /> 否
                         </div>
                     </div>
+                    <!-- /新上市 -->
 
+                    <div class="hr-line-dashed"></div>
+
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.4/css/bootstrap2/bootstrap-switch.min.css"
+                    />
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.4/js/bootstrap-switch.min.js" integrity="sha256-AKUJYz2DyEoZYHh2/+zPHm1tTdYb4cmG8HC2ydmTzM4="
+                        crossorigin="anonymous"></script>
+                    <!-- 热销产品 -->
                     <div class="row cl">
-                        <label class="text-l ml-50  col-xs-4 col-sm-2">
-                            <span class="c-red">*</span>热销产品：</label>
-                        <div class="formControls col-xs-8 col-sm-4">
-                            <input type="radio" name="is_hot" value="1" <?php echo $pro_allinfo[ 'is_hot']==1 ? 'checked="checked"' : null?>/> 是 &nbsp;
+                        <div class="col-xs-4 col-sm-2 ml-30">
+                            <label class="layui-form-label">热销产品: </label>
+                        </div>
+                        <div class="formControls col-xs-8 col-sm-4 ">
+                            <div class="switch switch-large" data-on-label="是" data-off-label="否">
+                                <input name="is_hot" type="checkbox" value="1" <?php echo $pro_allinfo[ 'is_hot']==1 ? 'checked="checked"' : null?> />
+                            </div>
+                            <!-- <input type="radio" name="is_hot" value="1" <?php echo $pro_allinfo[ 'is_hot']==1 ? 'checked="checked"' : null?>/> <label class="layui-form-label">是</label>  &nbsp;&nbsp;&nbsp;&nbsp;
                             <input type="radio" name="is_hot" value="0" <?php echo $pro_allinfo[ 'is_hot']!=1 ? 'checked="checked"' : null?> /> 否
+                         -->
                         </div>
                     </div>
+                    <!-- /热销产品 -->
 
+                    <div class="hr-line-dashed"></div>
 
-                    <div class="row cl">
+                    <!-- <div class="row cl">
                         <label class="text-l ml-50  col-xs-4 col-sm-2">
                             <span class="c-red">*</span>品牌图片，图片大小120*120</label>
                         <div class="formControls col-xs-8 col-sm-4">
                             <input type="file" name="file" id="file" value="">
                         </div>
-                    </div>
+                    </div> -->
 
 
                     <div class="row cl">
-                        <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+                        <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-2">
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                             <input class="btn btn-primary radius" type="submit" name="submit" lay-submit lay-filter="*" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
                             <input type="hidden" name="pro_id" id='pro_id' value="{$pro_allinfo.id}">
                         </div>
@@ -393,8 +542,15 @@
     <script type="text/javascript" src="__PUBLIC__/admin/js/product.js"></script>
 
     <script>
+        /*----------  单个input验证 不会像layui 验证弹出提示 ----------*/
         $(function () {
             $("#commentForm").validate();
+            var pn = $("#pro_number").val();
+            if (pn == "" || pn == 0) {
+                var v = Math.round(new Date().getTime() / 10000);
+                $("#pro_number").val(v);
+            }
+
         })
 
 
@@ -418,10 +574,10 @@
                     });
 
                     $('#cid').html(htmls);
-                    form.render(); //这里只有这么写才可以 看来某些东西冲突了
+                    form.render('select'); //这里只有这么写才可以 看来某些东西冲突了
                 } else {
                     $('#cid').html('<option value="">二级分类</option>');
-                    form.render();
+                    form.render('select');
                 }
             }, "json");
         });
@@ -441,19 +597,19 @@
                     return "必须选择栏目";
                 }
             },
-            // contact: function (value) {
-            //     if (value.length < 4) {
-            //         return '内容请输入至少4个字符';
-            //     }
-            // },
-            // phone: [/^1[3|4|5|7|8]\d{9}$/, '手机必须11位，只能是数字！'],
-            // email: [/^[a-z0-9._%-]+@([a-z0-9-]+\.)+[a-z]{2,4}$|^1[3|4|5|7|8]\d{9}$/, '邮箱格式不对']
+            upImg: function (value) {
+                if (value == "") {
+                    return "请先上传图片!";
+                }
+            },
+
         });
 
         //提交监听事件    //没这个是不行的 否则自定义验证不生效
         form.on('submit(*)', function (data) {
-            // console.log(data);
-            // return false;
+            //这先留着 查看提交数据用
+            console.log(data.field);
+            return false;
         });
         /*=====  End of 表单自定义验证  ======*/
 
@@ -470,7 +626,6 @@
             );
             return false;
         }
-
 
         //图片删除
         function del_img(img, obj) {
@@ -489,34 +644,6 @@
                     }
                 }, "json");
             };
-        }
-
-
-        //onsubmit="return ac_from();"
-        function ac_from() {
-
-            // var name = document.getElementById('name').value;
-            // if (name.length < 1) {
-            //     alert('产品名称不能为空');
-            //     return false;
-            // }
-
-            var cateid = parseInt(document.getElementById("cateid").value);
-            if (!cateid) {
-                alert("请选择分类.");
-                $("#cateid").addClass("error");
-                $("#cateid").attr("aria-required", "true");
-                $("#cateid").attr("aria-invalid", "true");
-                form.render();
-                return false;
-            }
-
-            //  var pid=parseInt(document.getElementById("shop_id").value);
-            // if(isNaN(pid) || pid<1){
-            // 	alert("请选择所属商家");
-            // 	return false;
-            // }
-
         }
     </script>
 
