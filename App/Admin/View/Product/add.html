@@ -30,6 +30,13 @@
     <script type="text/javascript" src="__PUBLIC__/plugins/xheditor/xheditor-1.2.1.min.js"></script>
     <script type="text/javascript" src="__PUBLIC__/plugins/xheditor/xheditor_lang/zh-cn.js"></script>
     <script type="text/javascript" src="__PUBLIC__/admin/js/jCalendar.js"></script>
+    <script src="https://unpkg.com/wangeditor@3.0.15/release/wangEditor.min.js"></script>
+
+    <!-- 开关按钮的样式和js  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.4/css/bootstrap2/bootstrap-switch.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.4/js/bootstrap-switch.min.js" integrity="sha256-AKUJYz2DyEoZYHh2/+zPHm1tTdYb4cmG8HC2ydmTzM4="
+        crossorigin="anonymous"></script>
 
     <style>
         <?php $width=round($img['width']*0.6+6);
@@ -38,15 +45,18 @@
             list-style-type: none;
         }
 
-        .layui-form-radio>i:hover,
-        .layui-form-radioed>i {
-            color: #1E9FFF;
+        #content {
+            width: 770px;
+            height: 300px;
         }
+
+        /* 隐藏layui开关按钮多余样式 */
 
         .switch>.layui-form-checkbox {
             display: none !important;
             visibility: hidden !important;
         }
+
 
         /* .switch > .layui-icon{
             display: none !important;
@@ -452,8 +462,13 @@
                         <div class="col-xs-4 col-sm-2 ml-30">
                             <label class="layui-form-label">产品介绍：</label>
                         </div>
-                        <div class="formControls col-xs-8 col-sm-4">
-                            <textarea class="inp_1 inp_2" name="content" id="content" required/>{$pro_allinfo.content}</textarea>
+                        <div class="formControls col-xs-8 col-sm-6">
+                            <div id="editor">
+                                <p>222</p>
+                                {$pro_allinfo.content}
+                            </div>
+                            <textarea id="text1" style="width:100%; height:200px;">本地测试产品（勿拍，不发货）</textarea>
+                            <!-- <textarea lay-ignore name="content" id="content" required/>{$pro_allinfo.content}</textarea> -->
                         </div>
                         <label class="layui-form-label">
                             <span class="c-red text-l">*</span>
@@ -484,19 +499,18 @@
                         </div>
 
                         <div class="formControls col-xs-8 col-sm-4">
-                            <input class="layui-btn layui-btn-normal" type="radio" name="is_show" value="1" <?php echo $pro_allinfo[ 'is_show']==1 ?
+                            <div class="switch switch-large" data-on-label="是" data-off-label="否">
+                                <input name="is_show" type="checkbox" value="1" <?php echo $pro_allinfo[ 'is_show']==1 ? 'checked="checked"' : null?> />
+                            </div>
+                            <!-- <input class="layui-btn layui-btn-normal" type="radio" name="is_show" value="1" <?php echo $pro_allinfo[ 'is_show']==1 ?
                                 'checked="checked"' : null?>/> 是 &nbsp;&nbsp;&nbsp;&nbsp;
-                            <input type="radio" name="is_show" value="0" <?php echo $pro_allinfo[ 'is_show']!=1 ? 'checked="checked"' : null?> /> 否
+                            <input type="radio" name="is_show" value="0" <?php echo $pro_allinfo[ 'is_show']!=1 ? 'checked="checked"' : null?> /> 否 -->
                         </div>
                     </div>
                     <!-- /新上市 -->
 
                     <div class="hr-line-dashed"></div>
 
-                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.4/css/bootstrap2/bootstrap-switch.min.css"
-                    />
-                    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.4/js/bootstrap-switch.min.js" integrity="sha256-AKUJYz2DyEoZYHh2/+zPHm1tTdYb4cmG8HC2ydmTzM4="
-                        crossorigin="anonymous"></script>
                     <!-- 热销产品 -->
                     <div class="row cl">
                         <div class="col-xs-4 col-sm-2 ml-30">
@@ -536,10 +550,14 @@
         </div>
     </div>
 
+
+
     <!-- 底部 -->
     <include File='Page/footer' />
     <!-- /底部 -->
+
     <script type="text/javascript" src="__PUBLIC__/admin/js/product.js"></script>
+
 
     <script>
         /*----------  单个input验证 不会像layui 验证弹出提示 ----------*/
@@ -551,7 +569,85 @@
                 $("#pro_number").val(v);
             }
 
+            // // //初始化编辑器
+            // $('#content').xheditor({
+            //     skin: 'nostyle',
+            //     upImgUrl: '{:U("Upload/xheditor")}'
+            // });
         })
+
+
+        /*=============================================
+        =            富文本编辑及上传图片                 =
+        =============================================*/
+
+        var E = window.wangEditor
+        var editor = new E('#editor')
+        // 或者 var editor = new E( document.getElementById('editor') )
+        // 配置服务器端地址
+        editor.customConfig.uploadImgServer = '{:U("Upload/contentImage?flag=test")}'
+        //editor.customConfig.uploadImgServer = '{:U("Public/UploadImage?flag=test")}';
+        // 将图片大小限制为 3M
+        editor.customConfig.uploadImgMaxSize = 2 * 1024 * 1024;
+        // 限制一次最多上传 15 张图片
+        editor.customConfig.uploadImgMaxLength = 15;
+
+        editor.customConfig.uploadImgHooks = {
+            success: function (xhr, editor, result) {
+                // 图片上传并返回结果，图片插入成功之后触发
+                // xhr 是 XMLHttpRequst 对象，editor 是编辑器对象，result 是服务器端返回的结果
+                // console.log(xhr);
+                // console.log(editor);
+                // console.log(result);
+            },
+            fail: function (xhr, editor, result) {
+                alert(插入错误);
+                console.log(xhr);
+                console.log(editor);
+                console.log(result);
+                // 图片上传并返回结果，但图片插入错误时触发
+                // xhr 是 XMLHttpRequst 对象，editor 是编辑器对象，result 是服务器端返回的结果
+            },
+            error: function (xhr, editor) {
+                // 图片上传出错时触发
+                console.log(xhr);
+                console.log(editor);
+                // xhr 是 XMLHttpRequst 对象，editor 是编辑器对象
+            },
+            timeout: function (xhr, editor) {
+                // 图片上传超时时触发
+                alert("上传超时!");
+                console.log(xhr);
+                console.log(editor);
+                // xhr 是 XMLHttpRequst 对象，editor 是编辑器对象
+            },
+            // 如果服务器端返回的不是 {errno:0, data: [...]} 这种格式，可使用该配置
+            // （但是，服务器端返回的必须是一个 JSON 格式字符串！！！否则会报错）
+            // customInsert: function (insertImg, result, editor) {
+            //     console.log(insertImg);
+            //     console.log(editor);
+            //     console.log(result);
+            //     // 图片上传并返回结果，自定义插入图片的事件（而不是编辑器自动插入图片！！！）
+            //     // insertImg 是插入图片的函数，editor 是编辑器对象，result 是服务器端返回的结果
+            //     var url = '/Data/UploadFiles/'+result.data.savepath+result.data.savename;
+            //     // 举例：假如上传图片成功后，服务器端返回的是 {url:'....'} 这种格式，即可这样插入图片：
+            //     //var url = result.url
+            //     insertImg(url)
+
+            //     // result 必须是一个 JSON 格式字符串！！！否则报错
+            // }
+        }
+        var $text1 = $('#text1');
+        editor.customConfig.onchange = function (html) {
+            // 监控变化，同步更新到 textarea
+            $text1.val(html)
+        }
+        editor.create();
+        // 初始化 textarea 的值
+        $text1.val(editor.txt.html())
+        /*=====  End of 富文本编辑及上传图片 ======*/
+
+
 
 
         /*=============================================
@@ -613,12 +709,6 @@
         });
         /*=====  End of 表单自定义验证  ======*/
 
-
-        // //初始化编辑器
-        // $('#content').xheditor({
-        //     skin: 'nostyle',
-        //     upImgUrl: '{:U("Upload/xheditor")}'
-        // });
 
         function upadd(obj) {
             $('#imgs_add').append(

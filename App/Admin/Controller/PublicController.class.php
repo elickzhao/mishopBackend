@@ -3,6 +3,9 @@ namespace Admin\Controller;
 
 use Think\Controller;
 
+vendor("Underscore.Underscore");
+use Underscore\Types\Arrays;
+
 class PublicController extends Controller
 {
     //***************************************
@@ -166,6 +169,9 @@ class PublicController extends Controller
      */
     public function UploadImage()
     {
+        if ($_FILES["file"] == "") {
+            $_FILES =Arrays::replaceKeys($_FILES, ['file']);
+        }
         if (IS_POST) {
             //如果上传的是logo则清除目录老图
             if ($_REQUEST['flag'] == 'logo') {
@@ -177,11 +183,15 @@ class PublicController extends Controller
                 }
             }
             
-            $info = $this->upload_images($_FILES["file"], array('gif','jpg','png','jpeg'), $_REQUEST['flag']);
+            //$info = $this->upload_images($_FILES["file"], array('gif','jpg','png','jpeg'), $_REQUEST['flag']);
+            $info = $this->upload_images($_FILES, array('gif','jpg','png','jpeg'), $_REQUEST['flag']);
             if (!is_array($info)) {// 上传错误提示错误信息
                 $this->ajaxReturn(['error'=>['code'=>'100','message'=>$info]]);
             } else {// 上传成功 获取上传文件信息
-                $this->ajaxReturn($info);
+                if ($_REQUEST['flag'] == 'logo') {
+                    $this->ajaxReturn($info['file']);
+                }
+                $this->ajaxReturn([errno=>0,data=>$info]);
             }
         } else {
             $this->ajaxReturn('{"jsonrpc" : "2.0", "error" : {"code": 101, "message": "Failed to open input stream."}, "id" : "id"}');
@@ -200,11 +210,15 @@ class PublicController extends Controller
         $upload->exts      =  $exts;// 设置附件上传类型
         $upload->rootPath  =  './Data/UploadFiles/'; // 设置附件上传根目录
         $upload->savePath  =  ''; // 设置附件上传（子）目录
-        $upload->saveName = time().mt_rand(100000, 999999); //文件名称创建时间戳+随机数
+        //$upload->saveName = time().mt_rand(100000, 999999); //文件名称创建时间戳+随机数 //这个随机多文件上传容易重名
         $upload->autoSub  = true; //自动使用子目录保存上传文件 默认为true
         $upload->subName  = $path; //子目录创建方式，采用数组或者字符串方式定义
+        
         // 上传文件
-        $info = $upload->uploadOne($file);
+        //$info = $upload->uploadOne($file);
+                
+        $info = $upload->upload();
+        //$info['debug'] = $upload->getError();
 
         if (!$info) {// 上传错误提示错误信息
             return $upload->getError();
