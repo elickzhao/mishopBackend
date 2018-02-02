@@ -162,7 +162,7 @@ class UploadController extends PublicController
 
         //$this->ajaxReturn($_FILES);
         if (IS_POST) {
-            $info = $this->upload_images($_FILES, array('gif','jpg','png','jpeg'), $_REQUEST['flag']);
+            $info = $this->upload_images($_FILES, array('gif','jpg','png','jpeg'), "Uploads/".$_REQUEST['flag']);
             if (!is_array($info)) {// 上传错误提示错误信息
                 $this->ajaxReturn(['error'=>['code'=>'100','message'=>$info]]);
             } else {// 上传成功 获取上传文件信息

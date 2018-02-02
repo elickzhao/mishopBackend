@@ -464,10 +464,11 @@
                         </div>
                         <div class="formControls col-xs-8 col-sm-6">
                             <div id="editor">
-                                <p>222</p>
+                                <p>
                                 {$pro_allinfo.content}
+                                </p>
                             </div>
-                            <textarea id="text1" style="width:100%; height:200px;">本地测试产品（勿拍，不发货）</textarea>
+                            <textarea id="text1" name="content" style="width:100%; height:200px;display:none">本地测试产品（勿拍，不发货）</textarea>
                             <!-- <textarea lay-ignore name="content" id="content" required/>{$pro_allinfo.content}</textarea> -->
                         </div>
                         <label class="layui-form-label">
@@ -565,27 +566,26 @@
             $("#commentForm").validate();
             var pn = $("#pro_number").val();
             if (pn == "" || pn == 0) {
-                var v = Math.round(new Date().getTime() / 10000);
+                var v = pr();
                 $("#pro_number").val(v);
             }
-
-            // // //初始化编辑器
-            // $('#content').xheditor({
-            //     skin: 'nostyle',
-            //     upImgUrl: '{:U("Upload/xheditor")}'
-            // });
         })
 
+        /*----------  生成商品编号 并用于建立商品详情内容图片上传的目录  ----------*/
+        function pr(){
+            return Math.round(new Date().getTime() / 10000);
+        }
 
         /*=============================================
-        =            富文本编辑及上传图片                 =
+        =            富文本编辑及上传图片              =
         =============================================*/
 
         var E = window.wangEditor
         var editor = new E('#editor')
         // 或者 var editor = new E( document.getElementById('editor') )
         // 配置服务器端地址
-        editor.customConfig.uploadImgServer = '{:U("Upload/contentImage?flag=test")}'
+        var url = '{:U("Upload/contentImage?flag=")}'+'?flag='+ pr();
+        editor.customConfig.uploadImgServer = url;
         //editor.customConfig.uploadImgServer = '{:U("Public/UploadImage?flag=test")}';
         // 将图片大小限制为 3M
         editor.customConfig.uploadImgMaxSize = 2 * 1024 * 1024;
