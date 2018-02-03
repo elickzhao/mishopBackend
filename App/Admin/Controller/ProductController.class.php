@@ -100,10 +100,7 @@ class ProductController extends PublicController
                 'photo_string'=>$_POST['photo_string'],//轮播图
                 );
 
-                dump($array);
-                dump($_FILES);
-                
-              
+
                 //判断产品详情页图片是否有设置宽度，去掉重复的100%
                 if (strpos($array['content'], 'width="100%"')) {
                     $array['content']=str_replace(' width="100%"', '', $array['content']);
@@ -204,9 +201,6 @@ class ProductController extends PublicController
                 } else {
                     $array['addtime']=time();
                     $sql = M('product')->add($array);
-                    echo M('product')->getlastsql();
-                    dump($sql);
-                    exit();
                     $id=$sql;
                 }
 

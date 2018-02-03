@@ -287,7 +287,8 @@
 
                         <div class="formControls col-xs-8 col-sm-4">
                             <?php if ($pro_allinfo['photo_x']) { ?>
-                            <img src="__DATA__/<?php echo $pro_allinfo['photo_x']; ?>" width="80" height="80" style="margin-bottom: 3px;" />
+                            <img id='old_photo_x' src="__DATA__/<?php echo $pro_allinfo['photo_x']; ?>" width="80" height="80" style="margin-bottom: 3px;"
+                            />
                             <br />
                             <?php } ?>
                             <span class="btn-upload form-group">
@@ -317,7 +318,8 @@
 
                         <div class="formControls col-xs-8 col-sm-4">
                             <?php if ($pro_allinfo['photo_d']) { ?>
-                            <img src="__DATA__/<?php echo $pro_allinfo['photo_d']; ?>" width="125" height="125" style="margin-bottom: 3px;" />
+                            <img id='old_photo_d' src="__DATA__/<?php echo $pro_allinfo['photo_d']; ?>" width="125" height="125" style="margin-bottom: 3px;"
+                            />
                             <br />
                             <?php } ?>
                             <span class="btn-upload form-group">
@@ -345,6 +347,54 @@
                             <label class="layui-form-label">轮播图：</label>
                         </div>
                         <div class="formControls col-xs-8 col-sm-4">
+
+                            <!-- <div class="layui-inline">
+                                        <label class="layui-form-label">范围</label>
+                                        <div class="layui-input-inline" style="width: 100px;">
+                                          <input type="text" name="price_min" placeholder="￥" autocomplete="off" class="layui-input">
+                                        </div>
+                                        <div class="layui-form-mid">-</div>
+                                        <div class="layui-input-inline" style="width: 100px;">
+                                          <input type="text" name="price_max" placeholder="￥" autocomplete="off" class="layui-input">
+                                        </div>
+                                      </div> -->
+                            <style>
+                                .box {
+                                    position: relative;
+                                    cursor: pointer;
+                                }
+
+                                .box .bmbox {
+                                    width: 125px;
+                                    height: 30px;
+                                    background: rgba( 0, 0, 0, 0.7);
+                                    position: absolute;
+                                    bottom: 0px;
+                                    left: 0px;
+                                    display: none;
+                                    color: white;
+                                    text-align: center;
+                                }
+
+                                .box:hover .bmbox {
+                                    display: block;
+
+                                }
+                            </style>
+                            <?php if (is_array($img_str)) { ?>
+                            <div class="layui-inline">
+                                <?php foreach ($img_str as $v) { ?>
+                                <div class="layui-input-inline box">
+                                    <img src="<?php echo $v; ?>" width="125" height="125">
+                                    <div class="bmbox" title="删除" onclick="del_img('<?php echo $v; ?>',this);">删除</div>
+                                </div>
+                                <?php } ?>
+                            </div>
+                            <span class="help-block ">
+                                    <i class="Hui-iconfont c-primary">&#xe6e0;</i>
+                                    <cite class="c-999">已上传图片</cite>
+                                </span>
+                            <?php } ?>
 
                             <div class="uploader-list-container">
                                 <div class="queueList">
@@ -408,16 +458,15 @@
                         </div>
                         <div class="formControls col-xs-8 col-sm-6">
                             <div id="editor">
-                                <p>
-                                    {$pro_allinfo.content}
-                                </p>
+                                <p>{$pro_allinfo.content}</p>
                             </div>
-                            <textarea id="text1" name="content" style="width:100%; height:200px;display:none">本地测试产品（勿拍，不发货）</textarea>
+                            <textarea id="text1" name="content" style="width:100%; height:200px;display:none"></textarea>
                             <!-- <textarea lay-ignore name="content" id="content" required/>{$pro_allinfo.content}</textarea> -->
                         </div>
-                        <label class="layui-form-label">
+                        <!-- 现在一些产品只有属性没有详细页 所以暂时不是必填项 -->
+                        <!-- <label class="layui-form-label">
                             <span class="c-red text-l">*</span>
-                        </label>
+                        </label> -->
                     </div>
                     <!-- /产品介绍 -->
 
@@ -507,7 +556,10 @@
     <script>
         /*----------  单个input验证 不会像layui 验证弹出提示 ----------*/
         $(function () {
+            //开启验证
             $("#commentForm").validate();
+
+            //自动生成商品编号
             var pn = $("#pro_number").val();
             if (pn == "" || pn == 0) {
                 var v = pr();
@@ -627,7 +679,9 @@
                 }
             },
             upImg: function (value) {
-                if (value == "") {
+                var old_photo_x = $('#old_photo_x').length;
+                var old_photo_d = $('#old_photo_d').length;
+                if (value == "" && !old_photo_x && !old_photo_d) {
                     return "请先上传图片!";
                 }
             },
@@ -650,26 +704,26 @@
                     );
                     return false;
                 }
+*/
+        //图片删除
+        function del_img(img, obj) {
+            var pro_id = $('#pro_id').val();
+            if (confirm('是否确认删除？')) {
+                $.post('{:U("img_del")}', {
+                    img_url: img,
+                    pro_id: pro_id
+                }, function (data) {
+                    if (data.status == 1) {
+                        $(obj).parent().remove();
+                        return false;
+                    } else {
+                        alert(data.err);
+                        return false;
+                    }
+                }, "json");
+            };
+        }
 
-                //图片删除
-                function del_img(img, obj) {
-                    var pro_id = $('#pro_id').val();
-                    if (confirm('是否确认删除？')) {
-                        $.post('{:U("img_del")}', {
-                            img_url: img,
-                            pro_id: pro_id
-                        }, function (data) {
-                            if (data.status == 1) {
-                                $(obj).parent().remove();
-                                return false;
-                            } else {
-                                alert(data.err);
-                                return false;
-                            }
-                        }, "json");
-                    };
-                }
-        */
 
 
         (function ($) {
@@ -849,7 +903,7 @@
                         extensions: 'gif,jpg,jpeg,bmp,png',
                         mimeTypes: 'image/*'
                     },
-                    compress: {     //图片压缩选项    如果有问题 就把这项去掉
+                    compress: { //图片压缩选项    如果有问题 就把这项去掉
                         width: 600,
                         height: 600,
 

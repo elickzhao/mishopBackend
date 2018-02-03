@@ -22,5 +22,5 @@
 function cutMoney($m)
 {
     $y=explode(".", $m);
-    return ($y[1] > 0 ) ? $m : $y[0];
+    return ($y[1] > 0) ? $m : $y[0];
 }
