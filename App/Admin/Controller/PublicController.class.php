@@ -205,7 +205,7 @@ class PublicController extends Controller
     * 图片上传的公共方法
     *  $file 文件数据流 $exts 文件类型 $path 子目录名称
     */
-    public function upload_images($file, $exts, $path)
+    public function upload_images($file, $exts, $path, $type=2)
     {
         $upload = new \Think\Upload();// 实例化上传类
         $upload->maxSize   =  2097152 ;// 设置附件上传大小2M
@@ -216,10 +216,16 @@ class PublicController extends Controller
         $upload->autoSub  = true; //自动使用子目录保存上传文件 默认为true
         $upload->subName  = $path; //子目录创建方式，采用数组或者字符串方式定义
         
-        // 上传文件
-        //$info = $upload->uploadOne($file);
+        if ($type==1) {
+            // 上传单个文件
+            $info = $upload->uploadOne($file);
+        } elseif ($type==2) {
+            //上传多个文件
+            $info = $upload->upload();
+        }
+
                 
-        $info = $upload->upload();
+  
         //$info['debug'] = $upload->getError();
 
         if (!$info) {// 上传错误提示错误信息

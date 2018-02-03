@@ -10,7 +10,6 @@
     <link rel="Bookmark" href="/favicon.ico">
     <link rel="Shortcut Icon" href="/favicon.ico" />
     <script type="text/javascript" src="__PUBLIC__/admin/js/action.js"></script>
-    <script type="text/javascript" src="__PUBLIC__/admin/js/jquery.js"></script>
     <!--[if lt IE 9]>
     <script type="text/javascript" src="__PUBLIC__/admin/lib/html5shiv.js"></script>
     <script type="text/javascript" src="__PUBLIC__/admin/lib/respond.min.js"></script>
@@ -22,7 +21,7 @@
     <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/lib/Hui-iconfont/1.0.8/iconfont.css" />
     <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/skin/default/skin.css" id="skin" />
     <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/css/style.css" />
-    <!-- <link href="__PUBLIC__/admin/css/main.css" rel="stylesheet" type="text/css" /> -->
+
 
     <!--[if IE 6]>
     <script type="text/javascript" src="__PUBLIC__/admin/lib/DD_belatedPNG_0.0.8a-min.js" ></script>
@@ -116,6 +115,7 @@
             </div>
         </div>
     </header>
+    
     <!-- 左侧菜单 -->
     <include File='Page/adminusermenu' />
     <!-- /左侧菜单 -->
@@ -125,7 +125,6 @@
         <a class="pngfix" href="javascript:void(0);" onClick="displaynavbar(this)"></a>
     </div>
     <section class="Hui-article-box">
-
         <div id="iframe_box">
             <div class="show_iframe" style="min-width: 650px;">
                 <div style="display:none" class="loading"></div>
@@ -143,7 +142,7 @@
     <!--/_footer 作为公共模版分离出去-->
 
     <!--请在下方写此页面业务相关的脚本-->
-    <script type="text/javascript" src="__PUBLIC__/admin/lib/jquery.contextmenu/jquery.contextmenu.r2.js"></script>   
+    <!-- <script type="text/javascript" src="__PUBLIC__/admin/lib/jquery.contextmenu/jquery.contextmenu.r2.js"></script> -->
     <script type="text/javascript">
         $(function () {
             /*$("#min_title_list li").contextMenu('Huiadminmenu', {
@@ -211,21 +210,17 @@
             var ua = navigator.userAgent.toLowerCase();
             if (ua.indexOf("360se") > -1) {
                 alert("由于360浏览器功能限制，请按 Ctrl+D 手动收藏！");
-            }
-            else if (ua.indexOf("msie 8") > -1) {
+            } else if (ua.indexOf("msie 8") > -1) {
                 window.external.AddToFavoritesBar(url, title); //IE8
-            }
-            else if (document.all) {
+            } else if (document.all) {
                 try {
                     window.external.addFavorite(url, title);
                 } catch (e) {
                     alert('您的浏览器不支持,请按 Ctrl+D 手动收藏!');
                 }
-            }
-            else if (window.sidebar) {
+            } else if (window.sidebar) {
                 window.sidebar.addPanel(title, url, "");
-            }
-            else {
+            } else {
                 alert('您的浏览器不支持,请按 Ctrl+D 手动收藏!');
             }
         }

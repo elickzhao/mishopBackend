@@ -97,7 +97,12 @@ class ProductController extends PublicController
                 'is_show'=>intval($_POST['is_show']),//是否新品
                 'is_sale'=>intval($_POST['is_sale']),//是否折扣
                 'shiyong'=>intval($_POST['shiyong']),//销量
+                'photo_string'=>$_POST['photo_string'],//轮播图
                 );
+
+                dump($array);
+                dump($_FILES);
+                
               
                 //判断产品详情页图片是否有设置宽度，去掉重复的100%
                 if (strpos($array['content'], 'width="100%"')) {
@@ -109,7 +114,7 @@ class ProductController extends PublicController
                 //上传产品小图
                 if (!empty($_FILES["photo_x"]["tmp_name"])) {
                     //文件上传
-                    $info = $this->upload_images($_FILES["photo_x"], array('jpg','png','jpeg'), "product/".date(Ymd));
+                    $info = $this->upload_images($_FILES["photo_x"], array('jpg','png','jpeg'), "product/".date(Ymd), 1);
                     if (!is_array($info)) {// 上传错误提示错误信息
                         $this->error($info);
                         exit();
@@ -128,7 +133,7 @@ class ProductController extends PublicController
                 //上传产品大图
                 if (!empty($_FILES["photo_d"]["tmp_name"])) {
                     //文件上传
-                    $info = $this->upload_images($_FILES["photo_d"], array('jpg','png','jpeg'), "product/".date(Ymd));
+                    $info = $this->upload_images($_FILES["photo_d"], array('jpg','png','jpeg'), "product/".date(Ymd), 1);
                     if (!is_array($info)) {// 上传错误提示错误信息
                         $this->error($info);
                         exit();
@@ -144,41 +149,42 @@ class ProductController extends PublicController
                     }
                 }
 
-                //多张商品轮播图上传
-                $up_arr = array();
-                if (!empty($_FILES["files"]["tmp_name"])) {
-                    foreach ($_FILES["files"]['name'] as $k => $val) {
-                        $up_arr[$k]['name'] = $val;
-                    }
+                // //多张商品轮播图上传
+                // $up_arr = array();
+                // if (!empty($_FILES["files"]["tmp_name"])) {
+                //     foreach ($_FILES["files"]['name'] as $k => $val) {
+                //         $up_arr[$k]['name'] = $val;
+                //     }
 
-                    foreach ($_FILES["files"]['type'] as $k => $val) {
-                        $up_arr[$k]['type'] = $val;
-                    }
+                //     foreach ($_FILES["files"]['type'] as $k => $val) {
+                //         $up_arr[$k]['type'] = $val;
+                //     }
 
-                    foreach ($_FILES["files"]['tmp_name'] as $k => $val) {
-                        $up_arr[$k]['tmp_name'] = $val;
-                    }
+                //     foreach ($_FILES["files"]['tmp_name'] as $k => $val) {
+                //         $up_arr[$k]['tmp_name'] = $val;
+                //     }
 
-                    foreach ($_FILES["files"]['error'] as $k => $val) {
-                        $up_arr[$k]['error'] = $val;
-                    }
+                //     foreach ($_FILES["files"]['error'] as $k => $val) {
+                //         $up_arr[$k]['error'] = $val;
+                //     }
 
-                    foreach ($_FILES["files"]['size'] as $k => $val) {
-                        $up_arr[$k]['size'] = $val;
-                    }
-                }
-                if ($up_arr) {
-                    $res=array();
-                    $adv_str = '';
-                    foreach ($up_arr as $key => $value) {
-                        $res = $this->upload_images($value, array('jpg','png','jpeg'), "product/".date(Ymd));
-                        if (is_array($res)) {
-                            // 上传成功 获取上传文件信息保存数据库
-                            $adv_str .= ','.'UploadFiles/'.$res['savepath'].$res['savename'];
-                        }
-                    }
-                    $array['photo_string'] = $adv_str;
-                }
+                //     foreach ($_FILES["files"]['size'] as $k => $val) {
+                //         $up_arr[$k]['size'] = $val;
+                //     }
+                // }
+
+                // if ($up_arr) {
+                //     $res=array();
+                //     $adv_str = '';
+                //     foreach ($up_arr as $key => $value) {
+                //         $res = $this->upload_images($value, array('jpg','png','jpeg'), "product/".date(Ymd));
+                //         if (is_array($res)) {
+                //             // 上传成功 获取上传文件信息保存数据库
+                //             $adv_str .= ','.'UploadFiles/'.$res['savepath'].$res['savename'];
+                //         }
+                //     }
+                //     $array['photo_string'] = $adv_str;
+                // }
             
                 //执行添加
                 if (intval($id)>0) {
@@ -198,6 +204,9 @@ class ProductController extends PublicController
                 } else {
                     $array['addtime']=time();
                     $sql = M('product')->add($array);
+                    echo M('product')->getlastsql();
+                    dump($sql);
+                    exit();
                     $id=$sql;
                 }
 

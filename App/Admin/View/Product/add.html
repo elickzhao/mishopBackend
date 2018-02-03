@@ -57,89 +57,6 @@
             visibility: hidden !important;
         }
 
-
-        /* .switch > .layui-icon{
-            display: none !important;
-            visibility:hidden  !important ;
-
-        } */
-
-        /* .has-switch>div.switch-on {
-            display: none;
-        } */
-
-        /* .dx1 {
-            float: left;
-            margin-left: 17px;
-            margin-bottom: 10px;
-        }
-
-        .dx2 {
-            color: #090;
-            font-size: 16px;
-            border-bottom: 1px solid #CCC;
-            width: 100% !important;
-            padding-bottom: 8px;
-        }
-
-        .dx3 {
-            width: 120px;
-            margin: 5px auto;
-            border-radius: 2px;
-            border: 1px solid #b9c9d6;
-            display: block;
-        }
-
-        .dx4 {
-            border-bottom: 1px solid #eee;
-            padding-top: 5px;
-            width: 100%;
-        }
-
-        .img-err {
-            position: relative;
-            top: 2px;
-            left: 82%;
-            color: white;
-            font-size: 20px;
-            border-radius: 16px;
-            background: #c00;
-            height: 21px;
-            width: 21px;
-            text-align: center;
-            line-height: 20px;
-            cursor: pointer;
-        }
-
-        .btn {
-            height: 25px;
-            width: 60px;
-            line-height: 24px;
-            padding: 0 8px;
-            background: #24a49f;
-            border: 1px #26bbdb solid;
-            border-radius: 3px;
-            color: #fff;
-            display: inline-block;
-            text-decoration: none;
-            font-size: 13px;
-            outline: none;
-            -webkit-box-shadow: #666 0px 0px 6px;
-            -moz-box-shadow: #666 0px 0px 6px;
-        }
-
-        .btn:hover {
-            border: 1px #0080FF solid;
-            background: #D2E9FF;
-            color: red;
-            -webkit-box-shadow: rgba(81, 203, 238, 1) 0px 0px 6px;
-            -moz-box-shadow: rgba(81, 203, 238, 1) 0px 0px 6px;
-        }
-
-        .cls {
-            background: #24a49f;
-        } */
-
         #commentForm .layui-form-label {
             text-align: left;
         }
@@ -374,7 +291,7 @@
                             <br />
                             <?php } ?>
                             <span class="btn-upload form-group">
-                                <input class="input-text upload-url radius" type="text" name="uploadfile-1" id="uploadfile-1" readonly>
+                                <input class="input-text upload-url radius" type="text" name="photo_x" id="photo_x" readonly>
                                 <a href="javascript:void();" class="btn btn-primary radius">
                                     <i class="layui-icon">&#xe64a;</i> 浏览文件</a>
                                 <input type="file" name="photo_x" id="photo_x" class="input-file" lay-verify="upImg">
@@ -404,7 +321,7 @@
                             <br />
                             <?php } ?>
                             <span class="btn-upload form-group">
-                                <input class="input-text upload-url radius" type="text" name="uploadfile-1" id="uploadfile-1" readonly>
+                                <input class="input-text upload-url radius" type="text" name="photo_d" id="photo_d" readonly>
                                 <a href="javascript:void();" class="btn btn-primary radius">
                                     <i class="layui-icon">&#xe64a;</i> 浏览文件</a>
                                 <input type="file" name="photo_d" id="photo_d" class="input-file" lay-verify="upImg">
@@ -720,8 +637,8 @@
         //提交监听事件    //没这个是不行的 否则自定义验证不生效
         form.on('submit(*)', function (data) {
             //这先留着 查看提交数据用
-            console.log(data.field);
-            return false;
+            // console.log(data.field);
+            // return false;
         });
         /*=====  End of 表单自定义验证  ======*/
 
