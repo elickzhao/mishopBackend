@@ -157,7 +157,7 @@
                 state = "pending",
                 uploader;
 
-            var upUrl = "{:U('Public/UploadImage?flag=logo')}";
+            var upUrl = "{:U('Upload/UploadImage?flag=logo')}";
             var uploader = WebUploader.create({
                 auto: false,
                 swf: '__PUBLIC__/admin/lib/webuploader/0.1.5/Uploader.swf',
@@ -228,7 +228,7 @@
             uploader.on('uploadSuccess', function (file,response) {
                 $('#' + file.id).addClass('upload-state-success').find(".state").text("已上传");
                 $("#photo_sj0").val('UploadFiles/'+response.savepath+response.savename);
-                //console.log(response);
+                //console.log(response+"aaaa");
             });
 
             // 文件上传失败，显示上传出错。

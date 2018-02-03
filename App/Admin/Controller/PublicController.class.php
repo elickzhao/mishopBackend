@@ -190,8 +190,10 @@ class PublicController extends Controller
             } else {// 上传成功 获取上传文件信息
                 if ($_REQUEST['flag'] == 'logo') {
                     $this->ajaxReturn($info['file']);
+                } else {
+                    $str = '/Data/UploadFiles/'.$info['file']['savepath'].$info['file']['savename'];
+                    $this->ajaxReturn([errno=>0,data=>$str]);
                 }
-                $this->ajaxReturn([errno=>0,data=>$info]);
             }
         } else {
             $this->ajaxReturn('{"jsonrpc" : "2.0", "error" : {"code": 101, "message": "Failed to open input stream."}, "id" : "id"}');
