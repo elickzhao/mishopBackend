@@ -45,6 +45,8 @@ class ProductController extends PublicController
             $productlist[$k]['brand'] = M('brand')->where('id='.intval($v['brand_id']))->getField('name');
         }
 
+        $bc = ['产品管理','全部产品'];
+
         //==========================
         // 将GET到的数据再输出
         //==========================
@@ -57,6 +59,7 @@ class ProductController extends PublicController
         //=============
         // 将变量输出
         //=============
+        $this->assign('bc', $bc);
         $this->assign('productlist', $productlist);
         $this->assign('page_index', $page_index);
         $this->display();
@@ -145,43 +148,6 @@ class ProductController extends PublicController
                         }
                     }
                 }
-
-                // //多张商品轮播图上传
-                // $up_arr = array();
-                // if (!empty($_FILES["files"]["tmp_name"])) {
-                //     foreach ($_FILES["files"]['name'] as $k => $val) {
-                //         $up_arr[$k]['name'] = $val;
-                //     }
-
-                //     foreach ($_FILES["files"]['type'] as $k => $val) {
-                //         $up_arr[$k]['type'] = $val;
-                //     }
-
-                //     foreach ($_FILES["files"]['tmp_name'] as $k => $val) {
-                //         $up_arr[$k]['tmp_name'] = $val;
-                //     }
-
-                //     foreach ($_FILES["files"]['error'] as $k => $val) {
-                //         $up_arr[$k]['error'] = $val;
-                //     }
-
-                //     foreach ($_FILES["files"]['size'] as $k => $val) {
-                //         $up_arr[$k]['size'] = $val;
-                //     }
-                // }
-
-                // if ($up_arr) {
-                //     $res=array();
-                //     $adv_str = '';
-                //     foreach ($up_arr as $key => $value) {
-                //         $res = $this->upload_images($value, array('jpg','png','jpeg'), "product/".date(Ymd));
-                //         if (is_array($res)) {
-                //             // 上传成功 获取上传文件信息保存数据库
-                //             $adv_str .= ','.'UploadFiles/'.$res['savepath'].$res['savename'];
-                //         }
-                //     }
-                //     $array['photo_string'] = $adv_str;
-                // }
             
                 //执行添加
                 if (intval($id)>0) {
