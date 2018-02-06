@@ -45,7 +45,7 @@ class ProductController extends PublicController
             $productlist[$k]['brand'] = M('brand')->where('id='.intval($v['brand_id']))->getField('name');
         }
 
-        $bc = ['产品管理','全部产品'];
+        $bc = ['商品管理','商品列表'];
 
         //==========================
         // 将GET到的数据再输出

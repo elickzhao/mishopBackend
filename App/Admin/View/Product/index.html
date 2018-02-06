@@ -19,6 +19,7 @@
     <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/skin/default/skin.css" id="skin" />
     <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/css/style.css" />
     <link rel="stylesheet" href="__PUBLIC__/admin/css/common.css">
+    <link rel="stylesheet" href="__PUBLIC__/admin/lib/layui/css/layui.css">
     <!--[if IE 6]>
     <script type="text/javascript" src="__PUBLIC__/admin/lib/DD_belatedPNG_0.0.8a-min.js" ></script>
     <script>DD_belatedPNG.fix('*');</script>
@@ -38,7 +39,7 @@
             <div class="panel-header">{$bc[1]}</div>
             <div class="panel-body">
 
-                <div class="text-c">
+                <!-- <div class="text-c">
                     <input type="text" class="input-text" style="width:250px" placeholder="产品名称" id="name" value="{$name}">
                     <select class="inp_1 inp_6" id="tuijian">
                         <option value="">全部产品</option>
@@ -47,8 +48,48 @@
                     </select>
                     <button type="button" class="btn btn-success" id="" name="" onclick="product_option(0);">
                         <i class="Hui-iconfont">&#xe665;</i> 搜索</button>
-                </div>
-                <br>
+                </div> -->
+                <form class="layui-form" action="">
+                    <div class="layui-inline">
+                        <div class="layui-input-inline" style="width: 260px;">
+                            <select class="lay-search" name="cateid" id="cateid" lay-filter="cid_1" lay-search lay-verify="cateid">
+                                <option value>所有分类</option>
+                                <option value="010">北京</option>
+                                <option value="021">上海</option>
+                                <option value="0571">杭州</option>
+                                <!-- <volist name="cate_list" id="v">
+                                    <option value="{$v.id}" <if condition="$v.id eq $pro_allinfo['tid']">selected="selected"</if>>-- {$v.name}</option>
+                                </volist> -->
+                            </select>
+                        </div>
+                        <!-- <div class="layui-input-inline" style="width: 260px;">
+                            <select class="lay-search" name="cateid" id="cateid" lay-filter="cid_1" lay-search lay-verify="cateid">
+                                <option value>所有品牌</option>
+                                <option value="010">北京</option>
+                                <option value="021">上海</option>
+                                <option value="0571">杭州</option>
+                            </select>
+                        </div> -->
+
+                        <div class="layui-input-inline" style="width: 100px;">
+                            <select class="inp_1" name="cid" id="cid" lay-filter="cid_2" lay-search lay-verify="cateid">
+                                <option value>全部</option>
+                                <option value="010">新品</option>
+                                <option value="021">热卖</option>
+                                <option value="0571">推荐</option>
+                            </select>
+                        </div>
+
+                        <div class="layui-input-inline" style="width: 260px;">
+                            <input type="text" name="title" placeholder="请输入商品名称" autocomplete="off" class="layui-input">
+
+                        </div>
+                        <button class="layui-btn layui-btn-normal">
+                            <i class="Hui-iconfont">&#xe665;</i> 搜索</button>
+                </form>
+                
+                <div class="hr-line-dashed"></div>
+
                 <table class="table table-border table-bordered table-bg">
                     <thead>
 
@@ -119,109 +160,109 @@
                         </td>
                     </tr>
                 </table>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- 底部 -->
-    <include File='Page/footer' />
-    <!-- /底部 -->
+        <!-- 底部 -->
+        <include File='Page/footer' />
+        <!-- /底部 -->
 
-    <script>
-        function product_option(page) {
+        <script>
+            function product_option(page) {
 
-            var pid = $('#pid').val();
-            if (pid == '') {
-                pid = $('#ppid').val();
-            }
-            var obj = {
-                "name": $("#name").val(),
-                "shop_id": pid,
-                "tuijian": $("#tuijian").val()
-            }
-            //alert(obj);exit();
-            var url = '?page=' + page;
-            $.each(obj, function (a, b) {
-                url += '&' + a + '=' + b;
-            });
-            location = url;
-        }
-
-        function del_id_urls(pro_id) {
-            if (confirm('您确定要删除吗？')) {
-                location.href = "{:U('del')}?did=" + pro_id;
-            };
-        }
-
-        //新品设置
-        function pro_new(pro_id, type) {
-            if (!pro_id) {
-                return;
-            }
-            $.post("{:U('Product/set_new')}", {
-                pro_id: pro_id
-            }, function (data) {
-                if (data.status == 1) {
-                    if (type == 1) {
-                        document.getElementById('new_' + pro_id).innerHTML =
-                            '<a class="label err" onclick="pro_new(' + pro_id + ',0);">非新品</if></a>';
-                    } else {
-                        document.getElementById('new_' + pro_id).innerHTML =
-                            '<a class="label blue" onclick="pro_new(' + pro_id + ',1);">新品上市</if></a>';
-                    }
-                } else {
-                    alert('操作失败，请稍后再试！');
-                    return false;
+                var pid = $('#pid').val();
+                if (pid == '') {
+                    pid = $('#ppid').val();
                 }
-            }, 'json');
-        }
-
-        //热销设置
-        function pro_hot(pro_id, type) {
-            if (!pro_id) {
-                return;
-            }
-            $.post("{:U('Product/set_hot')}", {
-                pro_id: pro_id
-            }, function (data) {
-                if (data.status == 1) {
-                    if (type == 1) {
-                        document.getElementById('hot_' + pro_id).innerHTML =
-                            '<a class="label err" onclick="pro_hot(' + pro_id + ',0);">非热卖</if></a>';
-                    } else {
-                        document.getElementById('hot_' + pro_id).innerHTML =
-                            '<a class="label succ" onclick="pro_hot(' + pro_id + ',1);">热卖商品</if></a>';
-                    }
-                } else {
-                    alert('操作失败，请稍后再试！');
-                    return false;
+                var obj = {
+                    "name": $("#name").val(),
+                    "shop_id": pid,
+                    "tuijian": $("#tuijian").val()
                 }
-            }, 'json');
-        }
-
-        //折扣设置
-        function pro_zk(pro_id, type) {
-            if (!pro_id) {
-                return;
+                //alert(obj);exit();
+                var url = '?page=' + page;
+                $.each(obj, function (a, b) {
+                    url += '&' + a + '=' + b;
+                });
+                location = url;
             }
-            $.post("{:U('Product/set_zk')}", {
-                pro_id: pro_id
-            }, function (data) {
-                if (data.status == 1) {
-                    if (type == 1) {
-                        document.getElementById('zk_' + pro_id).innerHTML =
-                            '<a class="label err" onclick="pro_zk(' + pro_id + ',0);">非折扣</if></a>';
-                    } else {
-                        document.getElementById('zk_' + pro_id).innerHTML =
-                            '<a class="label fail" onclick="pro_zk(' + pro_id + ',1);">折扣商品</if></a>';
-                    }
-                } else {
-                    alert('操作失败，请稍后再试！');
-                    return false;
+
+            function del_id_urls(pro_id) {
+                if (confirm('您确定要删除吗？')) {
+                    location.href = "{:U('del')}?did=" + pro_id;
+                };
+            }
+
+            //新品设置
+            function pro_new(pro_id, type) {
+                if (!pro_id) {
+                    return;
                 }
-            }, 'json');
-        }
-    </script>
+                $.post("{:U('Product/set_new')}", {
+                    pro_id: pro_id
+                }, function (data) {
+                    if (data.status == 1) {
+                        if (type == 1) {
+                            document.getElementById('new_' + pro_id).innerHTML =
+                                '<a class="label err" onclick="pro_new(' + pro_id + ',0);">非新品</if></a>';
+                        } else {
+                            document.getElementById('new_' + pro_id).innerHTML =
+                                '<a class="label blue" onclick="pro_new(' + pro_id + ',1);">新品上市</if></a>';
+                        }
+                    } else {
+                        alert('操作失败，请稍后再试！');
+                        return false;
+                    }
+                }, 'json');
+            }
+
+            //热销设置
+            function pro_hot(pro_id, type) {
+                if (!pro_id) {
+                    return;
+                }
+                $.post("{:U('Product/set_hot')}", {
+                    pro_id: pro_id
+                }, function (data) {
+                    if (data.status == 1) {
+                        if (type == 1) {
+                            document.getElementById('hot_' + pro_id).innerHTML =
+                                '<a class="label err" onclick="pro_hot(' + pro_id + ',0);">非热卖</if></a>';
+                        } else {
+                            document.getElementById('hot_' + pro_id).innerHTML =
+                                '<a class="label succ" onclick="pro_hot(' + pro_id + ',1);">热卖商品</if></a>';
+                        }
+                    } else {
+                        alert('操作失败，请稍后再试！');
+                        return false;
+                    }
+                }, 'json');
+            }
+
+            //折扣设置
+            function pro_zk(pro_id, type) {
+                if (!pro_id) {
+                    return;
+                }
+                $.post("{:U('Product/set_zk')}", {
+                    pro_id: pro_id
+                }, function (data) {
+                    if (data.status == 1) {
+                        if (type == 1) {
+                            document.getElementById('zk_' + pro_id).innerHTML =
+                                '<a class="label err" onclick="pro_zk(' + pro_id + ',0);">非折扣</if></a>';
+                        } else {
+                            document.getElementById('zk_' + pro_id).innerHTML =
+                                '<a class="label fail" onclick="pro_zk(' + pro_id + ',1);">折扣商品</if></a>';
+                        }
+                    } else {
+                        alert('操作失败，请稍后再试！');
+                        return false;
+                    }
+                }, 'json');
+            }
+        </script>
 
 </body>
 
