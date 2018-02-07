@@ -123,7 +123,8 @@
                         </div>
                         <div class="formControls col-xs-8 col-sm-4">
                             <div class="layui-inline">
-                                <div class="layui-input-inline" style="width: 260px;">
+                                <!-- 这个宽度在不同浏览器大小会受到影响 以后看看解决 -->
+                                <div class="layui-input-inline" style="width: 230px;">
                                     <select class="lay-search" name="cateid" id="cateid" lay-filter="cid_1" lay-search lay-verify="cateid">
                                         <option value>一级分类</option>
                                         <volist name="cate_list" id="v">
@@ -132,7 +133,7 @@
                                     </select>
                                 </div>
 
-                                <div class="layui-input-inline" style="width: 260px;">
+                                <div class="layui-input-inline" style="width: 230px;">
                                     <?php if($catetwo) { ?>
                                     <select class="inp_1" name="cid" id="cid" lay-filter="cid_2" lay-search lay-verify="cateid">
                                         <option value>二级分类</option>

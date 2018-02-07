@@ -64,6 +64,23 @@ class ProductController extends PublicController
         $this->assign('page_index', $page_index);
         $this->display();
     }
+
+    public function getGoods()
+    {
+        $where="1=1 AND pro_type=1 AND del<1";
+        //define('rows', 10);
+
+        $count=M('product')->where($where)->count();
+        $rows=ceil($count/rows);
+        $page = (int) -- $_GET['page'] ;
+        $rows = $_GET['limit'] ? $_GET['limit'] : 10; 
+        $limit= $page*$rows;
+        $productlist=M('product')->where($where)->order('id desc')->limit($limit, $rows)->select();
+
+        $resuslt = [code=>0,msg=>'',count=>$count,data=>$productlist];
+
+        $this->ajaxReturn($resuslt);
+    }
     //**********************************************
     //说明：产品 添加修改
     //注意：cid 分类id  shop_id店铺id
