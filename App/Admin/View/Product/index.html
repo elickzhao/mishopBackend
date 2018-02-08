@@ -29,6 +29,10 @@
         .layui-table-cell {
             height: inherit;
         }
+
+        .layui-table-cell a {
+            text-decoration: none;
+        }
     </style>
     <title>产品管理</title>
 </head>
@@ -55,8 +59,10 @@
                 </div> -->
                 <div class="row cl">
                     <div class="col-sm-4">
-                        <button class="layui-btn layui-btn-normal">
-                            <i class="Hui-iconfont">&#xe603;</i> 发布商品</button>
+                        <a href="{:U('Product/add')}">
+                            <button class="layui-btn layui-btn-normal">
+                                <i class="Hui-iconfont">&#xe603;</i> 发布商品</button>
+                        </a>
                     </div>
                     <div class="col-sm-8 f-r">
                         <form class="layui-form f-r" action="">
@@ -65,16 +71,17 @@
                                     <select class="lay-search" name="cateid" id="cateid" lay-filter="cid_1" lay-search lay-verify="cateid">
                                         <option value>所有分类</option>
                                         <option value="">请选择</option>
-                                        <optgroup label="城市记忆">
-                                            <option value="你工作的第一个城市">你工作的第一个城市？</option>
-                                        </optgroup>
-                                        <optgroup label="学生时代">
-                                            <option value="你的工号">你的工号？</option>
-                                            <option value="你最喜欢的老师">你最喜欢的老师？</option>
-                                        </optgroup>
-                                        <!-- <volist name="cate_list" id="v">
-                                    <option value="{$v.id}" <if condition="$v.id eq $pro_allinfo['tid']">selected="selected"</if>>-- {$v.name}</option>
-                                </volist> -->
+                                        <volist name="cate_list" id="v">
+                                            <if condition="$v.tid eq 1">
+                                                <optgroup label="{$v.name}">                                            
+                                                    <volist name="cate_list" id="vo">
+                                                        <if condition="$vo['tid'] == $v['id']">
+                                                            <option value="{$vo.id}">{$vo.name}</option>
+                                                        </if>
+                                                    </volist>
+                                                </optgroup>
+                                            </if>
+                                        </volist>
                                     </select>
                                 </div>
                                 <!-- <div class="layui-input-inline" style="width: 260px;">
@@ -121,26 +128,19 @@
 
 
     <script type="text/html" id="barDemo">
-        <a class="layui-btn layui-btn-xs" lay-event="detail">查看</a>
-        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+        <a class="layui-btn layui-btn-xs" href="{:U('Product/add')}?id={{d.id}}">编辑</a>
         <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
-
-        <!-- 这里同样支持 laytpl 语法，如： -->
-        {{# if(d.auth > 2){ }}
-        <a class="layui-btn layui-btn-xs" lay-event="check">审核</a>
-        {{# } }}
     </script>
 
     <script>
         var table = layui.table;
 
-
         //第一个实例
-        table.render({
+        var tableIns = table.render({
             elem: '#demo',
             height: 'full-290',
             url: "{:U('Product/getGoods')}",
-            even: true,
+            //even: true,
             page: true,
             cellMinWidth: 80,
             cols: [
@@ -154,41 +154,221 @@
                     field: 'photo_x',
                     title: '图片',
                     width: '8%',
+                    align: 'center',
                     templet: "<div><img src='/Data/{{d.photo_x}}' width='80px' height='80px'/></div>"
-                }, {
-                    field: 'brand_id',
-                    title: '所属品牌',
-                    width: '8%'
                 }, {
                     field: 'name',
                     title: '产品名称',
-                    width: '37%'
+                    width: '25%',
+                    templet: "<div><a herf='JavaScript:;' title='{{d.name}}' stytle='text-decoration:none;'>{{d.name}}</a></div>"
+                }, {
+                    field: 'pro_number',
+                    title: '商品货号',
+                    width: '8%'
                 }, {
                     field: 'price_yh',
                     title: '价格/元',
-                    width: '7%'
+                    width: '7%',
+                    align: 'center',
                 }, {
-                    field: 'renqi',
-                    title: '人气',
-                    width: '5%',
-                    sort: true
+                    field: 'num',
+                    title: '库存',
+                    width: '6%',
+                    align: 'center',
+                    sort: true,
+                    templet: function (d) {
+                        var r = d.num > 10 ? '<span class="c-black">' + d.num + '</span>' :
+                            '<span style="color: #FF5722;"  title="库存不足!"><strong>' + d.num +
+                            '</strong></span>';
+                        return r;
+
+                    }
+                }, {
+                    field: 'is_down',
+                    title: '上下架',
+                    width: '7%',
+                    align: 'center',
+                    sort: true,
+                    templet: function (d) {
+                        var r = d.is_down == 0 ?
+                            '<span class="label label-success radius" lay-event="is_down">上架中</span>' : //'<span style="color: #009688;" lay-event="is_down"><strong><i class="Hui-iconfont">&#xe6a7;</i> 上架中</strong></span>' :
+                            '<span class="label label-danger radius" lay-event="is_down">已下架</span>'; //'<span style="color: #FF5722;" lay-event="is_down"><strong><i class="Hui-iconfont">&#xe6a6;</i> 已下架</strong></span>';
+                        return r;
+
+                    }
+                }, {
+                    field: 'is_show',
+                    title: '新品',
+                    width: '7%',
+                    align: 'center',
+                    sort: true,
+                    templet: function (d) {
+                        var r = d.is_show == 1 ?
+                            '<span class="label label-success radius" lay-event="is_show">新&nbsp;&nbsp;&nbsp;品</span>' :
+                            '<span class="label label-danger radius" lay-event="is_show">非新品</span>';
+                        return r;
+
+                    },
                 }, {
                     field: 'is_hot',
-                    title: '属性(点击修改)',
-                    width: '8%',
-                    sort: true
+                    title: '热卖',
+                    width: '7%',
+                    align: 'center',
+                    sort: true,
+                    templet: function (d) {
+                        var r = d.is_hot == 1 ?
+                            '<span style="color: #009688;" lay-event="is_hot"><strong><i class="Hui-iconfont">&#xe6a7;</i> 热卖</strong></span>' :
+                            '<span style="color: #999999;" lay-event="is_hot"><strong><i class="Hui-iconfont">&#xe6a6;</i> 非热卖</strong></span>';
+                        return r;
+
+                    },
                 }, {
                     field: 'type',
                     title: '推荐',
-                    width: '5%',
-                    sort: true
+                    width: '7%',
+                    align: 'center',
+                    sort: true,
+                    templet: function (d) {
+                        var r = d.type == 1 ?
+                            '<span style="color: #009688;" lay-event="type"><strong><i class="Hui-iconfont">&#xe6a7;</i> 推荐</strong></span>' :
+                            '<span style="color: #999999;" lay-event="type"><strong><i class="Hui-iconfont">&#xe6a6;</i> 非推荐</strong></span>';
+                        return r;
+
+                    },
+
                 }, {
                     field: 'cz',
                     title: '操作',
                     width: '15%',
+                    align: 'center',
                     toolbar: '#barDemo'
                 }]
             ]
+        });
+
+
+
+        /*=============================================
+        =            请求后台数据            =
+        =============================================*/
+        function getData(id, filed, value) {
+            $.ajax("{:U('Product/setGoodsAtrr')}", {
+                method: 'POST',
+                data: {
+                    id: id,
+                    filed: filed,
+                    val: value,
+                },
+                dataType: 'json',
+                success: function (e) {
+                    console.log(e);
+                    if (e.code == 0) {
+                        layer.msg('更新数据失败!', {
+                            icon: 2
+                        });
+                    } else {
+                        tableIns.reload('test', {
+                            page: {
+                                curr: 1 //重新从第 1 页开始
+                            }
+                        });
+                    }
+                },
+                error: function (e) {
+                    console.log(e);
+                }
+
+            });
+        }
+        /*=====  End of 请求后台数据  ======*/
+
+
+
+
+        //监听工具条
+        table.on('tool(test)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+            var data = obj.data; //获得当前行数据
+            var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+            var tr = obj.tr; //获得当前行 tr 的DOM对象
+
+            //上架
+            if (layEvent === 'is_down') {
+                var value = (data.is_down == 1) ? 0 : 1;
+                //console.log(data);
+                //有模板就不行 真怪
+                // obj.update({
+                //     is_show: 1,
+                // });
+                $.ajax("{:U('Product/setGoodsAtrr')}", {
+                    method: 'POST',
+                    data: {
+                        id: data.id,
+                        filed: layEvent,
+                        val: value,
+                    },
+                    dataType: 'json',
+                    success: function (e) {
+                        console.log(e);
+                        if (e.code == 0) {
+                            layer.msg('更新数据失败!', {
+                                icon: 2
+                            });
+                        } else {
+                            console.log(e);
+                            // obj.update({
+                            //     pro_number: value
+                            // });
+                            tableIns.reload('test', {
+                                page: {
+                                    curr: 1 //重新从第 1 页开始
+                                }
+                            });
+                        }
+                    },
+                    error: function (e) {
+                        console.log(e);
+                    }
+
+                });
+
+            }
+            //新品
+            if (layEvent === 'is_show') {
+                var value = (data.is_show == 1) ? 0 : 1;
+                getData(data.id, layEvent, value);
+            }
+            //热卖
+            if (layEvent === 'is_hot') {
+                var value = (data.is_hot == 1) ? 0 : 1;
+                getData(data.id, layEvent, value);
+            }
+            //推荐
+            if (layEvent === 'type') {
+                var value = (data.type == 1) ? 0 : 1;
+                getData(data.id, layEvent, value);
+            }
+
+            if (layEvent === 'del') { //删除
+                layer.confirm('真的删除行么', function (index) {
+                    obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                    layer.close(index);
+                    //向服务端发送删除指令
+                    var url = "{:U('getDel')}?did=" + data.id;
+                    $.ajax(url, {
+                        method: 'GET',
+                        dataType: 'json',
+                        success: function (e) {
+                            console.log(e);
+                        },
+                        error: function (e) {
+                            console.log(e);
+                        }
+
+                    });
+
+
+                });
+            }
         });
 
 

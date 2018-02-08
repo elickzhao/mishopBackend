@@ -45,6 +45,9 @@ class ProductController extends PublicController
             $productlist[$k]['brand'] = M('brand')->where('id='.intval($v['brand_id']))->getField('name');
         }
 
+        $cate_list= M('category')->where('1=1')->select();
+        $this->assign('cate_list', $cate_list);
+
         $bc = ['商品管理','商品列表'];
 
         //==========================
@@ -65,6 +68,10 @@ class ProductController extends PublicController
         $this->display();
     }
 
+    /**
+     * [getGoods ajax获取商品列表]
+     * @return [json] [商品数据]
+     */
     public function getGoods()
     {
         $where="1=1 AND pro_type=1 AND del<1";
@@ -73,14 +80,64 @@ class ProductController extends PublicController
         $count=M('product')->where($where)->count();
         $rows=ceil($count/rows);
         $page = (int) -- $_GET['page'] ;
-        $rows = $_GET['limit'] ? $_GET['limit'] : 10; 
+        $rows = $_GET['limit'] ? $_GET['limit'] : 10;
         $limit= $page*$rows;
-        $productlist=M('product')->where($where)->order('id desc')->limit($limit, $rows)->select();
+        $productlist=M('product')->where($where)->order('updatetime desc')->limit($limit, $rows)->select();
 
         $resuslt = [code=>0,msg=>'',count=>$count,data=>$productlist];
 
         $this->ajaxReturn($resuslt);
     }
+
+
+    /**
+     * [setGoodsAtrr 设置商品属性]
+     */
+    public function setGoodsAtrr()
+    {
+        if (IS_POST) {
+            $pro_id = $_POST['id'];
+            $filed = $_POST['filed'];
+            $val = $_POST['val'];
+
+            $data[$filed] = $val;
+            $up = M('product')->where('id='.intval($pro_id))->save($data);
+            $rr = M('product')->getlastsql();
+
+            $resuslt = [code=>$up,msg=>$up];
+            $this->ajaxReturn($resuslt);
+        } else {
+            $this->ajaxReturn([code=>1,msg=>'非法请求']);
+        }
+    }
+
+    //***************************
+    //说明：产品 删除
+    //***************************
+    public function getDel()
+    {
+        $id = intval($_REQUEST['did']);
+        $info = M('product')->where('id='.intval($id))->find();
+        if (!$info) {
+            $this->ajaxReturn("产品信息错误");
+        }
+
+        if (intval($info['del'])==1) {
+            $this->ajaxReturn("操作成功");
+        }
+
+        $data=array();
+        $data['del'] = $info['del'] == '1' ?  0 : 1;
+        $data['del_time'] = time();
+        $up = M('product')->where('id='.intval($id))->save($data);
+        if ($up) {
+            //$this->redirect('index', array('page'=>intval($_REQUEST['page'])));
+            $this->ajaxReturn("操作成功 - ".$up);
+        } else {
+            $this->error('操作失败.');
+        }
+    }
+
     //**********************************************
     //说明：产品 添加修改
     //注意：cid 分类id  shop_id店铺id
@@ -189,6 +246,7 @@ class ProductController extends PublicController
 
                 //规格操作
                 if ($sql) {//name="guige_name[]
+                    //$this->redirect('index', array('page'=>intval($_REQUEST['page'])));
                     $this->success('操作成功.', 'index');
                     exit();
                 } else {
@@ -437,7 +495,7 @@ class ProductController extends PublicController
         $data['del_time'] = time();
         $up = M('product')->where('id='.intval($id))->save($data);
         if ($up) {
-            $this->redirect('index', array('page'=>intval($_REQUEST['page'])));
+            //$this->redirect('index', array('page'=>intval($_REQUEST['page'])));
             exit();
         } else {
             $this->error('操作失败.');
