@@ -75,7 +75,18 @@ class ProductController extends PublicController
     public function getGoods()
     {
         $where="1=1 AND pro_type=1 AND del<1";
-        //define('rows', 10);
+
+        if ($_GET[$pro_number] != 0) {
+            //搜索优先级查询
+            $arr = ['pro_number','name','cid'];
+            foreach ($arr as $key => $value) {
+                if ($_GET[$value] != '') {
+                    $where .= ' AND '.$value.' = '. $_GET[$value];
+                    break;
+                }
+            }
+        }
+
 
         $count=M('product')->where($where)->count();
         $rows=ceil($count/rows);
@@ -83,7 +94,9 @@ class ProductController extends PublicController
         $rows = $_GET['limit'] ? $_GET['limit'] : 10;
         $limit= $page*$rows;
         $productlist=M('product')->where($where)->order('updatetime desc')->limit($limit, $rows)->select();
+        $sql = M('product')->getlastsql();
 
+        //$resuslt = [code=>0,msg=>'',count=>$count,data=>$productlist,sql=>$sql];
         $resuslt = [code=>0,msg=>'',count=>$count,data=>$productlist];
 
         $this->ajaxReturn($resuslt);
