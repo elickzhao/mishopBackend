@@ -117,7 +117,24 @@
                 </div>
                 <div class="hr-line-dashed"></div>
 
+                <div class="cl mt-20">
+                    <div class="btn-group l">
+                        <span class="btn btn-primary" title="全选" lay-filter="allCheckbox" id="allCheckbox">
+                            <i class="Hui-iconfont f-16">&#xe676;</i> 全选</span>
+                    </div>
+                    <div class="btn-group l ml-5">
+                        <span class="btn btn-primary" title="上下架">
+                            <i class="Hui-iconfont f-16">&#xe6dc;</i> 上下架</span>
+                        <span class="btn btn-primary" title="新品">
+                            <i class="Hui-iconfont f-16">&#xe728;</i> 新品</span>
+                        <span class="btn btn-primary" title="热卖">
+                            <i class="Hui-iconfont f-16">&#xe6c1;</i> 热卖</span>
+                        <span class="btn btn-primary" title="推荐">
+                            <i class="Hui-iconfont">&#xe697;</i> 推荐</span>
+                    </div>
+                </div>
                 <table id="demo" lay-filter="test"></table>
+
 
             </div>
         </div>
@@ -241,12 +258,22 @@
                 }, {
                     field: 'cz',
                     title: '操作',
-                    width: '15%',
+                    width: '10%',
                     align: 'center',
                     toolbar: '#barDemo'
                 }]
             ],
         });
+
+
+        // 选中全选框
+        $("#allCheckbox").click(function () {
+            let is_checked = $("table input[type='checkbox']").prop('checked');
+
+            $("table input[type='checkbox']").prop('checked', is_checked ? false : true);
+            form.render('checkbox');
+        });
+
 
         form.on('submit(*)', function (data) {
             console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
@@ -261,12 +288,12 @@
                         pro_number: field.pro_number,
                     }
                 });
-            }else{
+            } else {
                 console.log('ddd');
 
                 tableIns.reload({
                     url: "{:U('Product/getGoods')}"
-                }); 
+                });
             }
 
             return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
