@@ -123,7 +123,7 @@
                             <i class="Hui-iconfont f-16">&#xe676;</i> 全选</span>
                     </div>
                     <div class="btn-group l ml-5">
-                        <span class="btn btn-primary" title="上下架">
+                        <span class="btn btn-primary" title="上下架" id="isDown">
                             <i class="Hui-iconfont f-16">&#xe6dc;</i> 上下架</span>
                         <span class="btn btn-primary" title="新品">
                             <i class="Hui-iconfont f-16">&#xe728;</i> 新品</span>
@@ -133,7 +133,7 @@
                             <i class="Hui-iconfont">&#xe697;</i> 推荐</span>
                     </div>
                 </div>
-                <table id="demo" lay-filter="test"></table>
+                <table id="demo" lay-filter="test" lay-data="{id: 'idTest'}"></table>
 
 
             </div>
@@ -153,6 +153,7 @@
     <script>
         var table = layui.table;
         var form = layui.form;
+        var goods;
 
         //第一个实例
         var tableIns = table.render({
@@ -263,15 +264,38 @@
                     toolbar: '#barDemo'
                 }]
             ],
+            done: function (res, curr, count) {
+                //数据渲染完的回调 
+                //把返回数据赋值给全局函数
+                goods = res.data;
+            },
         });
 
 
         // 选中全选框
         $("#allCheckbox").click(function () {
             let is_checked = $("table input[type='checkbox']").prop('checked');
+            let c = is_checked ? false : true;
+            $("table input[type='checkbox']").prop('checked', c);
 
-            $("table input[type='checkbox']").prop('checked', is_checked ? false : true);
+            //这个渲染必须用这个
             form.render('checkbox');
+            //上面是样式上选取 下面这是数据上选取 只有这样才可以使用 table.checkStatus 来查看选取内容
+            for (var i = 0; i < goods.length; i++) {
+                goods[i]["LAY_CHECKED"] = c;
+            }
+
+        });
+
+        //批量下架
+        $("#isDown").click(function () {
+
+
+            var checkStatus = table.checkStatus('demo'); //test即为基础参数id对应的值
+
+            console.log(checkStatus.data) //获取选中行的数据
+            console.log(checkStatus.data.length) //获取选中行数量，可作为是否有选中行的条件
+            console.log(checkStatus.isAll) //表格是否全选
         });
 
 
