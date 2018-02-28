@@ -76,20 +76,23 @@ class ProductController extends PublicController
     {
         $where="1=1 AND pro_type = 1 AND del<1";
 
-        if ($_GET['cid'] !== 0) {   //这里必须是绝对不等 要不当值不存在的时候 会把0当做false的
-            //搜索优先级查询
-            $arr = ['pro_number','name','cid'];
-            foreach ($arr as $key => $value) {
-                if ($_GET[$value] != '') {
-                    if ($value == 'name') {
-                        $where .= ' AND '.$value.' like "%'. $_GET[$value].'%"';
-                    } else {
-                        $where .= ' AND '.$value.' = '. $_GET[$value];
-                    }
-                    break;
+        if ($_GET['cid'] == 0) {
+            unset($_GET['cid']);
+        }
+        
+        //搜索优先级查询
+        $arr = ['pro_number','name','cid'];
+        foreach ($arr as $key => $value) {
+            if ($_GET[$value] != '') {
+                if ($value == 'name') {
+                    $where .= ' AND '.$value.' like "%'. $_GET[$value].'%"';
+                } else {
+                    $where .= ' AND '.$value.' = '. $_GET[$value];
                 }
+                break;
             }
         }
+
 
 
         $count=M('product')->where($where)->count();
@@ -100,8 +103,8 @@ class ProductController extends PublicController
         $productlist=M('product')->where($where)->order('updatetime desc')->limit($limit, $rows)->select();
         $sql = M('product')->getlastsql();
 
-        //$resuslt = [code=>0,msg=>'',count=>$count,data=>$productlist,sql=>$sql];
-        $resuslt = [code=>0,msg=>'',count=>$count,data=>$productlist];
+        $resuslt = [code=>0,msg=>'',count=>$count,data=>$productlist,sql=>$sql];
+        //$resuslt = [code=>0,msg=>'',count=>$count,data=>$productlist];
 
         $this->ajaxReturn($resuslt);
     }

@@ -131,11 +131,11 @@
                     </div>
 
                     <div class="btn-group l ml-5">
-                        <span class="btn btn-primary" title="新品">
+                        <span class="btn btn-primary" title="新品" id="is_show">
                             <i class="Hui-iconfont f-16">&#xe728;</i> 新品</span>
-                        <span class="btn btn-primary" title="热卖">
+                        <span class="btn btn-primary" title="热卖" id="is_hot">
                             <i class="Hui-iconfont f-16">&#xe6c1;</i> 热卖</span>
-                        <span class="btn btn-primary" title="推荐">
+                        <span class="btn btn-primary" title="推荐" id="type">
                             <i class="Hui-iconfont">&#xe697;</i> 推荐</span>
                     </div>
                 </div>
@@ -305,6 +305,24 @@
             getData(list, 'is_down', 0);
 
         });
+        //批量新品
+        $("#is_show").click(function () {
+            let list = getList();
+            getData(list, 'is_show', 1);
+
+        });
+        //批量热卖
+        $("#is_hot").click(function () {
+            let list = getList();
+            getData(list, 'is_hot', 1);
+
+        });
+        //批量推荐
+        $("#type").click(function () {
+            let list = getList();
+            getData(list, 'type', 1);
+
+        });
 
         function getList() {
             var checkStatus = table.checkStatus('demo'); //test即为基础参数id对应的值
@@ -317,25 +335,6 @@
             var field = data.field;
 
             if (field.cateid != '' || field.name != '' || field.pro_number != '') {
-
-                // $.ajax("{:U('Product/getGoods')}", {
-                //     method: 'GET',
-                //     data: {
-                //         cid: field.cateid,
-                //         name: field.name,
-                //         pro_number: field.pro_number,
-                //     },
-                //     dataType: 'json',
-                //     success: function (e) {
-                //         console.log(e);
-                //     },
-                //     error: function (e) {
-                //         console.log(e);
-                //     }
-
-                // });
-
-
                 tableIns.reload({
                     url: "{:U('Product/getGoods')}",
                     where: { //设定异步数据接口的额外参数，任意设
@@ -350,7 +349,6 @@
                     url: "{:U('Product/getGoods')}"
                 });
             }
-
             return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
         });
 
@@ -402,43 +400,7 @@
             //上架
             if (layEvent === 'is_down') {
                 var value = (data.is_down == 1) ? 0 : 1;
-                //console.log(data);
-                //有模板就不行 真怪
-                // obj.update({
-                //     is_show: 1,
-                // });
-                $.ajax("{:U('Product/setGoodsAtrr')}", {
-                    method: 'POST',
-                    data: {
-                        id: data.id,
-                        filed: layEvent,
-                        val: value,
-                    },
-                    dataType: 'json',
-                    success: function (e) {
-                        console.log(e);
-                        if (e.code == 0) {
-                            layer.msg('更新数据失败!', {
-                                icon: 2
-                            });
-                        } else {
-                            console.log(e);
-                            // obj.update({
-                            //     pro_number: value
-                            // });
-                            tableIns.reload('test', {
-                                page: {
-                                    curr: 1 //重新从第 1 页开始
-                                }
-                            });
-                        }
-                    },
-                    error: function (e) {
-                        console.log(e);
-                    }
-
-                });
-
+                getData(data.id, layEvent, value);
             }
             //新品
             if (layEvent === 'is_show') {
