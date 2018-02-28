@@ -122,9 +122,15 @@
                         <span class="btn btn-primary" title="全选" lay-filter="allCheckbox" id="allCheckbox">
                             <i class="Hui-iconfont f-16">&#xe676;</i> 全选</span>
                     </div>
+
                     <div class="btn-group l ml-5">
-                        <span class="btn btn-primary" title="上下架" id="isDown">
-                            <i class="Hui-iconfont f-16">&#xe6dc;</i> 上下架</span>
+                        <span class="btn btn-primary" title="上架" id="isUp">
+                            <i class="Hui-iconfont f-16">&#xe6dc;</i> 上架</span>
+                        <span class="btn btn-primary" title="下架" id="isDown">
+                            <i class="Hui-iconfont f-16">&#xe6de;</i> 下架</span>
+                    </div>
+
+                    <div class="btn-group l ml-5">
                         <span class="btn btn-primary" title="新品">
                             <i class="Hui-iconfont f-16">&#xe728;</i> 新品</span>
                         <span class="btn btn-primary" title="热卖">
@@ -149,7 +155,7 @@
         <a class="layui-btn layui-btn-xs" href="{:U('Product/add')}?id={{d.id}}">编辑</a>
         <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
     </script>
-
+    <script src="https://cdn.bootcss.com/lodash.js/4.17.5/lodash.core.min.js"></script>
     <script>
         var table = layui.table;
         var form = layui.form;
@@ -289,21 +295,47 @@
 
         //批量下架
         $("#isDown").click(function () {
+            let list = getList();
+            getData(list, 'is_down', 1);
 
+        });
+        //批量上架
+        $("#isUp").click(function () {
+            let list = getList();
+            getData(list, 'is_down', 0);
 
-            var checkStatus = table.checkStatus('demo'); //test即为基础参数id对应的值
-
-            console.log(checkStatus.data) //获取选中行的数据
-            console.log(checkStatus.data.length) //获取选中行数量，可作为是否有选中行的条件
-            console.log(checkStatus.isAll) //表格是否全选
         });
 
+        function getList() {
+            var checkStatus = table.checkStatus('demo'); //test即为基础参数id对应的值
+            var ids = _.map(checkStatus.data, 'id');
+            return ids;
+        }
 
         form.on('submit(*)', function (data) {
             console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
             var field = data.field;
 
             if (field.cateid != '' || field.name != '' || field.pro_number != '') {
+
+                // $.ajax("{:U('Product/getGoods')}", {
+                //     method: 'GET',
+                //     data: {
+                //         cid: field.cateid,
+                //         name: field.name,
+                //         pro_number: field.pro_number,
+                //     },
+                //     dataType: 'json',
+                //     success: function (e) {
+                //         console.log(e);
+                //     },
+                //     error: function (e) {
+                //         console.log(e);
+                //     }
+
+                // });
+
+
                 tableIns.reload({
                     url: "{:U('Product/getGoods')}",
                     where: { //设定异步数据接口的额外参数，任意设
@@ -313,8 +345,7 @@
                     }
                 });
             } else {
-                console.log('ddd');
-
+                //console.log('ddd');
                 tableIns.reload({
                     url: "{:U('Product/getGoods')}"
                 });

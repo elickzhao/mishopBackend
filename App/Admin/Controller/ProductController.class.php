@@ -74,14 +74,18 @@ class ProductController extends PublicController
      */
     public function getGoods()
     {
-        $where="1=1 AND pro_type=1 AND del<1";
+        $where="1=1 AND pro_type = 1 AND del<1";
 
-        if ($_GET[$pro_number] != 0) {
+        if ($_GET['cid'] !== 0) {   //这里必须是绝对不等 要不当值不存在的时候 会把0当做false的
             //搜索优先级查询
             $arr = ['pro_number','name','cid'];
             foreach ($arr as $key => $value) {
                 if ($_GET[$value] != '') {
-                    $where .= ' AND '.$value.' = '. $_GET[$value];
+                    if ($value == 'name') {
+                        $where .= ' AND '.$value.' like "%'. $_GET[$value].'%"';
+                    } else {
+                        $where .= ' AND '.$value.' = '. $_GET[$value];
+                    }
                     break;
                 }
             }
@@ -113,8 +117,14 @@ class ProductController extends PublicController
             $filed = $_POST['filed'];
             $val = $_POST['val'];
 
+            if (is_array($pro_id)) {
+                $where = 'id in ('. implode(',', $pro_id).')';
+            } else {
+                $where = 'id='.intval($pro_id);
+            }
+
             $data[$filed] = $val;
-            $up = M('product')->where('id='.intval($pro_id))->save($data);
+            $up = M('product')->where($where)->save($data);
             $rr = M('product')->getlastsql();
 
             $resuslt = [code=>$up,msg=>$up];
@@ -123,6 +133,7 @@ class ProductController extends PublicController
             $this->ajaxReturn([code=>1,msg=>'非法请求']);
         }
     }
+
 
     //***************************
     //说明：产品 删除
