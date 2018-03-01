@@ -131,11 +131,11 @@
                     </div>
 
                     <div class="btn-group l ml-5">
-                        <span class="btn btn-primary" title="新品" id="is_show">
+                        <span class="btn btn-primary" title="新品" id="isShow">
                             <i class="Hui-iconfont f-16">&#xe728;</i> 新品</span>
-                        <span class="btn btn-primary" title="热卖" id="is_hot">
+                        <span class="btn btn-primary" title="热卖" id="isHot">
                             <i class="Hui-iconfont f-16">&#xe6c1;</i> 热卖</span>
-                        <span class="btn btn-primary" title="推荐" id="type">
+                        <span class="btn btn-primary" title="推荐" id="isType">
                             <i class="Hui-iconfont">&#xe697;</i> 推荐</span>
                     </div>
                 </div>
@@ -151,17 +151,70 @@
     <!-- /底部 -->
 
 
+
+    <!--=============================================
+    =            动态表格模板列表                    =
+    =============================================-->
+
     <script type="text/html" id="barDemo">
         <a class="layui-btn layui-btn-xs" href="{:U('Product/add')}?id={{d.id}}">编辑</a>
         <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
     </script>
+
+    <script type="text/html" id="is_down">
+        <!-- 这里同样支持 laytpl 语法，如： -->
+        {{# if(d.is_down == 1){ }}
+        <span class="label label-danger radius" lay-event="is_down">已下架</span>
+        {{# }else{ }}
+        <span class="label label-success radius" lay-event="is_down">上架中</span>
+        {{# } }}
+    </script>
+    <script type="text/html" id="is_show">
+        {{# if(d.is_show == 1){ }}
+        <span class="label label-success radius" lay-event="is_show">新&nbsp;&nbsp;&nbsp;品</span>
+        {{# }else{ }}
+        <span class="label label-danger radius" lay-event="is_show">非新品</span>
+        {{# } }}
+    </script>
+    <script type="text/html" id="is_hot">
+        {{# if(d.is_hot == 1){ }}
+        <span style="color: #009688;" lay-event="is_hot">
+            <strong>
+                <i class="Hui-iconfont">&#xe6a7;</i> 热卖</strong>
+        </span>
+        {{# }else{ }}
+        <span style="color: #999999;" lay-event="is_hot">
+            <strong>
+                <i class="Hui-iconfont">&#xe6a6;</i> 非热卖</strong>
+        </span>
+        {{# } }}
+    </script>
+    <script type="text/html" id="type">
+        {{# if(d.type == 1){ }}
+        <span style="color: #009688;" lay-event="type">
+            <strong>
+                <i class="Hui-iconfont">&#xe6a7;</i> 推荐</strong>
+        </span>
+        {{# }else{ }}
+        <span style="color: #999999;" lay-event="type">
+            <strong>
+                <i class="Hui-iconfont">&#xe6a6;</i> 非推荐</strong>
+        </span>
+        {{# } }}
+    </script>
+
+    <!--=====  End of 动态表格模板列表  ======-->
+
     <script src="https://cdn.bootcss.com/lodash.js/4.17.5/lodash.core.min.js"></script>
     <script>
         var table = layui.table;
         var form = layui.form;
         var goods;
 
-        //第一个实例
+        /*=============================================
+        =            渲染实例            =
+        =============================================*/
+
         var tableIns = table.render({
             elem: '#demo',
             height: 'full-290',
@@ -215,52 +268,35 @@
                     width: '7%',
                     align: 'center',
                     sort: true,
-                    templet: function (d) {
-                        var r = d.is_down == 0 ?
-                            '<span class="label label-success radius" lay-event="is_down">上架中</span>' : //'<span style="color: #009688;" lay-event="is_down"><strong><i class="Hui-iconfont">&#xe6a7;</i> 上架中</strong></span>' :
-                            '<span class="label label-danger radius" lay-event="is_down">已下架</span>'; //'<span style="color: #FF5722;" lay-event="is_down"><strong><i class="Hui-iconfont">&#xe6a6;</i> 已下架</strong></span>';
-                        return r;
-
-                    }
+                    templet: "#is_down"
+                    //下面这种写法 用obj.update(); 更新单元格的时候会报错 但是用reload会更新整个页面 回到页头 效果不够好
+                    // templet: function (d) {
+                    //     var r = d.is_down == "0" ?
+                    //         '<span class="label label-success radius" lay-event="is_down">上架中</span>' : //'<span style="color: #009688;" lay-event="is_down"><strong><i class="Hui-iconfont">&#xe6a7;</i> 上架中</strong></span>' :
+                    //         '<span class="label label-danger radius" lay-event="is_down">已下架</span>'; //'<span style="color: #FF5722;" lay-event="is_down"><strong><i class="Hui-iconfont">&#xe6a6;</i> 已下架</strong></span>';
+                    //     return r;
+                    // }
                 }, {
                     field: 'is_show',
                     title: '新品',
                     width: '7%',
                     align: 'center',
                     sort: true,
-                    templet: function (d) {
-                        var r = d.is_show == 1 ?
-                            '<span class="label label-success radius" lay-event="is_show">新&nbsp;&nbsp;&nbsp;品</span>' :
-                            '<span class="label label-danger radius" lay-event="is_show">非新品</span>';
-                        return r;
-
-                    },
+                    templet: "#is_show"
                 }, {
                     field: 'is_hot',
                     title: '热卖',
                     width: '7%',
                     align: 'center',
                     sort: true,
-                    templet: function (d) {
-                        var r = d.is_hot == 1 ?
-                            '<span style="color: #009688;" lay-event="is_hot"><strong><i class="Hui-iconfont">&#xe6a7;</i> 热卖</strong></span>' :
-                            '<span style="color: #999999;" lay-event="is_hot"><strong><i class="Hui-iconfont">&#xe6a6;</i> 非热卖</strong></span>';
-                        return r;
-
-                    },
+                    templet: "#is_hot"
                 }, {
                     field: 'type',
                     title: '推荐',
                     width: '7%',
                     align: 'center',
                     sort: true,
-                    templet: function (d) {
-                        var r = d.type == 1 ?
-                            '<span style="color: #009688;" lay-event="type"><strong><i class="Hui-iconfont">&#xe6a7;</i> 推荐</strong></span>' :
-                            '<span style="color: #999999;" lay-event="type"><strong><i class="Hui-iconfont">&#xe6a6;</i> 非推荐</strong></span>';
-                        return r;
-
-                    },
+                    templet: "#type"
 
                 }, {
                     field: 'cz',
@@ -277,8 +313,14 @@
             },
         });
 
+        /*=====  End of 渲染实例  ======*/
 
-        // 选中全选框
+
+
+        /*=============================================
+        =            选中操作                          =
+        =============================================*/
+
         $("#allCheckbox").click(function () {
             let is_checked = $("table input[type='checkbox']").prop('checked');
             let c = is_checked ? false : true;
@@ -290,8 +332,22 @@
             for (var i = 0; i < goods.length; i++) {
                 goods[i]["LAY_CHECKED"] = c;
             }
-
         });
+
+        /*=====  End of 选中操作  ======*/
+
+        
+        /*----------  处理选中数据 返回 id 数组  ----------*/
+        function getList() {
+            var checkStatus = table.checkStatus('demo'); //test即为基础参数id对应的值
+            var ids = _.map(checkStatus.data, 'id');
+            return ids;
+        }
+
+
+        /*=============================================
+        =            批量操作                         =
+        =============================================*/
 
         //批量下架
         $("#isDown").click(function () {
@@ -306,29 +362,31 @@
 
         });
         //批量新品
-        $("#is_show").click(function () {
+        $("#isShow").click(function () {
             let list = getList();
             getData(list, 'is_show', 1);
 
         });
         //批量热卖
-        $("#is_hot").click(function () {
+        $("#isHot").click(function () {
             let list = getList();
             getData(list, 'is_hot', 1);
 
         });
         //批量推荐
-        $("#type").click(function () {
+        $("#isType").click(function () {
             let list = getList();
             getData(list, 'type', 1);
 
         });
 
-        function getList() {
-            var checkStatus = table.checkStatus('demo'); //test即为基础参数id对应的值
-            var ids = _.map(checkStatus.data, 'id');
-            return ids;
-        }
+        /*=====  End of 批量操作  ======*/
+
+
+        
+        /*=============================================
+        =            头部检索表单提交                  =
+        =============================================*/
 
         form.on('submit(*)', function (data) {
             console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
@@ -351,13 +409,14 @@
             }
             return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
         });
-
-
+  
+        /*=====  End of 头部检索表单提交  ======*/
+        
 
         /*=============================================
         =            请求后台数据            =
         =============================================*/
-        function getData(id, filed, value) {
+        function getData(id, filed, value, obj) {
             $.ajax("{:U('Product/setGoodsAtrr')}", {
                 method: 'POST',
                 data: {
@@ -367,16 +426,10 @@
                 },
                 dataType: 'json',
                 success: function (e) {
-                    console.log(e);
+                    //console.log(e);
                     if (e.code == 0) {
                         layer.msg('更新数据失败!', {
                             icon: 2
-                        });
-                    } else {
-                        tableIns.reload('test', {
-                            page: {
-                                curr: 1 //重新从第 1 页开始
-                            }
                         });
                     }
                 },
@@ -390,9 +443,13 @@
 
 
 
-
-        //监听工具条
-        table.on('tool(test)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+        
+        /*=============================================
+        =            监听单元点击更新属性              =
+        =============================================*/
+        
+           //监听工具条
+           table.on('tool(test)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
             var data = obj.data; //获得当前行数据
             var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
             var tr = obj.tr; //获得当前行 tr 的DOM对象
@@ -400,21 +457,34 @@
             //上架
             if (layEvent === 'is_down') {
                 var value = (data.is_down == 1) ? 0 : 1;
+                //如果用这个更新就不能用 回调函数那么写 templet
+                obj.update({
+                    is_down: value
+                });
                 getData(data.id, layEvent, value);
             }
             //新品
             if (layEvent === 'is_show') {
                 var value = (data.is_show == 1) ? 0 : 1;
+                obj.update({
+                    is_show: value
+                });
                 getData(data.id, layEvent, value);
             }
             //热卖
             if (layEvent === 'is_hot') {
                 var value = (data.is_hot == 1) ? 0 : 1;
+                obj.update({
+                    is_hot: value
+                });
                 getData(data.id, layEvent, value);
             }
             //推荐
             if (layEvent === 'type') {
                 var value = (data.type == 1) ? 0 : 1;
+                obj.update({
+                    type: value
+                });
                 getData(data.id, layEvent, value);
             }
             //删除
@@ -433,111 +503,13 @@
                         error: function (e) {
                             console.log(e);
                         }
-
                     });
-
-
                 });
             }
         });
-
-
-        /*----------  下面为原版缩写的方法  ----------*/
-
-
-        function product_option(page) {
-
-            var pid = $('#pid').val();
-            if (pid == '') {
-                pid = $('#ppid').val();
-            }
-            var obj = {
-                "name": $("#name").val(),
-                "shop_id": pid,
-                "tuijian": $("#tuijian").val()
-            }
-            //alert(obj);exit();
-            var url = '?page=' + page;
-            $.each(obj, function (a, b) {
-                url += '&' + a + '=' + b;
-            });
-            location = url;
-        }
-
-        function del_id_urls(pro_id) {
-            if (confirm('您确定要删除吗？')) {
-                location.href = "{:U('del')}?did=" + pro_id;
-            };
-        }
-
-        //新品设置
-        function pro_new(pro_id, type) {
-            if (!pro_id) {
-                return;
-            }
-            $.post("{:U('Product/set_new')}", {
-                pro_id: pro_id
-            }, function (data) {
-                if (data.status == 1) {
-                    if (type == 1) {
-                        document.getElementById('new_' + pro_id).innerHTML =
-                            '<a class="label err" onclick="pro_new(' + pro_id + ',0);">非新品</if></a>';
-                    } else {
-                        document.getElementById('new_' + pro_id).innerHTML =
-                            '<a class="label blue" onclick="pro_new(' + pro_id + ',1);">新品上市</if></a>';
-                    }
-                } else {
-                    alert('操作失败，请稍后再试！');
-                    return false;
-                }
-            }, 'json');
-        }
-
-        //热销设置
-        function pro_hot(pro_id, type) {
-            if (!pro_id) {
-                return;
-            }
-            $.post("{:U('Product/set_hot')}", {
-                pro_id: pro_id
-            }, function (data) {
-                if (data.status == 1) {
-                    if (type == 1) {
-                        document.getElementById('hot_' + pro_id).innerHTML =
-                            '<a class="label err" onclick="pro_hot(' + pro_id + ',0);">非热卖</if></a>';
-                    } else {
-                        document.getElementById('hot_' + pro_id).innerHTML =
-                            '<a class="label succ" onclick="pro_hot(' + pro_id + ',1);">热卖商品</if></a>';
-                    }
-                } else {
-                    alert('操作失败，请稍后再试！');
-                    return false;
-                }
-            }, 'json');
-        }
-
-        //折扣设置
-        function pro_zk(pro_id, type) {
-            if (!pro_id) {
-                return;
-            }
-            $.post("{:U('Product/set_zk')}", {
-                pro_id: pro_id
-            }, function (data) {
-                if (data.status == 1) {
-                    if (type == 1) {
-                        document.getElementById('zk_' + pro_id).innerHTML =
-                            '<a class="label err" onclick="pro_zk(' + pro_id + ',0);">非折扣</if></a>';
-                    } else {
-                        document.getElementById('zk_' + pro_id).innerHTML =
-                            '<a class="label fail" onclick="pro_zk(' + pro_id + ',1);">折扣商品</if></a>';
-                    }
-                } else {
-                    alert('操作失败，请稍后再试！');
-                    return false;
-                }
-            }, 'json');
-        }
+     
+        /*=====  End of 监听单元点击更新属性  ======*/
+        
     </script>
 
 </body>
