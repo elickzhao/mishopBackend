@@ -352,31 +352,31 @@
         //批量下架
         $("#isDown").click(function () {
             let list = getList();
-            getData(list, 'is_down', 1);
+            getData(list, 'is_down', 1,1);
 
         });
         //批量上架
         $("#isUp").click(function () {
             let list = getList();
-            getData(list, 'is_down', 0);
+            getData(list, 'is_down', 0,1);
 
         });
         //批量新品
         $("#isShow").click(function () {
             let list = getList();
-            getData(list, 'is_show', 1);
+            getData(list, 'is_show', 1,1);
 
         });
         //批量热卖
         $("#isHot").click(function () {
             let list = getList();
-            getData(list, 'is_hot', 1);
+            getData(list, 'is_hot', 1,1);
 
         });
         //批量推荐
         $("#isType").click(function () {
             let list = getList();
-            getData(list, 'type', 1);
+            getData(list, 'type', 1,1);
 
         });
 
@@ -416,7 +416,7 @@
         /*=============================================
         =            请求后台数据            =
         =============================================*/
-        function getData(id, filed, value, obj) {
+        function getData(id, filed, value, re) {
             $.ajax("{:U('Product/setGoodsAtrr')}", {
                 method: 'POST',
                 data: {
@@ -427,6 +427,10 @@
                 dataType: 'json',
                 success: function (e) {
                     //console.log(e);
+                    //批量操作时重读整个页面
+                    if(re){
+                        tableIns.reload();
+                    }
                     if (e.code == 0) {
                         layer.msg('更新数据失败!', {
                             icon: 2
