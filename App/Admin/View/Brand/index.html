@@ -1,100 +1,338 @@
 <!DOCTYPE HTML>
 <html>
+
 <head>
     <meta charset="utf-8">
     <meta name="renderer" content="webkit|ie-comp|ie-stand">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
     <meta http-equiv="Cache-Control" content="no-siteapp" />
-    <link rel="Bookmark" href="/favicon.ico" >
+    <link rel="Bookmark" href="/favicon.ico">
     <link rel="Shortcut Icon" href="/favicon.ico" />
     <!--[if lt IE 9]>
-    <script type="text/javascript" src="__PUBLIC__/admin/lib/html5shiv.js"></script>
-    <script type="text/javascript" src="__PUBLIC__/admin/lib/respond.min.js"></script>
-    <![endif]-->
+        <script type="text/javascript" src="__PUBLIC__/admin/lib/html5shiv.js"></script>
+        <script type="text/javascript" src="__PUBLIC__/admin/lib/respond.min.js"></script>
+        <![endif]-->
     <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui/css/H-ui.min.css" />
     <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/css/H-ui.admin.css" />
     <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/lib/Hui-iconfont/1.0.8/iconfont.css" />
     <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/skin/default/skin.css" id="skin" />
     <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/css/style.css" />
+    <link rel="stylesheet" href="__PUBLIC__/admin/css/common.css">
+    <link rel="stylesheet" href="__PUBLIC__/admin/lib/layui/css/layui.css">
     <!--[if IE 6]>
-    <script type="text/javascript" src="__PUBLIC__/admin/lib/DD_belatedPNG_0.0.8a-min.js" ></script>
-    <script>DD_belatedPNG.fix('*');</script>
-    <![endif]-->
-    <script type="text/javascript" src="__PUBLIC__/admin/js/jquery.js"></script>
+        <script type="text/javascript" src="__PUBLIC__/admin/lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+        <script>DD_belatedPNG.fix('*');</script>
+        <![endif]-->
     <script type="text/javascript" src="__PUBLIC__/admin/js/action.js"></script>
-
-    <title>管理员列表</title>
-</head>
-<body>
-<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 品牌管理 <span class="c-gray en">&gt;</span> 全部品牌 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
-<div class="page-container">
-    <div class="text-c">
-        <input type="text" class="input-text" style="width:250px" placeholder="品牌名称" id="name" value="<?php echo $name;?>">
-        <button type="button" class="btn btn-success" id="" name="" onclick="product_option(0);"><i class="Hui-iconfont">&#xe665;</i> 搜索</button>
-    </div>
-    <br>
-    <table class="table table-border table-bordered table-bg">
-        <thead>
-
-        <tr class="text-c">
-            <th width="40">ID</th>
-            <th width="150">logo图片</th>
-            <th width="130">品牌名称</th>
-            <th width="80">是否推荐</th>
-            <th width="100">操作</th>
-        </tr>
-        </thead>
-
-
-        <tbody id="news_option">
-        <volist name='list' id="b">
-            <tr  class="text-c">
-                <td>{$b.id}</td>
-                <td><img src="__DATA__/{$b.photo}" width="80px" height="80px"></td>
-                <td>{$b.name}</td>
-                <td><if condition="$b.type eq 1"><label style="color:green;">是</label><else />否</if></td>
-                <td class="obj_1">
-                    <a href="{:U('set_tj')}?id={$b.id}" >推荐</a> |
-                    <a href="{:U('add')}?id={$b.id}" >修改</a>
-                    | <a onclick="del_id_url2({$b.id})">删除</a>
-                </td>
-            </tr>
-        </volist>
-        </tbody>
-        <tr class="text-c">
-            <td colspan="10" class="td_2">
-                {$page}
-            </td>
-        </tr>
-    </table>
-</div>
-<!--_footer 作为公共模版分离出去-->
-<script type="text/javascript" src="__PUBLIC__/admin/lib/jquery/1.9.1/jquery.min.js"></script>
-<script type="text/javascript" src="__PUBLIC__/admin/lib/layer/2.4/layer.js"></script>
-<script type="text/javascript" src="__PUBLIC__/admin/static/h-ui/js/H-ui.min.js"></script>
-<script type="text/javascript" src="__PUBLIC__/admin/static/h-ui.admin/js/H-ui.admin.js"></script> <!--/_footer 作为公共模版分离出去-->
-
-<!--请在下方写此页面业务相关的脚本-->
-<script type="text/javascript" src="__PUBLIC__/admin/lib/My97DatePicker/4.8/WdatePicker.js"></script>
-<script type="text/javascript" src="__PUBLIC__/admin/lib/datatables/1.10.0/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="__PUBLIC__/admin/lib/laypage/1.2/laypage.js"></script>
-
-
-<script>
-    function product_option(page){
-        var brand_name = $('#name').val();
-        location="{:U('index')}?brand_name="+brand_name;
-    }
-
-    function del_id_url2(id){
-        if(confirm("确认删除吗？"))
-        {
-            location='{:U("del")}?did='+id;
+    <style>
+        .layui-table-cell {
+            height: inherit;
         }
-    }
 
-</script>
+        .layui-table-cell a {
+            text-decoration: none;
+        }
+    </style>
+
+    <title>品牌管理</title>
+</head>
+
+<body>
+    <!-- 导航 -->
+    <include File='Page/nav' />
+    <!-- /导航 -->
+    <div class="page-container">
+        <div class="panel panel-default mt-40">
+            <div class="panel-header">{$bc[1]}</div>
+            <div class="panel-body">
+
+                <div class="row cl">
+                    <div class="col-sm-4">
+                        <a href="{:U('Brand/add')}">
+                            <button class="layui-btn layui-btn-normal">
+                                <i class="Hui-iconfont">&#xe603;</i> 添加品牌</button>
+                        </a>
+                    </div>
+                    <div class="col-sm-8 f-r">
+                        <form class="layui-form f-r" action="">
+                            <div class="layui-inline">
+                                <div class="layui-input-inline" style="width: 260px;">
+                                    <input type="text" name="brand_name" placeholder="请输入品牌名称" autocomplete="off" class="layui-input">
+                                </div>
+                                <!-- <div class="layui-input-inline" style="width: 160px;">
+                                    <input type="text" name="pro_number" placeholder="请输入品牌ID" autocomplete="off" class="layui-input">
+                                </div> -->
+                                <button class="layui-btn layui-btn-normal" lay-submit name="submit" lay-filter="*">
+                                    <i class="Hui-iconfont">&#xe665;</i> 搜索</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="hr-line-dashed"></div>
+
+                <div class="cl mt-20">
+                    <div class="btn-group l">
+                        <span class="btn btn-primary" title="全选" lay-filter="allCheckbox" id="allCheckbox">
+                            <i class="Hui-iconfont f-16">&#xe676;</i> 全选</span>
+                    </div>
+
+                    <div class="btn-group l ml-5">
+                        <span class="btn btn-primary" title="上架" id="isUp">
+                            <i class="Hui-iconfont f-16">&#xe6dc;</i> 上架</span>
+                        <span class="btn btn-primary" title="下架" id="isDown">
+                            <i class="Hui-iconfont f-16">&#xe6de;</i> 下架</span>
+                    </div>
+
+                    <div class="btn-group l ml-5">
+                        <span class="btn btn-primary" title="新品" id="isShow">
+                            <i class="Hui-iconfont f-16">&#xe728;</i> 新品</span>
+                        <span class="btn btn-primary" title="热卖" id="isHot">
+                            <i class="Hui-iconfont f-16">&#xe6c1;</i> 热卖</span>
+                        <span class="btn btn-primary" title="推荐" id="isType">
+                            <i class="Hui-iconfont">&#xe697;</i> 推荐</span>
+                    </div>
+                </div>
+                <table id="demo" lay-filter="test" lay-data="{id: 'idTest'}"></table>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部 -->
+    <include File='Page/footer' />
+    <!-- /底部 -->
+
+    <script type="text/html" id="barDemo">
+        <a class="layui-btn layui-btn-xs" href="{:U('Product/add')}?id={{d.id}}">编辑</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+
+    <script type="text/html" id="type">
+        {{# if(d.type == 1){ }}
+        <span style="color: #009688;" lay-event="type">
+            <strong>
+                <i class="Hui-iconfont">&#xe6a7;</i> 推荐</strong>
+        </span>
+        {{# }else{ }}
+        <span style="color: #999999;" lay-event="type">
+            <strong>
+                <i class="Hui-iconfont">&#xe6a6;</i> 非推荐</strong>
+        </span>
+        {{# } }}
+    </script>
+
+    <script>
+        var table = layui.table;
+        var form = layui.form;
+        var goods;
+
+        /*=============================================
+        =            头部检索表单提交                  =
+        =============================================*/
+
+        form.on('submit(*)', function (data) {
+            //console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
+            var field = data.field;
+
+            if (field.cateid != '' || field.name != '' || field.pro_number != '') {
+                tableIns.reload({
+                    url: "{:U('index')}",
+                    where: { //设定异步数据接口的额外参数，任意设
+                        brand_name: field.brand_name,
+                    }
+                });
+            } else {
+                //console.log('ddd');
+                tableIns.reload({
+                    url: "{:U('index')}"
+                });
+            }
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+        /*=====  End of 头部检索表单提交  ======*/
+
+        /*=============================================
+        =            渲染实例            =
+        =============================================*/
+
+        var tableIns = table.render({
+            elem: '#demo',
+            height: 'full-320',
+            url: "{:U('Brand/getBrands')}",
+            page: true,
+            cellMinWidth: 80,
+            cols: [
+                [{
+                    field: 'id',
+                    title: 'ID',
+                    width: '5%',
+                    sort: true,
+                    checkbox: true,
+                }, {
+                    field: 'id',
+                    title: 'ID',
+                    width: '5%',
+                    sort: true,
+                }, {
+                    field: 'photo',
+                    title: 'LOGO图片',
+                    width: '20%',
+                    align: 'center',
+                    templet: "<div><img src='/Data/{{d.photo}}' width='80px' height='80px'/></div>"
+                }, {
+                    field: 'name',
+                    title: '产品名称',
+                    width: '45%',
+                    templet: "<div><a herf='JavaScript:;' title='{{d.name}}' stytle='text-decoration:none;'>{{d.name}}</a></div>"
+                }, {
+                    field: 'type',
+                    title: '推荐',
+                    width: '10%',
+                    align: 'center',
+                    sort: true,
+                    templet: "#type"
+
+                }, {
+                    field: 'cz',
+                    title: '操作',
+                    width: '14%',
+                    align: 'center',
+                    toolbar: '#barDemo'
+                }]
+            ],
+            done: function (res, curr, count) {
+                //数据渲染完的回调 
+                //把返回数据赋值给全局函数
+                goods = res.data;
+            },
+        });
+
+        /*=====  End of 渲染实例  ======*/
+
+
+        /*=============================================
+        =            头部检索表单提交                  =
+        =============================================*/
+
+        // form.on('submit(*)', function (data) {
+        //     console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
+        //     var field = data.field;
+
+        //     if (field.cateid != '' || field.name != '' || field.pro_number != '') {
+        //         tableIns.reload({
+        //             url: "{:U('Product/getGoods')}",
+        //             where: { //设定异步数据接口的额外参数，任意设
+        //                 cid: field.cateid,
+        //                 name: field.name,
+        //                 pro_number: field.pro_number,
+        //             }
+        //         });
+        //     } else {
+        //         //console.log('ddd');
+        //         tableIns.reload({
+        //             url: "{:U('Product/getGoods')}"
+        //         });
+        //     }
+        //     return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        // });
+
+        /*=====  End of 头部检索表单提交  ======*/
+
+
+        /*=============================================
+        =            请求后台数据            =
+        =============================================*/
+        function getData(id, filed, value, re) {
+            $.ajax("{:U('Brand/setBrandAtrr')}", {
+                method: 'POST',
+                data: {
+                    id: id,
+                    filed: filed,
+                    val: value,
+                },
+                dataType: 'json',
+                success: function (e) {
+                    //console.log(e);
+                    //批量操作时重读整个页面
+                    if (re) {
+                        tableIns.reload();
+                    }
+                    if (e.code == 0) {
+                        layer.msg('更新数据失败!', {
+                            icon: 2
+                        });
+                    }
+                },
+                error: function (e) {
+                    console.log(e);
+                }
+
+            });
+        }
+        /*=====  End of 请求后台数据  ======*/
+
+        /*=============================================
+        =            监听单元点击更新属性              =
+        =============================================*/
+
+        //监听工具条
+        table.on('tool(test)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+            var data = obj.data; //获得当前行数据
+            var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+            var tr = obj.tr; //获得当前行 tr 的DOM对象
+
+            //推荐
+            if (layEvent === 'type') {
+                var value = (data.type == 1) ? 0 : 1;
+                obj.update({
+                    type: value
+                });
+                getData(data.id, layEvent, value);
+            }
+            //删除
+            if (layEvent === 'del') { //删除
+                layer.confirm('真的删除行么', function (index) {
+                    layer.close(index);
+                    //向服务端发送删除指令
+                    var url = "{:U('del')}?did=" + data.id;
+                    $.ajax(url, {
+                        method: 'GET',
+                        dataType: 'json',
+                        success: function (e) {
+                            console.log(e);
+                            if (e.code) {
+                                layer.msg(e.msg, {
+                                    icon: 2
+                                });
+                            } else {
+                                obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                            }
+                        },
+                        error: function (e) {
+                            console.log(e);
+                        }
+                    });
+                });
+            }
+        });
+
+        /*=====  End of 监听单元点击更新属性  ======*/
+
+
+        // function product_option(page) {
+        //     var brand_name = $('#name').val();
+        //     location = "{:U('index')}?brand_name=" + brand_name;
+        // }
+
+        // function del_id_url2(id) {
+        //     if (confirm("确认删除吗？")) {
+        //         location = '{:U("del")}?did=' + id;
+        //     }
+        // }
+    </script>
 
 </body>
+
 </html>

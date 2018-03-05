@@ -103,8 +103,8 @@ class ProductController extends PublicController
         $productlist=M('product')->where($where)->order('updatetime desc')->limit($limit, $rows)->select();
         $sql = M('product')->getlastsql();
 
-        $resuslt = [code=>0,msg=>'',count=>$count,data=>$productlist,sql=>$sql];
-        //$resuslt = [code=>0,msg=>'',count=>$count,data=>$productlist];
+        //$resuslt = [code=>0,msg=>'',count=>$count,data=>$productlist,sql=>$sql];
+        $resuslt = [code=>0,msg=>'',count=>$count,data=>$productlist];
 
         $this->ajaxReturn($resuslt);
     }

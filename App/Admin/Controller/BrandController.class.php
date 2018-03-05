@@ -49,9 +49,52 @@ class BrandController extends PublicController
 
         $list = $this->Brand->where($condition)->limit($Page->firstRow.','.$Page->listRows)->select();
 
+
+        $bc = ['品牌管理','全部品牌'];
+        $this->assign('bc', $bc);
+
         $this->assign('list', $list);
         $this->assign('page', $show);
         $this->display(); // 输出模板
+    }
+
+        /**
+     * [getGoods ajax获取品牌列表]
+     * @return [json] [品牌数据]
+     */
+    public function getBrands()
+    {
+
+        $where="1=1";
+
+        // if ($_GET['cid'] == 0) {
+        //     unset($_GET['cid']);
+        // }
+        
+        // //搜索优先级查询
+        // $arr = ['pro_number','name','cid'];
+        // foreach ($arr as $key => $value) {
+        //     if ($_GET[$value] != '') {
+        //         if ($value == 'name') {
+        //             $where .= ' AND '.$value.' like "%'. $_GET[$value].'%"';
+        //         } else {
+        //             $where .= ' AND '.$value.' = '. $_GET[$value];
+        //         }
+        //         break;
+        //     }
+        // }
+
+        $count=M('brand')->where($where)->count();
+        $rows=ceil($count/rows);
+        $page = (int) -- $_GET['page'] ;
+        $rows = $_GET['limit'] ? $_GET['limit'] : 10;
+        $limit= $page*$rows;
+        $brandlist=M('brand')->where($where)->order('addtime desc')->limit($limit, $rows)->select();
+        $sql = M('brand')->getlastsql();
+
+        $resuslt = [code=>0,msg=>'',count=>$count,data=>$brandlist];
+
+        $this->ajaxReturn($resuslt);
     }
 
 
@@ -82,7 +125,6 @@ class BrandController extends PublicController
     {
         //构建数组
         $this->Brand->create();
-        //上传广告图片
         $photo = '';
         if (!empty($_FILES["file"]["tmp_name"])) {
             //文件上传
@@ -91,7 +133,7 @@ class BrandController extends PublicController
                 $this->error($info);
                 exit();
             } else {// 上传成功 获取上传文件信息
-                $this->Brand->photo = 'UploadFiles/'.$info['savepath'].$info['savename'];
+                $this->Brand->photo = 'UploadFiles/'.$info["file"]['savepath'].$info["file"]['savename'];
                 if (intval($_POST['id'])) {
                     $photo = $this->Brand->where('id='.intval($_POST['id']))->getField('photo');
                 }
@@ -125,6 +167,35 @@ class BrandController extends PublicController
         }
     }
 
+
+    /**
+     * [setBrandAtrr 设置品牌属性]
+     */
+    public function setBrandAtrr()
+    {
+        if (IS_POST) {
+            $brand_id = $_POST['id'];
+            $filed = $_POST['filed'];
+            $val = $_POST['val'];
+
+            if (is_array($brand_id)) {
+                $where = 'id in ('. implode(',', $brand_id).')';
+            } else {
+                $where = 'id='.intval($brand_id);
+            }
+
+            $data[$filed] = $val;
+            $up = M('brand')->where($where)->save($data);
+            $rr = M('brand')->getlastsql();
+
+            $resuslt = [code=>$up,msg=>$up];
+            $this->ajaxReturn($resuslt);
+        } else {
+            $this->ajaxReturn([code=>1,msg=>'非法请求']);
+        }
+    }
+
+
     /*
     *
     * 品牌删除
@@ -142,7 +213,8 @@ class BrandController extends PublicController
         $count = M('product')->where(['brand_id'=>$id,'del'=>0])->count();
 
         if ($count != 0) {
-            $this->error('删除错误!该品牌下有产品.', 'index', 5);
+            //$this->error('删除错误!该品牌下有产品.', 'index', 5);
+            $this->ajaxReturn([code=>1,msg=>'删除错误!该品牌下有产品.']);
         }
 
         //修改对应的显示状态
@@ -154,7 +226,7 @@ class BrandController extends PublicController
                     @unlink($img_url);
                 }
             }
-            $this->success('操作成功.', 'index');
+            $this->ajaxReturn("操作成功 - ".$up);
         } else {
             $this->error('操作失败.');
         }

@@ -46,17 +46,6 @@
         <div class="panel panel-default mt-40">
             <div class="panel-header">{$bc[1]}</div>
             <div class="panel-body">
-
-                <!-- <div class="text-c">
-                    <input type="text" class="input-text" style="width:250px" placeholder="产品名称" id="name" value="{$name}">
-                    <select class="inp_1 inp_6" id="tuijian">
-                        <option value="">全部产品</option>
-                        <option value="1" <?php echo $tuijian=='1' ? 'selected="selected"' : NULL ?>>推荐产品</option>
-                        <option value="0" <?php echo $tuijian=='0' ? 'selected="selected"' : NULL ?>>非推荐产品</option>
-                    </select>
-                    <button type="button" class="btn btn-success" id="" name="" onclick="product_option(0);">
-                        <i class="Hui-iconfont">&#xe665;</i> 搜索</button>
-                </div> -->
                 <div class="row cl">
                     <div class="col-sm-4">
                         <a href="{:U('Product/add')}">
@@ -217,7 +206,7 @@
 
         var tableIns = table.render({
             elem: '#demo',
-            height: 'full-290',
+            height: 'full-320',
             url: "{:U('Product/getGoods')}",
             //even: true,
             page: true,
