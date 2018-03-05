@@ -58,11 +58,8 @@
                         <form class="layui-form f-r" action="">
                             <div class="layui-inline">
                                 <div class="layui-input-inline" style="width: 260px;">
-                                    <input type="text" name="brand_name" placeholder="请输入品牌名称" autocomplete="off" class="layui-input">
+                                    <input type="text" name="brand_name" placeholder="请输入品牌名称" autocomplete="off" class="layui-input" value="">
                                 </div>
-                                <!-- <div class="layui-input-inline" style="width: 160px;">
-                                    <input type="text" name="pro_number" placeholder="请输入品牌ID" autocomplete="off" class="layui-input">
-                                </div> -->
                                 <button class="layui-btn layui-btn-normal" lay-submit name="submit" lay-filter="*">
                                     <i class="Hui-iconfont">&#xe665;</i> 搜索</button>
                             </div>
@@ -77,18 +74,14 @@
                             <i class="Hui-iconfont f-16">&#xe676;</i> 全选</span>
                     </div>
 
+<!--                 批量删除会检测品牌下商品 但是不能有效提示那个品牌有商品所以还是单个删除吧    
                     <div class="btn-group l ml-5">
-                        <span class="btn btn-primary" title="上架" id="isUp">
-                            <i class="Hui-iconfont f-16">&#xe6dc;</i> 上架</span>
-                        <span class="btn btn-primary" title="下架" id="isDown">
-                            <i class="Hui-iconfont f-16">&#xe6de;</i> 下架</span>
-                    </div>
+                        <span class="btn btn-primary" title="删除" id="isDel">
+                            <i class="Hui-iconfont f-16">&#xe6dc;</i> 删除</span>
+
+                    </div> -->
 
                     <div class="btn-group l ml-5">
-                        <span class="btn btn-primary" title="新品" id="isShow">
-                            <i class="Hui-iconfont f-16">&#xe728;</i> 新品</span>
-                        <span class="btn btn-primary" title="热卖" id="isHot">
-                            <i class="Hui-iconfont f-16">&#xe6c1;</i> 热卖</span>
                         <span class="btn btn-primary" title="推荐" id="isType">
                             <i class="Hui-iconfont">&#xe697;</i> 推荐</span>
                     </div>
@@ -104,7 +97,7 @@
     <!-- /底部 -->
 
     <script type="text/html" id="barDemo">
-        <a class="layui-btn layui-btn-xs" href="{:U('Product/add')}?id={{d.id}}">编辑</a>
+        <a class="layui-btn layui-btn-xs" href="{:U('Brand/add')}?id={{d.id}}">编辑</a>
         <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
     </script>
 
@@ -120,12 +113,30 @@
                 <i class="Hui-iconfont">&#xe6a6;</i> 非推荐</strong>
         </span>
         {{# } }}
+
+        <!--                         let r
+                        //default.png
+                        if(d.photo != ""){
+                            r = "<div><img src='/Data/{{d.photo}}' width='80px' height='80px'/></div>"
+                        }else{
+                            r = "<div><img src='/Public/admin/images/default.png' width='80px' height='80px'/></div>"
+                        }
+                        return r;    -->
+    </script>
+
+    <script type="text/html" id="photo">
+        {{# if(d.photo === ""){ }}
+            <div><img src='/Public/admin/images/nophoto.png' width='80px' height='80px'/></div>
+        {{# }else{ }}
+            <div><img src='/Data/{{d.photo}}' width='80px' height='80px'/></div>
+        {{# } }}
+
     </script>
 
     <script>
         var table = layui.table;
         var form = layui.form;
-        var goods;
+        var brands;
 
         /*=============================================
         =            头部检索表单提交                  =
@@ -135,9 +146,9 @@
             //console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
             var field = data.field;
 
-            if (field.cateid != '' || field.name != '' || field.pro_number != '') {
+            if ( field.brand_name != '') {
                 tableIns.reload({
-                    url: "{:U('index')}",
+                    url: "{:U('Brand/getBrands')}",
                     where: { //设定异步数据接口的额外参数，任意设
                         brand_name: field.brand_name,
                     }
@@ -145,12 +156,11 @@
             } else {
                 //console.log('ddd');
                 tableIns.reload({
-                    url: "{:U('index')}"
+                    url: "{:U('Brand/getBrands')}"
                 });
             }
             return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
         });
-
         /*=====  End of 头部检索表单提交  ======*/
 
         /*=============================================
@@ -180,7 +190,7 @@
                     title: 'LOGO图片',
                     width: '20%',
                     align: 'center',
-                    templet: "<div><img src='/Data/{{d.photo}}' width='80px' height='80px'/></div>"
+                    templet: '#photo'
                 }, {
                     field: 'name',
                     title: '产品名称',
@@ -205,40 +215,11 @@
             done: function (res, curr, count) {
                 //数据渲染完的回调 
                 //把返回数据赋值给全局函数
-                goods = res.data;
+                brands = res.data;
             },
         });
 
         /*=====  End of 渲染实例  ======*/
-
-
-        /*=============================================
-        =            头部检索表单提交                  =
-        =============================================*/
-
-        // form.on('submit(*)', function (data) {
-        //     console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
-        //     var field = data.field;
-
-        //     if (field.cateid != '' || field.name != '' || field.pro_number != '') {
-        //         tableIns.reload({
-        //             url: "{:U('Product/getGoods')}",
-        //             where: { //设定异步数据接口的额外参数，任意设
-        //                 cid: field.cateid,
-        //                 name: field.name,
-        //                 pro_number: field.pro_number,
-        //             }
-        //         });
-        //     } else {
-        //         //console.log('ddd');
-        //         tableIns.reload({
-        //             url: "{:U('Product/getGoods')}"
-        //         });
-        //     }
-        //     return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
-        // });
-
-        /*=====  End of 头部检索表单提交  ======*/
 
 
         /*=============================================
@@ -319,6 +300,49 @@
         });
 
         /*=====  End of 监听单元点击更新属性  ======*/
+
+
+
+
+        /*=============================================
+        =            选中操作                          =
+        =============================================*/
+
+        $("#allCheckbox").click(function () {
+            let is_checked = $("table input[type='checkbox']").prop('checked');
+            let c = is_checked ? false : true;
+            $("table input[type='checkbox']").prop('checked', c);
+
+            //这个渲染必须用这个
+            form.render('checkbox');
+            //上面是样式上选取 下面这是数据上选取 只有这样才可以使用 table.checkStatus 来查看选取内容
+            for (var i = 0; i < brands.length; i++) {
+                brands[i]["LAY_CHECKED"] = c;
+            }
+        });
+
+        /*=====  End of 选中操作  ======*/
+
+
+        /*----------  处理选中数据 返回 id 数组  ----------*/
+        function getList() {
+            var checkStatus = table.checkStatus('demo'); //test即为基础参数id对应的值
+            var ids = _.map(checkStatus.data, 'id');
+            return ids;
+        }
+
+        /*=============================================
+        =            批量操作                         =
+        =============================================*/
+
+        //批量推荐
+        $("#isType").click(function () {
+            let list = getList();
+            getData(list, 'type', 1, 1);
+
+        });
+
+        /*=====  End of 批量操作  ======*/
 
 
         // function product_option(page) {

@@ -43,7 +43,7 @@
                         <label class="text-l ml-50 col-xs-4 col-sm-2">
                             品牌名称：</label>
                         <div class="formControls col-xs-8 col-sm-4">
-                            <input type="text" class="input-text" placeholder="品牌名称. 必填字段!" name="name" id="name" value="{$info.title}" minlength="2"
+                            <input type="text" class="input-text" placeholder="品牌名称. 必填字段!" name="name" id="name" value="{$info.name}" minlength="2"
                                 type="text" lay-verify="required">
                         </div>
                         <span class="c-red">*</span>
@@ -56,14 +56,19 @@
                             品牌图片 : </label>
                         <div class="formControls col-xs-8 col-sm-4">
                             <div class="uploader-thum-container">
+
+                                <?php if ($info['photo']) { ?>
+                                <img src="__DATA__/<?php echo $info['photo']; ?>" width="120" height="120" />
+                                <br />
+                                <br />
+                                <?php } ?>
                                 <!-- <input type="file" name="file" id="file" value="" required> -->
                                 <span class="btn-upload form-group">
                                     <input class="input-text upload-url radius" type="text" name="file" id="file" readonly>
                                     <a href="javascript:void();" class="btn btn-primary radius">
-                                            <i class="Hui-iconfont">&#xe642;</i> 浏览文件</a>
-                                    <input type="file" multiple name="file" id="file" class="input-file" lay-verify="required" required>
+                                        <i class="Hui-iconfont">&#xe642;</i> 浏览文件</a>
+                                    <input type="file" multiple name="file" id="file" class="input-file">
                                 </span>
-                                <span class="c-red">*</span>
                             </div>
 
                             <span class="help-block ">
@@ -78,7 +83,7 @@
                     <div class="row cl">
                         <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
                             <input class="btn btn-primary radius" lay-submit lay-filter="*" type="submit" name="submit" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
-                            <input type="hidden" name="id" id="id" value="<?php echo $brand_info['id']; ?>">
+                            <input type="hidden" name="id" id="id" value="<?php echo $info['id']; ?>">
                         </div>
                     </div>
                 </form>

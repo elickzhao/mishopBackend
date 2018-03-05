@@ -58,31 +58,16 @@ class BrandController extends PublicController
         $this->display(); // 输出模板
     }
 
-        /**
+    /**
      * [getGoods ajax获取品牌列表]
      * @return [json] [品牌数据]
      */
     public function getBrands()
     {
-
         $where="1=1";
-
-        // if ($_GET['cid'] == 0) {
-        //     unset($_GET['cid']);
-        // }
-        
-        // //搜索优先级查询
-        // $arr = ['pro_number','name','cid'];
-        // foreach ($arr as $key => $value) {
-        //     if ($_GET[$value] != '') {
-        //         if ($value == 'name') {
-        //             $where .= ' AND '.$value.' like "%'. $_GET[$value].'%"';
-        //         } else {
-        //             $where .= ' AND '.$value.' = '. $_GET[$value];
-        //         }
-        //         break;
-        //     }
-        // }
+        if ($_GET['brand_name'] != "") {
+            $where .= ' AND name like "%'. $_GET['brand_name'].'%"';
+        }
 
         $count=M('brand')->where($where)->count();
         $rows=ceil($count/rows);
@@ -109,7 +94,7 @@ class BrandController extends PublicController
             $id = intval($_GET['id']);
         
             $brand_info = $this->Brand->where('id='.intval($id))->find();
-            $this->assign('brand_info', $brand_info);
+            $this->assign('info', $brand_info);
         }
         $bc = ['品牌管理','添加品牌'];
         $this->assign('bc', $bc);
