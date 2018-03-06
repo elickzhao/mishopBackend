@@ -192,7 +192,8 @@ class OrderController extends PublicController
             $order_list[$k]['u_name'] = M('user')->where('id='.intval($v['uid']))->getField('name');
         }
 
-        //echo $where;
+        $bc = ['订单管理','全部订单'];
+        $this->assign('bc', $bc);
 
         $this->assign('order_list', $order_list); // 赋值数据集
 
@@ -203,12 +204,55 @@ class OrderController extends PublicController
         $this->display(); // 输出模板
     }
 
+
+    /**
+     * [getOrders ajax获取订单列表]
+     * @return [json] [订单数据]
+     */
+    public function getOrders()
+    {
+        $where="1=1 AND del<1 ";
+
+        // if ($_GET['cid'] == 0) {
+        //     unset($_GET['cid']);
+        // }
+        
+        // //搜索优先级查询
+        // $arr = ['pro_number','name','cid'];
+        // foreach ($arr as $key => $value) {
+        //     if ($_GET[$value] != '') {
+        //         if ($value == 'name') {
+        //             $where .= ' AND '.$value.' like "%'. $_GET[$value].'%"';
+        //         } else {
+        //             $where .= ' AND '.$value.' = '. $_GET[$value];
+        //         }
+        //         break;
+        //     }
+        // }
+
+
+
+        $count=M('order')->where($where)->count();
+        $rows=ceil($count/rows);
+        $page = (int) -- $_GET['page'] ;
+        $rows = $_GET['limit'] ? $_GET['limit'] : 20;
+        $limit= $page*$rows;
+        $orderlist=M('order')->where($where)->order('id desc')->limit($limit, $rows)->select();
+        foreach ($orderlist as $k => $v) {
+            $orderlist[$k]['u_name'] = M('user')->where('id='.intval($v['uid']))->getField('name');
+        }
+        $sql = M('order')->getlastsql();
+
+        //$resuslt = [code=>0,msg=>'',count=>$count,data=>$orderlist,sql=>$sql];
+        $resuslt = [code=>0,msg=>'',count=>$count,data=>$orderlist];
+
+        $this->ajaxReturn($resuslt);
+    }
+
+
     /*
-
     *
-
     * 选择商家里面的省市联动
-
     */
 
     public function get_city()
@@ -398,9 +442,9 @@ class OrderController extends PublicController
 
         \Think\Log::write('[Wechat Transaction] 订单:'.$back_info['order_sn'].' 申请退款. 金额:'.$back_info['price_h'], 'INFO ');
 
-        $out_trade_no = $back_info['order_sn'];					//订单号
-        $total_fee = $back_info['price_h'] * 100;		//订单总金额 单位分
-        $refund_fee = $back_info['price_h'] * 100;		//退款总金额 单位分
+        $out_trade_no = $back_info['order_sn'];                 //订单号
+        $total_fee = $back_info['price_h'] * 100;       //订单总金额 单位分
+        $refund_fee = $back_info['price_h'] * 100;      //退款总金额 单位分
 
         $input = new \WxPayRefund();
         $input->SetOut_trade_no($out_trade_no);
@@ -464,11 +508,12 @@ class OrderController extends PublicController
         $up['del'] = 1;
 
         $res = $this->order->where('id='.intval($id))->save($up);
-
         if ($res) {
-            $this->success('操作成功.');
+            $this->ajaxReturn([code=>0,msg=>"操作成功 - ".$up]);
+            //$this->success('操作成功.');
         } else {
-            $this->error('操作失败.');
+            $this->ajaxReturn([code=>1,msg=>'操作失败!']);
+            //$this->error('操作失败.');
         }
     }
 
