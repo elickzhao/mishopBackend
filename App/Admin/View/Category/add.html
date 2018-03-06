@@ -24,7 +24,24 @@
     <script type="text/javascript" src="__PUBLIC__/admin/lib/DD_belatedPNG_0.0.8a-min.js" ></script>
     <script>DD_belatedPNG.fix('*');</script>
     <![endif]-->
+    <script type="text/javascript" src="__PUBLIC__/admin/js/jquery.js"></script>
     <script type="text/javascript" src="__PUBLIC__/admin/js/action.js"></script>
+    <!-- 开关按钮的样式和js  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.4/css/bootstrap2/bootstrap-switch.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.4/js/bootstrap-switch.min.js" integrity="sha256-AKUJYz2DyEoZYHh2/+zPHm1tTdYb4cmG8HC2ydmTzM4="
+        crossorigin="anonymous"></script>
+    <style>
+        /* 隐藏layui开关按钮多余样式 */
+        .switch>.layui-form-checkbox {
+            display: none !important;
+            visibility: hidden !important;
+        }
+
+        #commentForm .layui-form-label {
+            text-align: left;
+        }
+    </style>
 
     <title>新增分类</title>
 </head>
@@ -72,8 +89,8 @@
                             <label class="layui-form-label">分类名称：</label>
                         </div>
                         <div class="formControls col-xs-8 col-sm-4">
-                            <input type="text" class="input-text" placeholder="分类名称" name="name" id="name" value="{$cate_info.name}" minlength="2"
-                                maxlength="5" lay-verify="required" required>
+                            <input type="text" class="input-text" placeholder="分类名称" name="name" id="name" value="{$cate_info.name}" minlength="2" maxlength="5"
+                                lay-verify="required" required>
                             <span class="help-block ">
                                 <i class="Hui-iconfont c-danger">&#xe6e0;</i>
                                 <cite class="c-999">分类名称不能超过五个字</cite>
@@ -104,7 +121,7 @@
                                 <span class="btn-upload form-group">
                                     <input class="input-text upload-url radius" type="text" name="file" id="file" readonly>
                                     <a href="javascript:void();" class="btn btn-primary radius">
-                                        <i class="layui-icon">&#xe67c;</i>  浏览文件</a>
+                                        <i class="layui-icon">&#xe67c;</i> 浏览文件</a>
                                     <input id="bz_1" type="file" multiple name="file" id="file" class="input-file">
                                 </span>
                             </div>
@@ -142,6 +159,19 @@
                         </div>
                     </div>
                     <!-- /排序 -->
+                    <div class="hr-line-dashed"></div>
+                    <!-- 推荐 -->
+                    <div class="row cl">
+                        <div class="col-xs-4 col-sm-2 ml-30">
+                            <label class="layui-form-label">推荐: </label>
+                        </div>
+                        <div class="formControls col-xs-8 col-sm-4 ">
+                            <div class="switch switch-large" data-on-label="是" data-off-label="否">
+                                <input name="bz_2" type="checkbox" value="1" <?php echo $cate_info[ 'bz_2']==1 ? 'checked="checked"' : null?> />
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /推荐 -->
 
                     <div class="hr-line-dashed"></div>
 

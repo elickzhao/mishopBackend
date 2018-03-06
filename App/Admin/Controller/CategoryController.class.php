@@ -68,6 +68,9 @@ class CategoryController extends PublicController
     */
     public function save()
     {
+        if ($_POST['bz_2']=="") {
+            $_POST['bz_2']=0;
+        }
         //限制三级以上分类添加的判断
         $tid = intval($_POST['tid']);
         //获取用户选择分类的父级分类
@@ -133,7 +136,7 @@ class CategoryController extends PublicController
             }
             $this->success('操作成功.', 'index');
         } else {
-            $this->error('操作失败.');
+            $this->error('操作失败! 数据无变化!');
         }
     }
 
