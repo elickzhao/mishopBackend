@@ -19,6 +19,7 @@
 	<link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/skin/default/skin.css" id="skin" />
 	<link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/css/style.css" />
 	<link rel="stylesheet" href="__PUBLIC__/admin/css/common.css">
+	<link rel="stylesheet" href="__PUBLIC__/admin/lib/layui/css/layui.css">
 	<!--[if IE 6]>
 	<script type="text/javascript" src="__PUBLIC__/admin/lib/DD_belatedPNG_0.0.8a-min.js" ></script>
 	<script>DD_belatedPNG.fix('*');</script>
@@ -55,7 +56,7 @@
 					<volist name='list' id='tr1'>
 						<tr data-id="tr_{$tr1.tid}" class="text-c">
 							<td>{$tr1.id}</td>
-							<td style="text-align:left; padding-left:15px;">- {$tr1.name}</td>
+							<td style="text-align:left; padding-left:15px;"><i class="layui-icon" >&#xe625;</i>  {$tr1.name}</td>
 							<td>
 								<if condition="$tr1.bz_2 eq 1">
 									<font style="color:#090">推荐</font>
@@ -73,7 +74,8 @@
 						<volist name='tr1["list2"]' id='tr2'>
 							<tr data-id="tr_{$tr2.tid}" class="text-c">
 								<td>{$tr2.id}</td>
-								<td style="text-align:left; padding-left:15px;">&nbsp; &nbsp; &nbsp;- {$tr2.name}</td>
+								<td style="text-align:left; padding-left:15px;">
+										&nbsp;&nbsp;&nbsp;&nbsp;<i onclick="rowClicked(this)" data-tid="{$tr2.id}" data-icon="0" class="layui-icon" style="font-size: 20px; color: #1E9FFF;">&#xe622;</i>  {$tr2.name}</td>
 								<td>
 									<if condition="$tr2.bz_2 eq 1">
 										<font style="color:#090">推荐</font>
@@ -86,9 +88,9 @@
 								</td>
 							</tr>
 							<volist name='tr2["list3"]' id='tr3'>
-								<tr data-id="tr_{$tr3.tid}" class="text-c">
+								<tr data-id="tr_{$tr3.tid}" class="text-c" style="display:none">
 									<td>{$tr3.id}</td>
-									<td style="text-align:left; padding-left:15px;">&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;- {$tr3.name}</td>
+									<td style="text-align:left; padding-left:15px;">&nbsp; &nbsp; &nbsp;&nbsp; &nbsp;<i class="Hui-iconfont" style="font-size: 20px; color: #0099CC">&#xe63e;</i>  {$tr3.name}</td>
 									<td>
 										<if condition="$tr3.bz_2 eq 1">
 											<font style="color:#090">推荐</font>
@@ -114,6 +116,16 @@
 	<!-- /底部 -->
 
 	<script>
+		function rowClicked(obj) {
+			var icon = ($(obj).data('icon') == 0) ? '&#xe7a0;' : "&#xe622;";
+			$(obj).html(icon);
+			$(obj).data('icon', ($(obj).data('icon')) ? 0 : 1);
+			// $(obj).html("&#xe7a0;");
+			var dis = (icon == "&#xe7a0;") ?  "table-row" :"none" ;
+			var subtb = "[data-id='tr_" + $(obj).data('tid') + "']";
+			$(subtb).css('display', dis);
+		}
+
 		function del_id_url(id) {
 			if (confirm("确认删除吗？")) {
 				location = '{:U("del")}?did=' + id;
