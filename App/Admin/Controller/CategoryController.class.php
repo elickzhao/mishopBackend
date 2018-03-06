@@ -16,9 +16,9 @@ class CategoryController extends PublicController
         // 获取所有分类，进行关系划分
         $list = $this->category->where('tid=0 AND bz_4<2')->order('sort desc,id asc')->field('id,tid,name,bz_2,bz_4')->select();
         foreach ($list as $k1 => $v1) {
-            $list[$k1]['list2'] = $this->category->where('tid='.intval($v1['id']))->field('id,tid,name,bz_2')->select();
+            $list[$k1]['list2'] = $this->category->where('tid='.intval($v1['id']))->field('id,tid,name,bz_2,bz_1,sort')->select();
             foreach ($list[$k1]['list2'] as $k2 => $v2) {
-                $list[$k1]['list2'][$k2]['list3'] = $this->category->where('tid='.intval($v2['id']))->field('id,tid,name,bz_2')->select();
+                $list[$k1]['list2'][$k2]['list3'] = $this->category->where('tid='.intval($v2['id']))->field('id,tid,name,bz_2,bz_1,sort')->select();
             }
         }
 
@@ -31,7 +31,7 @@ class CategoryController extends PublicController
     */
     public function index()
     {
-    	$bc = ['品牌管理','管理品牌'];
+        $bc = ['品牌管理','管理品牌'];
         $this->assign('bc', $bc);
         $this->display(); // 输出模板
     }
@@ -156,6 +156,23 @@ class CategoryController extends PublicController
             $this->success('操作成功.');
         } else {
             $this->error('操作失败.');
+        }
+    }
+    public function setAtrr()
+    {
+        if (IS_POST) {
+            $cat_id = $_POST['id'];
+            $val = $_POST['val'];
+
+            $where = 'id='.intval($cat_id);
+
+            $data['sort'] = $val;
+            $up = M('category')->where($where)->save($data);
+
+            $resuslt = [code=>0,msg=>$up];
+            $this->ajaxReturn($resuslt);
+        } else {
+            $this->ajaxReturn([code=>1,msg=>'非法请求']);
         }
     }
 

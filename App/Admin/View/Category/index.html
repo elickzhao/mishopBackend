@@ -41,13 +41,15 @@
 		<div class="panel panel-default mt-40">
 			<div class="panel-header">{$bc[1]}</div>
 			<div class="panel-body">
-				<table class="table table-border table-bordered table-bg">
+				<table class="layui-table">
 					<thead>
 
 						<tr class="text-c">
 							<th width="20">ID</th>
 							<th width="100">分类名称</th>
-							<th width="60">属性</th>
+							<th width="60">缩略图</th>
+							<th width="20">排序</th>
+							<th width="60">推荐</th>
 							<th width="80">操作</th>
 						</tr>
 					</thead>
@@ -56,7 +58,14 @@
 					<volist name='list' id='tr1'>
 						<tr data-id="tr_{$tr1.tid}" class="text-c">
 							<td>{$tr1.id}</td>
-							<td style="text-align:left; padding-left:15px;"><i class="layui-icon" >&#xe625;</i>  {$tr1.name}</td>
+							<td style="text-align:left; padding-left:15px;">
+								<i class="layui-icon">&#xe625;</i> {$tr1.name}</td>
+							<td>
+								<img src='/Public/admin/images/d05.png' width='30px' height='30px' />
+							</td>
+							<td>
+								0
+							</td>
 							<td>
 								<if condition="$tr1.bz_2 eq 1">
 									<font style="color:#090">推荐</font>
@@ -75,7 +84,15 @@
 							<tr data-id="tr_{$tr2.tid}" class="text-c">
 								<td>{$tr2.id}</td>
 								<td style="text-align:left; padding-left:15px;">
-										&nbsp;&nbsp;&nbsp;&nbsp;<i onclick="rowClicked(this)" data-tid="{$tr2.id}" data-icon="0" class="layui-icon" style="font-size: 20px; color: #1E9FFF;">&#xe622;</i>  {$tr2.name}</td>
+									&nbsp;&nbsp;&nbsp;&nbsp;
+									<i onclick="rowClicked(this)" data-tid="{$tr2.id}" data-icon="0" class="layui-icon" style="font-size: 20px; color: #1E9FFF;">&#xe622;</i> {$tr2.name}
+								</td>
+								<td>
+									<img src='/Public/admin/images/d05.png' width='30px' height='30px' />
+								</td>
+								<td>
+									<input class="layui-input text-c" width="20px" data-id="{$tr2.id}" onchange="updateSort(this)" value="{$tr2.sort}">
+								</td>
 								<td>
 									<if condition="$tr2.bz_2 eq 1">
 										<font style="color:#090">推荐</font>
@@ -90,7 +107,20 @@
 							<volist name='tr2["list3"]' id='tr3'>
 								<tr data-id="tr_{$tr3.tid}" class="text-c" style="display:none">
 									<td>{$tr3.id}</td>
-									<td style="text-align:left; padding-left:15px;">&nbsp; &nbsp; &nbsp;&nbsp; &nbsp;<i class="Hui-iconfont" style="font-size: 20px; color: #0099CC">&#xe63e;</i>  {$tr3.name}</td>
+									<td style="text-align:left; padding-left:15px;">&nbsp; &nbsp; &nbsp;&nbsp; &nbsp;
+										<i class="Hui-iconfont" style="font-size: 20px; color: #0099CC">&#xe63e;</i> {$tr3.name}
+									</td>
+									<td>
+										<if condition="$tr3['bz_1'] != '' ">
+												<img width='30px' height='30px' src="__DATA__/{$tr3.bz_1}">
+											<else />
+												<img src='/Public/admin/images/d05.png' width='30px' height='30px' />
+										</if>
+
+									</td>
+									<td>
+											<input class="layui-input text-c" width="20px" data-id="{$tr3.id}" onchange="updateSort(this)" value="{$tr3.sort}">
+									</td>
 									<td>
 										<if condition="$tr3.bz_2 eq 1">
 											<font style="color:#090">推荐</font>
@@ -121,9 +151,38 @@
 			$(obj).html(icon);
 			$(obj).data('icon', ($(obj).data('icon')) ? 0 : 1);
 			// $(obj).html("&#xe7a0;");
-			var dis = (icon == "&#xe7a0;") ?  "table-row" :"none" ;
+			var dis = (icon == "&#xe7a0;") ? "table-row" : "none";
 			var subtb = "[data-id='tr_" + $(obj).data('tid') + "']";
 			$(subtb).css('display', dis);
+		}
+
+		function updateSort(obj){
+			let id  = $(obj).data('id');
+			let value = $(obj).val();
+			//console.log('id:'+id+"--value:"+value);
+			$.ajax("{:U('Category/setAtrr')}", {
+                method: 'POST',
+                data: {
+                    id: id,
+                    val: value,
+                },
+                dataType: 'json',
+                success: function (e) {
+                    if (e.code) {
+                        layer.msg('更新数据失败!', {
+                            icon: 2
+                        });
+                    }else{
+						layer.msg('更新数据成功!', {
+                            icon: 1
+                        });
+					}
+                },
+                error: function (e) {
+                    console.log(e);
+                }
+
+            });
 		}
 
 		function del_id_url(id) {

@@ -105,7 +105,7 @@
                                     <input class="input-text upload-url radius" type="text" name="file" id="file" readonly>
                                     <a href="javascript:void();" class="btn btn-primary radius">
                                         <i class="layui-icon">&#xe67c;</i>  浏览文件</a>
-                                    <input id="bz_1" type="file" multiple name="file" id="file" class="input-file" lay-verify="upImg">
+                                    <input id="bz_1" type="file" multiple name="file" id="file" class="input-file">
                                 </span>
                             </div>
 
@@ -179,6 +179,7 @@
                 return "必须选择栏目";
             }
         },
+        //这个验证放弃了 因为二级分类是不需要图片的
         upImg: function (value) {
             var old_bz_1 = $('#old_bz_1').length;
             //var old_photo_d = $('#old_photo_d').length;
