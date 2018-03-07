@@ -4,6 +4,7 @@ namespace Admin\Controller;
 
 class OrderController extends PublicController
 {
+    public $orderStatus = [];
     /*
     *
     * 构造函数，用于导入外部文件和公共方法
@@ -17,7 +18,7 @@ class OrderController extends PublicController
 
         // $order_status = array('10' => '待付款', '20' => '待发货', '30' => '待收货', '40' => '已收货', '50' => '交易完成');
 
-        $order_status = array('0' => '已取消', '10' => '待付款', '20' => '待发货', '30' => '待收货', '40' => '待评价', '50' => '交易完成', '51' => '交易关闭');
+        $this->orderStatus = $order_status = array('0' => '已取消', '10' => '待付款', '20' => '待发货', '30' => '待收货', '40' => '待评价', '50' => '交易完成', '51' => '交易关闭');
 
         $this->assign('order_status', $order_status);
     }
@@ -242,6 +243,8 @@ class OrderController extends PublicController
             $orderlist[$k]['u_name'] = M('user')->where('id='.intval($v['uid']))->getField('name');
         }
         $sql = M('order')->getlastsql();
+        $orderlist['order_status'] = $this->orderStatus;
+
 
         //$resuslt = [code=>0,msg=>'',count=>$count,data=>$orderlist,sql=>$sql];
         $resuslt = [code=>0,msg=>'',count=>$count,data=>$orderlist];

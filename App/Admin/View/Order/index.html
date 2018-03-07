@@ -31,14 +31,14 @@
     <script type="text/javascript" src="__PUBLIC__/admin/js/mydate.js"></script> -->
     <link href="__PUBLIC__/admin/css/order.css" rel="stylesheet" type="text/css" />
     <style>
-            .layui-table-cell {
-                height: inherit;
-            }
-    
-            .layui-table-cell a {
-                text-decoration: none;
-            }
-        </style>
+        .layui-table-cell {
+            height: inherit;
+        }
+
+        .layui-table-cell a {
+            text-decoration: none;
+        }
+    </style>
     <title>全部订单</title>
 </head>
 
@@ -198,15 +198,26 @@
         <a class="layui-btn layui-btn-sm" href="{:U('show')}?oid={{d.id}}">查看</a>
         <a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del">删除</a>
         <if condition="$order.back eq 1">
-                <a class="layui-btn layui-btn-normal layui-btn-sm" lay-event="del">确认退款</a>
-                <a href="{:U('back')}?oid={$order.id}">确认退款</a>
+            <a class="layui-btn layui-btn-normal layui-btn-sm" lay-event="del">确认退款</a>
+            <a href="{:U('back')}?oid={$order.id}">确认退款</a>
         </if>
+    </script>
+    <script type="text/html" id="type">
+        {{# if(d.back == 1){ }}
+        <font style="color:red">申请退款</font>
+        {{# }else if(d.back == 2){ }}
+        <font style="color:#900">已退款</font>
+        {{# }else{ }}
+        <font class='font_color'>
+            {{d.status}}
+        </font>
+        {{# } }}
     </script>
 
     <script>
         var table = layui.table;
         var form = layui.form;
-        var brands;
+        var order_status;
 
         /*=============================================
         =            头部检索表单提交                  =
@@ -242,7 +253,7 @@
             height: 'full-290',
             url: "{:U('Order/getOrders')}",
             page: true,
-            limit:20,
+            limit: 20,
             cellMinWidth: 80,
             cols: [
                 [{
@@ -276,7 +287,7 @@
                     title: '订单状态',
                     //width: '15%',
                     align: 'center',
-
+                    templet: "#type"
                 }, {
                     field: 'addtime',
                     title: '订单时间',
@@ -301,45 +312,42 @@
             ],
             done: function (res, curr, count) {
                 //数据渲染完的回调 
-                //把返回数据赋值给全局函数
-                brands = res.data;
+                //原本打算用switch但失败 
+                //而且即使用了 也是把后台对照每个写一遍 毫无意义 还不如直接前台对比写
+                order_status = res.data.order_status;
+
+                //订单状态字体颜色设置
+                $('.font_color').each(function (index, element) {
+                    var obj = $(this);
+                    //console.log(obj.html());
+                    if (obj.html() == 0) {
+                        obj.html('已取消');
+                        obj.css('color', '#063559');
+                    } else if (obj.html() == 10) {
+                        obj.html('待付款');
+                        obj.css('color', '#063559');
+                    } else if (obj.html() == 20) {
+                        obj.html('待发货');
+                        obj.css('color', '#090');
+                    } else if (obj.html() == 30) {
+                        obj.html('待收货');
+                        obj.css('color', '#090');
+                    } else if (obj.html() == 40) {
+                        obj.html('待评价');
+                        obj.css('color', '#063559');
+                    } else if (obj.html() == 50) {
+                        obj.html('交易完成');
+                        obj.css('color', '#090');
+                    } else if (obj.html() == 51) {
+                        obj.html('交易关闭');
+                        obj.css('color', '#900');
+                    }
+                });
             },
         });
 
         /*=====  End of 渲染实例  ======*/
 
-
-        /*=============================================
-        =            请求后台数据            =
-        =============================================*/
-        function getData(id, filed, value, re) {
-            $.ajax("{:U('Brand/setBrandAtrr')}", {
-                method: 'POST',
-                data: {
-                    id: id,
-                    filed: filed,
-                    val: value,
-                },
-                dataType: 'json',
-                success: function (e) {
-                    //console.log(e);
-                    //批量操作时重读整个页面
-                    if (re) {
-                        tableIns.reload();
-                    }
-                    if (e.code == 0) {
-                        layer.msg('更新数据失败!', {
-                            icon: 2
-                        });
-                    }
-                },
-                error: function (e) {
-                    console.log(e);
-                }
-
-            });
-        }
-        /*=====  End of 请求后台数据  ======*/
 
         /*=============================================
         =            监听单元点击更新属性              =
@@ -407,26 +415,7 @@
                 "&start_time=" + start_time + '&end_time=' + end_time;
         }
 
-        //订单状态字体颜色设置
-        $('.font_color').each(function (index, element) {
-            var obj = $(this);
-            switch (obj.html()) {
-                case '待发货':
-                case '交易完成':
-                case '待收货':
-                    obj.css('color', '#090');
-                    break;
-                case '交易关闭':
-                case '已退款':
-                    obj.css('color', '#900');
-                    break;
-                case '申请退款':
-                    obj.css('color', '#f00');
-                default:
-                    obj.css('color', '#063559');
-                    break;
-            }
-        });
+
 
         //选择商家按钮事件
         function win_open(url, width, height) {
@@ -443,8 +432,8 @@
             //     location = '{:U("del")}?did=' + id;
             // }
             layer.confirm('确认删除吗？', function (index) {
-                    location = '{:U("del")}?did=' + id;
-                });
+                location = '{:U("del")}?did=' + id;
+            });
         }
     </script>
 
