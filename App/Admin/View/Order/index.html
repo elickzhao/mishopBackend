@@ -97,7 +97,7 @@
                             <div class="layui-inline">
                                 <!-- 支付类型 -->
                                 <div class="layui-input-inline" style="width: 260px;">
-                                    <select class="lay-search" name="cateid" id="cateid" lay-filter="cid_1" lay-search lay-verify="cateid">
+                                    <select class="lay-search" name="type" id="type" lay-filter="type" lay-search lay-verify="cateid">
                                         <option value>支付类型</option>
                                         <option value="weixin">微信支付</option>
                                         <option value="cash">现金支付</option>
@@ -107,19 +107,19 @@
 
                                 <!-- 订单状态 -->
                                 <div class="layui-input-inline" style="width: 260px;">
-                                    <select class="lay-search" name="cateid" id="cateid" lay-filter="cid_1" lay-search lay-verify="cateid">
+                                    <select class="lay-search" name="pay_status" id="pay_status" lay-filter="pay_status" lay-search lay-verify="cateid">
                                         <option value>订单状态</option>
                                         <foreach name="order_status" item="vo">
                                             <option value="{$key}">{$vo}</option>
                                         </foreach>
-                                        <option value="1">退款中</option>
+                                        <option value="1">申请退款</option>
                                         <option value="2">已退款</option>
                                     </select>
                                 </div>
                                 <!-- /订单状态 -->
 
                                 <div class="layui-input-inline" style="width: 260px;">
-                                    <input type="text" name="name" placeholder="收货手机号" autocomplete="off" class="layui-input">
+                                    <input type="text" name="tel" placeholder="收货手机号" autocomplete="off" class="layui-input">
                                 </div>
 
                                 <button class="layui-btn layui-btn-normal" lay-submit name="submit" lay-filter="*">
@@ -173,7 +173,8 @@
                             <td>{$order.addtime|date='Y-m-d H:i',###}</td>
                             <td>
                                 <a href="{:U('show')}?oid={$order.id}">查看</a> |
-                                <a onclick="del_id_url({$order.id})">删除</a>
+                                <a onclick="del_id_url({$order.id})">删除</a> | 
+                                <a onclick="openDialog2()">测试</a>
                                 <if condition="$order.back eq 1"> |
                                     <a href="{:U('back')}?oid={$order.id}">确认退款</a>
                                 </if>
@@ -197,12 +198,13 @@
     <script type="text/html" id="barDemo">
         <a class="layui-btn layui-btn-sm" href="{:U('show')}?oid={{d.id}}">查看</a>
         <a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del">删除</a>
+        <!-- <a class="layui-btn layui-btn-normal layui-btn-sm" onclick="openDialog2()">测试用</a> -->
         <if condition="$order.back eq 1">
             <a class="layui-btn layui-btn-normal layui-btn-sm" lay-event="del">确认退款</a>
             <a href="{:U('back')}?oid={$order.id}">确认退款</a>
         </if>
     </script>
-    <script type="text/html" id="type">
+    <script type="text/html" id="typeTpl">
         {{# if(d.back == 1){ }}
         <font style="color:red">申请退款</font>
         {{# }else if(d.back == 2){ }}
@@ -226,18 +228,20 @@
         form.on('submit(*)', function (data) {
             //console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
             var field = data.field;
-
-            if (field.brand_name != '') {
+            //console.log(field);
+            if (field.type != " " || field.pay_status != ' ' || field.tel != ' ') {
                 tableIns.reload({
-                    url: "{:U('Brand/getBrands')}",
+                    url: "{:U('Order/getOrders')}",
                     where: { //设定异步数据接口的额外参数，任意设
-                        brand_name: field.brand_name,
+                        type: field.type,
+                        pay_status: field.pay_status,
+                        tel: field.tel
                     }
                 });
+                field = "";
             } else {
-                //console.log('ddd');
                 tableIns.reload({
-                    url: "{:U('Brand/getBrands')}"
+                    url: "{:U('Order/getOrders')}"
                 });
             }
             return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
@@ -287,7 +291,7 @@
                     title: '订单状态',
                     //width: '15%',
                     align: 'center',
-                    templet: "#type"
+                    templet: "#typeTpl"
                 }, {
                     field: 'addtime',
                     title: '订单时间',
@@ -312,6 +316,7 @@
             ],
             done: function (res, curr, count) {
                 //数据渲染完的回调 
+                console.log(res);
                 //原本打算用switch但失败 
                 //而且即使用了 也是把后台对照每个写一遍 毫无意义 还不如直接前台对比写
                 order_status = res.data.order_status;
@@ -390,20 +395,17 @@
 
 
 
-
-
-
-
         //搜索按钮点击事件
         function product_option() {
             $('form').submit();
         }
-
+        
+        //打印订单 不过现在内容是错误的
         function openDialog() {
             //alert('aaa');die();
             location = "{:U('Inout/expOrder')}";
         }
-
+        //这两个现在都不好使
         function openDialog2() {
             var shop_id = $('#shop_id').val();
             var type = $('#type').val();

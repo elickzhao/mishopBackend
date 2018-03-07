@@ -218,18 +218,22 @@ class OrderController extends PublicController
         //     unset($_GET['cid']);
         // }
         
-        // //搜索优先级查询
-        // $arr = ['pro_number','name','cid'];
-        // foreach ($arr as $key => $value) {
-        //     if ($_GET[$value] != '') {
-        //         if ($value == 'name') {
-        //             $where .= ' AND '.$value.' like "%'. $_GET[$value].'%"';
-        //         } else {
-        //             $where .= ' AND '.$value.' = '. $_GET[$value];
-        //         }
-        //         break;
-        //     }
-        // }
+        //搜索优先级查询
+        $arr = ['tel','pay_status','type'];
+        foreach ($arr as $key => $value) {
+            if ($_GET[$value] != '') {
+                if ($value == 'pay_status') {
+                    if ($_GET['pay_status'] == 1 || $_GET['pay_status'] == 2) {
+                        $where .= ' AND back = "'. $_GET[$value].'"';
+                    } else {
+                        $where .= ' AND status = "'. $_GET[$value].'"';
+                    }
+                } else {
+                    $where .= ' AND '.$value.' = "'. $_GET[$value].'"';
+                }
+                //break;
+            }
+        }
 
 
 
@@ -243,11 +247,12 @@ class OrderController extends PublicController
             $orderlist[$k]['u_name'] = M('user')->where('id='.intval($v['uid']))->getField('name');
         }
         $sql = M('order')->getlastsql();
-        $orderlist['order_status'] = $this->orderStatus;
+        //这个放入会导致数据表多出一行来
+        //$orderlist['order_status'] = $this->orderStatus;
 
 
-        //$resuslt = [code=>0,msg=>'',count=>$count,data=>$orderlist,sql=>$sql];
-        $resuslt = [code=>0,msg=>'',count=>$count,data=>$orderlist];
+        $resuslt = [code=>0,msg=>'',count=>$count,data=>$orderlist,sql=>$sql];
+        //$resuslt = [code=>0,msg=>'',count=>$count,data=>$orderlist];
 
         $this->ajaxReturn($resuslt);
     }
