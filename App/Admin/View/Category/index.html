@@ -182,11 +182,13 @@
 				success: function (e) {
 					if (e.code) {
 						layer.msg('更新数据失败!', {
-							icon: 2
+							icon: 2,
+							time:1200
 						});
 					} else {
 						layer.msg('更新数据成功!', {
-							icon: 1
+							icon: 1,
+							time:1200
 						});
 					}
 				},

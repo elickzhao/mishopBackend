@@ -316,7 +316,7 @@
             ],
             done: function (res, curr, count) {
                 //数据渲染完的回调 
-                console.log(res);
+                //console.log(res);
                 //原本打算用switch但失败 
                 //而且即使用了 也是把后台对照每个写一遍 毫无意义 还不如直接前台对比写
                 order_status = res.data.order_status;
@@ -333,12 +333,12 @@
                         obj.css('color', '#063559');
                     } else if (obj.html() == 20) {
                         obj.html('待发货');
-                        obj.css('color', '#090');
+                        obj.css('color', '#f37b1d');
                     } else if (obj.html() == 30) {
-                        obj.html('待收货');
+                        obj.html('已发货');
                         obj.css('color', '#090');
                     } else if (obj.html() == 40) {
-                        obj.html('待评价');
+                        obj.html('已收货');
                         obj.css('color', '#063559');
                     } else if (obj.html() == 50) {
                         obj.html('交易完成');
@@ -393,40 +393,38 @@
         /*=====  End of 监听单元点击更新属性  ======*/
 
 
-
-
-        //搜索按钮点击事件
-        function product_option() {
-            $('form').submit();
-        }
+        // //搜索按钮点击事件
+        // function product_option() {
+        //     $('form').submit();
+        // }
         
-        //打印订单 不过现在内容是错误的
-        function openDialog() {
-            //alert('aaa');die();
-            location = "{:U('Inout/expOrder')}";
-        }
-        //这两个现在都不好使
-        function openDialog2() {
-            var shop_id = $('#shop_id').val();
-            var type = $('#type').val();
-            var status = $('#status').val();
-            var start_time = $('#start_time').val();
-            var end_time = $('#end_time').val();
-            //alert('aaa');die();
-            location = "{:U('Inout/expOrder')}?shop_id=" + shop_id + "&type=" + type + "&status=" + status +
-                "&start_time=" + start_time + '&end_time=' + end_time;
-        }
+        // //打印订单 不过现在内容是错误的
+        // function openDialog() {
+        //     //alert('aaa');die();
+        //     location = "{:U('Inout/expOrder')}";
+        // }
+        // //这两个现在都不好使
+        // function openDialog2() {
+        //     var shop_id = $('#shop_id').val();
+        //     var type = $('#type').val();
+        //     var status = $('#status').val();
+        //     var start_time = $('#start_time').val();
+        //     var end_time = $('#end_time').val();
+        //     //alert('aaa');die();
+        //     location = "{:U('Inout/expOrder')}?shop_id=" + shop_id + "&type=" + type + "&status=" + status +
+        //         "&start_time=" + start_time + '&end_time=' + end_time;
+        // }
 
 
 
-        //选择商家按钮事件
-        function win_open(url, width, height) {
+        // //选择商家按钮事件
+        // function win_open(url, width, height) {
 
-            height == null ? height = 600 : height;
-            width == null ? width = 800 : width;
-            var myDate = new Date()
-            window.open(url, 'newwindow' + myDate.getSeconds(), 'height=' + height + ',width=' + width);
-        }
+        //     height == null ? height = 600 : height;
+        //     width == null ? width = 800 : width;
+        //     var myDate = new Date()
+        //     window.open(url, 'newwindow' + myDate.getSeconds(), 'height=' + height + ',width=' + width);
+        // }
 
         //订单删除方法
         function del_id_url(id) {

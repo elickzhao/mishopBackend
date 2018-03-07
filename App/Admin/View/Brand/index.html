@@ -138,7 +138,7 @@
             //console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
             var field = data.field;
 
-            if ( field.brand_name != '') {
+            if ( field.brand_name != ' ') {
                 tableIns.reload({
                     url: "{:U('Brand/getBrands')}",
                     where: { //设定异步数据接口的额外参数，任意设

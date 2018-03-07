@@ -4,7 +4,6 @@ namespace Admin\Controller;
 
 class OrderController extends PublicController
 {
-    public $orderStatus = [];
     /*
     *
     * 构造函数，用于导入外部文件和公共方法
@@ -17,8 +16,9 @@ class OrderController extends PublicController
         $this->order_product = M('Order_product');
 
         // $order_status = array('10' => '待付款', '20' => '待发货', '30' => '待收货', '40' => '已收货', '50' => '交易完成');
-
-        $this->orderStatus = $order_status = array('0' => '已取消', '10' => '待付款', '20' => '待发货', '30' => '待收货', '40' => '待评价', '50' => '交易完成', '51' => '交易关闭');
+        //$order_status = array('0' => '已取消', '10' => '待付款', '20' => '待发货', '30' => '待收货', '40' => '待评价', '50' => '交易完成', '51' => '交易关闭');
+        $order_status = C('ORDER_STATUS');
+        unset($order_status['back']);
 
         $this->assign('order_status', $order_status);
     }
@@ -246,13 +246,9 @@ class OrderController extends PublicController
         foreach ($orderlist as $k => $v) {
             $orderlist[$k]['u_name'] = M('user')->where('id='.intval($v['uid']))->getField('name');
         }
-        $sql = M('order')->getlastsql();
-        //这个放入会导致数据表多出一行来
-        //$orderlist['order_status'] = $this->orderStatus;
-
-
-        $resuslt = [code=>0,msg=>'',count=>$count,data=>$orderlist,sql=>$sql];
-        //$resuslt = [code=>0,msg=>'',count=>$count,data=>$orderlist];
+        //$sql = M('order')->getlastsql();
+        //$resuslt = [code=>0,msg=>'',count=>$count,data=>$orderlist,sql=>$sql];
+        $resuslt = [code=>0,msg=>'',count=>$count,data=>$orderlist];
 
         $this->ajaxReturn($resuslt);
     }
@@ -303,8 +299,12 @@ class OrderController extends PublicController
         }
 
         //根据订单id获取订单数据还有商品信息
-
         $order_info = $this->order->where('id='.intval($order_id))->find();
+        //获取会员名字
+        $order_info['uname'] = M('user')->where('id='.intval($order_info['uid']))->getField('name');
+        //因暂时无阿里支付 所以暂时这么写
+        $order_info['type'] = ($order_info['type'] == 'weixin') ? '微信支付' : "线下支付" ;
+        
 
         $order_pro = $this->order_product->where('order_id='.intval($order_id))->select();
 
@@ -324,12 +324,17 @@ class OrderController extends PublicController
             }
         }
 
+
+
         $post_info = array();
 
         if (intval($order_info['post'])) {
             $post_info = M('post')->where('id='.intval($order_info['post']))->find();
         }
 
+
+        $bc = ['订单管理','订单详情'];
+        $this->assign('bc', $bc);
         $this->assign('post_info', $post_info);
 
         $this->assign('order_info', $order_info);
