@@ -211,7 +211,7 @@ class BrandController extends PublicController
                     @unlink($img_url);
                 }
             }
-            $this->ajaxReturn("操作成功 - ".$up);
+            $this->ajaxReturn([code=>0,msg=>"操作成功 - ".$up]);
         } else {
             $this->error('操作失败.');
         }

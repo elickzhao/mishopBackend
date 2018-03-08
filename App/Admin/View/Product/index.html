@@ -223,12 +223,19 @@
                     title: '图片',
                     width: '10%',
                     align: 'center',
-                    templet: "<div><img src='/Data/{{d.photo_x}}' width='80px' height='80px'/></div>"
+                    //这样写会报错 因为与tp{}冲突
+                    //templet: "<div><img src='/Data/{{d.photo_x}}' width='80px' height='80px'/></div>"
+                    templet: function(d){
+                        return "<div><img src='/Data/"+d.photo_x+"' width='80px' height='80px'/></div>"
+                    }
                 }, {
                     field: 'name',
                     title: '产品名称',
                     width: '25%',
-                    templet: "<div><a herf='JavaScript:;' title='{{d.name}}' stytle='text-decoration:none;'>{{d.name}}</a></div>"
+                    //templet: "<div><a herf='JavaScript:;' title='{{d.name}}' stytle='text-decoration:none;'>{{d.name}}</a></div>"
+                    templet: function(d){
+                        return "<div><a herf='JavaScript:;' title='"+d.name+"' stytle='text-decoration:none;'>"+d.name+"</a></div>"
+                    }
                 }, {
                     field: 'pro_number',
                     title: '商品货号',
