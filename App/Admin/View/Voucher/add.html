@@ -119,7 +119,7 @@
                         </div>
                         <div class="formControls col-xs-8 col-sm-4">
                             <input type="text" class="input-text" placeholder="满减金额. 必填字段!" name="full_money" id="full_money" value="{$voucher.full_money}"
-                             required>
+                                required>
                             <span class="help-block ">
                                 <i class="Hui-iconfont c-danger">&#xe6e0;</i>
                                 <cite class="c-999">&nbsp;默认店铺内所有商品通用</cite>
@@ -139,8 +139,7 @@
                             <label class="layui-form-label">优惠金额：</label>
                         </div>
                         <div class="formControls col-xs-8 col-sm-4">
-                            <input type="text" class="input-text" placeholder="优惠金额. 必填字段!" name="amount" id="amount" value="{$voucher.amount}"
-                                required>
+                            <input type="text" class="input-text" placeholder="优惠金额. 必填字段!" name="amount" id="amount" value="{$voucher.amount}" required>
                             <span class="help-block ">
                                 <i class="Hui-iconfont c-danger">&#xe6e0;</i>
                                 <cite class="c-999">&nbsp;使用时减免的金额</cite>
@@ -160,8 +159,7 @@
                             <label class="layui-form-label">所需积分：</label>
                         </div>
                         <div class="formControls col-xs-8 col-sm-4">
-                            <input type="text" class="input-text" placeholder="所需积分. 必填字段!" name="point" id="point" value="{$voucher.point}" 
-                                required>
+                            <input type="text" class="input-text" placeholder="所需积分. 必填字段!" name="point" id="point" value="<?php echo intval($voucher['point'])==0?10:$voucher['point']; ?>" required>
                             <span class="help-block ">
                                 <i class="Hui-iconfont c-danger">&#xe6e0;</i>
                                 <cite class="c-999">&nbsp;会员领取时所需积分，默认0，免费领取</cite>
@@ -180,7 +178,7 @@
                         </div>
                         <div class="formControls col-xs-8 col-sm-4">
                             <input type="text" class="input-text" placeholder="发行数量. 必填字段!" name="count" id="count" value="<?php echo intval($voucher['count'])==0?10:$voucher['count']; ?>"
-                                 required>
+                                required>
                         </div>
                         <label class="layui-form-label">
                             <span class="c-red text-l">*</span>
@@ -197,11 +195,12 @@
                         </div>
                         <div class="formControls col-xs-8 col-sm-4">
                             <input type="text" class="input-text" placeholder="使用范围. 必填字段!" name="proid" id="proid" value="<?php echo $voucher['proid']==''?'all':$voucher['proid']; ?>"
-                            readonly="readonly" disabled required>
+                                readonly="readonly" disabled required>
                             <span class="help-block ">
                                 <i class="Hui-iconfont c-danger">&#xe6e0;</i>
-                                <cite class="c-999">&nbsp;默认店铺内所有商品通用</cite>
-                                <input type="button" value="选择商品" class="btn btn-link" onclick="win_open('{:U('get_pro')}',1280,800)">
+                                <cite class="c-999">&nbsp;默认店铺内所有商品通用</cite> 
+                                <!-- onclick="win_open('{:U('get_pro')}',1280,800)" -->
+                                <input type="button" value="选择商品" class="btn btn-link" onclick="oo()">
                             </span>
                         </div>
                         <label class="layui-form-label">
@@ -328,19 +327,7 @@
     <include File='Page/footer' />
     <!-- /底部 -->
 
-    <!--_footer 作为公共模版分离出去-->
-    <!-- <script type="text/javascript" src="__PUBLIC__/admin/lib/jquery/1.9.1/jquery.min.js"></script>
-    <script type="text/javascript" src="__PUBLIC__/admin/lib/layer/2.4/layer.js"></script>
-    <script type="text/javascript" src="__PUBLIC__/admin/static/h-ui/js/H-ui.min.js"></script>
-    <script type="text/javascript" src="__PUBLIC__/admin/static/h-ui.admin/js/H-ui.admin.js"></script> -->
-    <!--/_footer 作为公共模版分离出去-->
 
-    <!--请在下方写此页面业务相关的脚本-->
-    <!-- <script type="text/javascript" src="__PUBLIC__/admin/lib/My97DatePicker/4.8/WdatePicker.js"></script>
-    <script type="text/javascript" src="__PUBLIC__/admin/lib/datatables/1.10.0/jquery.dataTables.min.js"></script>
-    <script type="text/javascript" src="__PUBLIC__/admin/lib/laypage/1.2/laypage.js"></script>
-
-    <script type="text/javascript" src="__PUBLIC__/admin/js/product.js"></script> -->
     <script>
         var laydate = layui.laydate;
         var form = layui.form;
@@ -366,7 +353,28 @@
             }
         });
 
-        $("#commentForm").validate();
+        $("#commentForm").validate({
+            rules: {
+                full_money:{number:true},
+                amount:{number:true},
+                point:{number:true},
+            }
+        });
+
+        function oo() {
+            layer.open({
+                type: 2,
+                title: '优惠券适用商品',
+                area: ['1280px', '800px'],
+                fixed: false, //不固定
+                maxmin: true,
+                shadeClose: true,
+                content: "{:U('get_goods')}"
+            });
+        }
+
+
+
         // function ac_from() {
 
         //     var full_money = document.getElementById("full_money").value;

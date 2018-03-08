@@ -388,7 +388,7 @@
             console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
             var field = data.field;
 
-            if (field.cateid != '' || field.name != '' || field.pro_number != '') {
+            if (field.cateid != ' ' || field.name != ' ' || field.pro_number != ' ') {
                 tableIns.reload({
                     url: "{:U('Product/getGoods')}",
                     where: { //设定异步数据接口的额外参数，任意设
