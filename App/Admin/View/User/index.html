@@ -188,13 +188,13 @@
                 [{
                     field: 'id',
                     title: 'ID',
-                    //width: '7%',
+                    width: '10%',
                     align: 'center',
                     sort: true,
                 }, {
                     field: 'photo',
                     title: '头像',
-                    //width: '20%',
+                    width: '20%',
                     align: 'center',
                     templet: function(d){
                         //还有个问题是直接用 "" 字符串形式的话 使用{} 可能造成tp的冲突而报错
@@ -203,12 +203,12 @@
                 }, {
                     field: 'name',
                     title: '账户名',
-                    //width: '21%',
+                    width: '28%',
                     //templet: "<div><a herf='JavaScript:;' title='{{d.name}}' stytle='text-decoration:none;'>{{d.name}}</a></div>"
                 }, {
                     field: 'addtime',
                     title: '注册时间',
-                    //width: '10%',
+                    width: '10%',
                     align: 'center',
                     sort: true,
                     templet: function (d) {
@@ -222,27 +222,27 @@
                 }, {
                     field: 'tel',
                     title: '手机号码',
-                    //width: '10%',
+                    width: '10%',
                     align: 'center',
                     sort: true,
                 }, {
                     field: 'del',
                     title: '状态',
-                    //width: '10%',
+                    width: '10%',
                     align: 'center',
                     sort: true,
                     templet: "#del"
                 }, {
                     field: 'cz',
                     title: '操作',
-                    //width: '14%',
+                    width: '10%',
                     align: 'center',
                     toolbar: '#barDemo'
                 }]
             ],
             done: function (res, curr, count) {
                 //数据渲染完的回调 
-                console.log(res);
+                //console.log(res);
                 currpage = curr;
             },
         });

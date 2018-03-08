@@ -120,7 +120,7 @@
         {{# if(d.photo === ""){ }}
             <div><img src='/Public/admin/images/nophoto.png' width='80px' height='80px'/></div>
         {{# }else{ }}
-            <div><img src='/Data/{{d.photo}}' width='80px' height='80px'/></div>
+            <div><img src='/Data/'+d.photo+' width='80px' height='80px'/></div>
         {{# } }}
     </script>
 
@@ -187,7 +187,10 @@
                     field: 'name',
                     title: '产品名称',
                     width: '41%',
-                    templet: "<div><a herf='JavaScript:;' title='{{d.name}}' stytle='text-decoration:none;'>{{d.name}}</a></div>"
+                    //templet: "<div><a herf='JavaScript:;' title='{{d.name}}' stytle='text-decoration:none;'>{{d.name}}</a></div>"
+                    templet:function(d){
+                        return "<div><a herf='JavaScript:;' title='"+d.name+"' stytle='text-decoration:none;'>"+d.name+"</a></div>"
+                    }
                 }, {
                     field: 'type',
                     title: '推荐',

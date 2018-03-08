@@ -25,7 +25,19 @@
     <script>DD_belatedPNG.fix('*');</script>
     <![endif]-->
     <script type="text/javascript" src="__PUBLIC__/admin/js/action.js"></script>
+    <style>
+        .layui-table-cell {
+            height: inherit;
+        }
 
+        .layui-table-cell a {
+            text-decoration: none;
+        }
+
+        #commentForm .layui-form-label {
+            text-align: left;
+        }
+    </style>
     <title>新增品牌</title>
 </head>
 
@@ -40,20 +52,24 @@
             <div class="panel-body">
                 <form class="form form-horizontal layui-form" action="{:U('save')}" method="post" id="commentForm" enctype="multipart/form-data">
                     <div class="row cl">
-                        <label class="text-l ml-50 col-xs-4 col-sm-2">
-                            品牌名称：</label>
+                        <div class="col-xs-4 col-sm-2 ml-30">
+                            <label class="layui-form-label">品牌名称：</label>
+                        </div>
                         <div class="formControls col-xs-8 col-sm-4">
                             <input type="text" class="input-text" placeholder="品牌名称. 必填字段!" name="name" id="name" value="{$info.name}" minlength="2"
                                 type="text" lay-verify="required">
                         </div>
-                        <span class="c-red">*</span>
+                        <label class="layui-form-label">
+                            <span class="c-red text-l">*</span>
+                        </label>
                     </div>
 
                     <div class="hr-line-dashed"></div>
 
                     <div class="row cl">
-                        <label class=" text-l ml-50  col-xs-4 col-sm-2">
-                            品牌图片 : </label>
+                        <div class="col-xs-4 col-sm-2 ml-30">
+                            <label class="layui-form-label">品牌图片: </label>
+                        </div>
                         <div class="formControls col-xs-8 col-sm-4">
                             <div class="uploader-thum-container">
 
