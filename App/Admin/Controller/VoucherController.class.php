@@ -36,8 +36,8 @@ class VoucherController extends PublicController
         $page_index=$this->page_index($count, $rows, $page);
         foreach ($voucher_list as $k => $v) {
             $voucher_list[$k]['shop_name'] = M('shangchang')->where('id='.intval($v['shop_id']))->getField('name');
-            $voucher_list[$k]['start_time'] = date("Y-m-d", $v['start_time']);
-            $voucher_list[$k]['end_time'] = date("Y-m-d", $v['end_time']);
+            $voucher_list[$k]['start_time'] = date("Y-m-d H:i:s", $v['start_time']);
+            $voucher_list[$k]['end_time'] = date("Y-m-d H:i:s", $v['end_time']);
         }
 
         $bc = ['优惠券管理','新增优惠券'];
@@ -57,8 +57,8 @@ class VoucherController extends PublicController
         if ($id>0) {
             $voucher = M('voucher')->where('id='.intval($id).' AND del=0')->find();
             $voucher['shop_name'] = M('shangchang')->where('id='.intval($voucher['shop_id']))->getField('name');
-            $voucher['start_time'] = date("Y-m-d", $voucher['start_time']);
-            $voucher['end_time'] = date("Y-m-d", $voucher['end_time']);
+            $voucher['start_time'] = date("Y-m-d H:i:s", $voucher['start_time']);
+            $voucher['end_time'] = date("Y-m-d H:i:s", $voucher['end_time']);
 
             //获取限定产品
             if ($voucher['proid']!='all' && $voucher['proid']!='') {
@@ -86,6 +86,8 @@ class VoucherController extends PublicController
             $shop_id = intval($_REQUEST['shop_id']);
         }
 
+        //dump($_REQUEST);exit();
+
         $id=intval($_REQUEST['id']);
         $title = $_REQUEST['title'];
         $full_money = floatval($_REQUEST['full_money']);
@@ -94,7 +96,8 @@ class VoucherController extends PublicController
         $count = intval($_REQUEST['count']);
         $start_time = $_REQUEST['start_time'];
         $end_time = $_REQUEST['end_time'];
-        $proid = trim($_REQUEST['proid'], ',');
+        $proid = $_REQUEST['proid'];
+
         if (!$proid) {
             $proid='all';
         }
@@ -120,10 +123,11 @@ class VoucherController extends PublicController
         $data['full_money'] = $full_money;
         $data['amount'] = $amount;
         $data['start_time'] = strtotime($start_time);
-        $data['end_time'] = strtotime($end_time.' 23:59:59');
+        $data['end_time'] = strtotime($end_time);
         $data['point'] = $point;
         $data['count'] = $count;
         $data['proid'] = $proid;
+
         if ($id>0) {
             $check = M('voucher')->where('id='.intval($id).' AND del=0')->find();
             if (intval($check['receive_num'])>0) {

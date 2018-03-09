@@ -61,7 +61,7 @@
                             <label class="layui-form-label">优惠券名：</label>
                         </div>
                         <div class="formControls col-xs-8 col-sm-4">
-                            <input type="text" class="input-text" placeholder="优惠券名. 必填字段!" name="title" id="title" value="{$info.title}" required>
+                            <input type="text" class="input-text" placeholder="优惠券名. 必填字段!" name="title" id="title" value="{$voucher.title}" required>
                         </div>
                         <label class="layui-form-label">
                             <span class="c-red text-l">*</span>
@@ -159,7 +159,7 @@
                             <label class="layui-form-label">所需积分：</label>
                         </div>
                         <div class="formControls col-xs-8 col-sm-4">
-                            <input type="text" class="input-text" placeholder="所需积分. 必填字段!" name="point" id="point" value="<?php echo intval($voucher['point'])==0?10:$voucher['point']; ?>" required>
+                            <input type="text" class="input-text" placeholder="所需积分. 必填字段!" name="point" id="point" value="<?php echo intval($voucher['point'])==0?0:$voucher['point']; ?>" required>
                             <span class="help-block ">
                                 <i class="Hui-iconfont c-danger">&#xe6e0;</i>
                                 <cite class="c-999">&nbsp;会员领取时所需积分，默认0，免费领取</cite>
@@ -194,8 +194,8 @@
                             <label class="layui-form-label">使用范围：</label>
                         </div>
                         <div class="formControls col-xs-8 col-sm-4">
-                            <input type="text" class="input-text" placeholder="使用范围. 必填字段!" name="proid" id="proid" value="<?php echo $voucher['proid']==''?'all':$voucher['proid']; ?>"
-                                readonly="readonly" disabled required>
+                            <input type="text" class="input-text" placeholder="使用范围. 必填字段!" name="proid" id="proid" onclick="oo()" value="<?php echo $voucher['proid']==''?'all':$voucher['proid']; ?>"
+                                readonly="readonly"  required>
                             <span class="help-block ">
                                 <i class="Hui-iconfont c-danger">&#xe6e0;</i>
                                 <cite class="c-999">&nbsp;默认店铺内所有商品通用</cite> 
@@ -214,7 +214,7 @@
                     <div class="row cl">
                         <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
                             <input class="btn btn-primary radius" lay-submit lay-filter="*" type="submit" name="submit" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
-                            <input type="hidden" name="id" id="id" value="<?php echo $info['id']; ?>">
+                            <input type="hidden" name="id" id="id" value="<?php echo $voucher['id']; ?>">
                         </div>
                     </div>
                 </form>
@@ -327,7 +327,7 @@
     <include File='Page/footer' />
     <!-- /底部 -->
 
-
+    <script src="https://cdn.bootcss.com/moment.js/2.21.0/moment.min.js"></script>
     <script>
         var laydate = layui.laydate;
         var form = layui.form;
@@ -336,11 +336,13 @@
         laydate.render({
             elem: '#start_time',
             type: 'datetime',
+            value: moment().startOf('day').format('Y-MM-DD HH:mm:ss'), 
         });
         laydate.render({
             elem: '#end_time',
             type: 'datetime',
             min: +1,
+            value: moment().add(1, 'days').endOf('day').format('Y-MM-DD HH:mm:ss'), 
             done: function (end) {
                 let start = $("#start_time").val();
                 if (end < start) {
