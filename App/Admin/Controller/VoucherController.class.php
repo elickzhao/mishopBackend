@@ -40,7 +40,7 @@ class VoucherController extends PublicController
             $voucher_list[$k]['end_time'] = date("Y-m-d H:i:s", $v['end_time']);
         }
 
-        $bc = ['优惠券管理','新增优惠券'];
+        $bc = ['优惠券管理','优惠券管理'];
         $this->assign('bc', $bc);
         $this->assign('keyword', $keyword);
         $this->assign('voucher_list', $voucher_list);
