@@ -331,18 +331,20 @@
     <script>
         var laydate = layui.laydate;
         var form = layui.form;
-
+ 
+        let start_time =($("#start_time").val() == "")?moment().startOf('day').format('Y-MM-DD HH:mm:ss'):$("#start_time").val();
+        let end_time =($("#end_time").val() == "")?moment().add(1, 'days').endOf('day').format('Y-MM-DD HH:mm:ss'):$("#end_time").val();
         //执行一个laydate实例
         laydate.render({
             elem: '#start_time',
             type: 'datetime',
-            value: moment().startOf('day').format('Y-MM-DD HH:mm:ss'), 
+            value: start_time, 
         });
         laydate.render({
             elem: '#end_time',
             type: 'datetime',
             min: +1,
-            value: moment().add(1, 'days').endOf('day').format('Y-MM-DD HH:mm:ss'), 
+            value: end_time, 
             done: function (end) {
                 let start = $("#start_time").val();
                 if (end < start) {

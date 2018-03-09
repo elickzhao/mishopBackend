@@ -70,7 +70,7 @@ class VoucherController extends PublicController
 
             $this->assign('voucher', $voucher);
         }
-        $bc = ['优惠券管理','新增优惠券'];
+        $bc = ['优惠券管理','优惠券管理'];
         $this->assign('bc', $bc);
         $this->display();
     }
@@ -146,6 +146,30 @@ class VoucherController extends PublicController
             $this->error('操作失败！');
             exit();
         }
+    }
+
+    /**
+     * [getGoods ajax获取优惠券列表]
+     * @return [json] [优惠券数据]
+     */
+    public function getVouchers()
+    {
+        $where="del<1";
+        if ($_GET['voucher_name'] != "") {
+            $where .= ' AND name like "%'. $_GET['voucher_name'].'%"';
+        }
+
+        $count=M('voucher')->where($where)->count();
+        $rows=ceil($count/rows);
+        $page = (int) -- $_GET['page'] ;
+        $rows = $_GET['limit'] ? $_GET['limit'] : 20;
+        $limit= $page*$rows;
+        $voucherlist=M('voucher')->where($where)->order('addtime desc')->limit($limit, $rows)->select();
+        $sql = M('voucher')->getlastsql();
+
+        $resuslt = [code=>0,msg=>'',count=>$count,data=>$voucherlist];
+
+        $this->ajaxReturn($resuslt);
     }
 
     //***************************
