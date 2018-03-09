@@ -59,6 +59,32 @@ class GuanggaoController extends PublicController
     }
 
 
+    /**
+      * [getGoods ajax获取广告列表]
+      * @return [json] [广告数据]
+      */
+    public function getGuanggaos()
+    {
+        $where="1=1";
+        if ($_GET['name'] != "") {
+            $where .= ' AND name like "%'. $_GET['name'].'%"';
+        }
+
+        $count=M('guanggao')->where($where)->count();
+        $rows=ceil($count/rows);
+        $page = (int) -- $_GET['page'] ;
+        $rows = $_GET['limit'] ? $_GET['limit'] : 10;
+        $limit= $page*$rows;
+        $guanggaolist=M('guanggao')->where($where)->order('addtime desc')->limit($limit, $rows)->select();
+        $sql = M('guanggao')->getlastsql();
+        
+        //$resuslt = [code=>0,msg=>'',count=>$count,data=>$guanggaolist,sql=>$sql];
+        $resuslt = [code=>0,msg=>'',count=>$count,data=>$guanggaolist];
+
+        $this->ajaxReturn($resuslt);
+    }
+
+
     /*
     *
     * 跳转添加或修改广告数据页面

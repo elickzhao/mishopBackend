@@ -77,6 +77,7 @@ class BrandController extends PublicController
         $brandlist=M('brand')->where($where)->order('addtime desc')->limit($limit, $rows)->select();
         $sql = M('brand')->getlastsql();
 
+        //$resuslt = [code=>0,msg=>'',count=>$count,data=>$productlist,sql=>$sql];
         $resuslt = [code=>0,msg=>'',count=>$count,data=>$brandlist];
 
         $this->ajaxReturn($resuslt);

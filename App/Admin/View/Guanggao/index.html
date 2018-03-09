@@ -1,12 +1,13 @@
 <!DOCTYPE HTML>
 <html>
+
 <head>
     <meta charset="utf-8">
     <meta name="renderer" content="webkit|ie-comp|ie-stand">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
     <meta http-equiv="Cache-Control" content="no-siteapp" />
-    <link rel="Bookmark" href="/favicon.ico" >
+    <link rel="Bookmark" href="/favicon.ico">
     <link rel="Shortcut Icon" href="/favicon.ico" />
     <!--[if lt IE 9]>
     <script type="text/javascript" src="__PUBLIC__/admin/lib/html5shiv.js"></script>
@@ -17,94 +18,285 @@
     <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/lib/Hui-iconfont/1.0.8/iconfont.css" />
     <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/skin/default/skin.css" id="skin" />
     <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/css/style.css" />
+    <link rel="stylesheet" href="__PUBLIC__/admin/css/common.css">
+    <link rel="stylesheet" href="__PUBLIC__/admin/lib/layui/css/layui.css">
     <!--[if IE 6]>
     <script type="text/javascript" src="__PUBLIC__/admin/lib/DD_belatedPNG_0.0.8a-min.js" ></script>
     <script>DD_belatedPNG.fix('*');</script>
     <![endif]-->
-    <script type="text/javascript" src="__PUBLIC__/admin/js/jquery.js"></script>
-    <script type="text/javascript" src="__PUBLIC__/admin/js/action.js"></script>
+    <style>
+        .layui-table-cell {
+            height: inherit;
+        }
+
+        .layui-table-cell a {
+            text-decoration: none;
+        }
+    </style>
 
     <title>广告管理</title>
 </head>
+
 <body>
-<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 广告管理 <span class="c-gray en">&gt;</span> 全部广告 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
-<div class="page-container">
-    <div class="text-c">
-        <input type="text" class="input-text" style="width:250px" placeholder="标题" id="name" value="<?php echo $name;?>">
-        <button type="button" class="btn btn-success" id="" name="" onclick="product_option(0);"><i class="Hui-iconfont">&#xe665;</i> 搜索</button>
+    <!-- 导航 -->
+    <include File='Page/nav' />
+    <!-- /导航 -->
+
+    <div class="page-container">
+        <div class="panel panel-default mt-40">
+            <div class="panel-header">{$bc[1]}</div>
+            <div class="panel-body">
+
+
+
+                <div class="row cl">
+                    <div class="col-sm-8 f-r">
+                        <form class="layui-form f-r" action="">
+                            <div class="layui-inline">
+                                <div class="layui-input-inline" style="width: 260px;">
+                                    <input type="text" name="name" placeholder="广告名" autocomplete="off" class="layui-input" value="">
+                                </div>
+                                <button class="layui-btn layui-btn-normal" lay-submit name="submit" lay-filter="*">
+                                    <i class="Hui-iconfont">&#xe665;</i> 搜索</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="hr-line-dashed"></div>
+
+                <table id="demo" lay-filter="test" lay-data="{id: 'idTest'}"></table>
+                <!-- <div class="text-c">
+            <input type="text" class="input-text" style="width:250px" placeholder="标题" id="name" value="<?php echo $name;?>">
+            <button type="button" class="btn btn-success" id="" name="" onclick="product_option(0);">
+                <i class="Hui-iconfont">&#xe665;</i> 搜索</button>
+        </div>
+        <br> -->
+                <!-- <table class="table table-border table-bordered table-bg">
+                    <thead>
+
+                        <tr class="text-c">
+                            <th width="40">ID</th>
+                            <th width="150">广告图</th>
+                            <th width="130">广告标题</th>
+                            <th width="80">显示位置</th>
+                            <th width="100">操作</th>
+                        </tr>
+                    </thead>
+
+
+                    <tbody id="news_option">
+                        <volist name='adv_list' id="adv">
+                            <tr class="text-c">
+                                <td>{$adv.id}</td>
+                                <td>
+                                    <img src="__DATA__/{$adv.photo}" width="120px" height="60px">
+                                </td>
+                                <td>{$adv.name}</td>
+                                <td>
+                                    <if condition="$adv.position eq 1">
+                                        <span class="label succ">首页头部轮播</span>
+                                        <else />
+                                        <span class="label err">其他</span>
+                                    </if>
+                                </td>
+                                <td class="obj_1">
+                                    <a href="{:U('add')}?adv_id={$adv.id}">修改</a>&nbsp;|
+                                    <a onclick="del_id_url2({$adv.id})">删除</a>
+                                </td>
+                            </tr>
+                        </volist>
+                    </tbody>
+                    <tr class="text-c">
+                        <td colspan="10" class="td_2">
+                            {$page}
+                        </td>
+                    </tr>
+                </table> -->
+            </div>
+        </div>
     </div>
-    <br>
-    <table class="table table-border table-bordered table-bg">
-        <thead>
+    <!-- 底部 -->
+    <include File='Page/footer' />
+    <!-- /底部 -->
 
-        <tr class="text-c">
-            <th width="40">ID</th>
-            <th width="150">广告图</th>
-            <th width="130">广告标题</th>
-            <th width="80">显示位置</th>
-            <th width="100">操作</th>
-        </tr>
-        </thead>
+    <script type="text/html" id="barDemo">
+        <a class="layui-btn layui-btn-sm" href="{:U('add')}?adv_id={{d.id}}">编辑</a>
+        <a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del">删除</a>
+    </script>
+
+    <script>
+        var table = layui.table;
+        var form = layui.form;
+        var currpage;
+
+        /*=============================================
+        =            头部检索表单提交                  =
+        =============================================*/
+
+        form.on('submit(*)', function (data) {
+            //console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
+            var field = data.field;
+
+            if (field.name != ' ') {
+                tableIns.reload({
+                    url: "{:U('getGuanggaos')}",
+                    where: { //设定异步数据接口的额外参数，任意设
+                        name: field.name,
+                    }
+                });
+            } else {
+                //console.log('ddd');
+                tableIns.reload({
+                    url: "{:U('getGuanggaos')}"
+                });
+            }
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+        /*=====  End of 头部检索表单提交  ======*/
+
+        /*=============================================
+        =            渲染实例            =
+        =============================================*/
+
+        var tableIns = table.render({
+            elem: '#demo',
+            height: 'full-280',
+            url: "{:U('Guanggao/getGuanggaos')}",
+            page: true,
+            cellMinWidth: 80,
+            cols: [
+                [{
+                    field: 'id',
+                    title: 'ID',
+                    //width: '10%',
+                    align: 'center',
+                    sort: true,
+                }, {
+                    field: 'photo',
+                    title: '头像',
+                    // width: '20%',
+                    align: 'center',
+                    templet: function (d) {
+                        //还有个问题是直接用 "" 字符串形式的话 使用{} 可能造成tp的冲突而报错
+                        return "<div><img src='" + d.photo + "' width='120px' height='60px'/></div>" //千万注意没有外层div是不可以的
+                    }
+                }, {
+                    field: 'name',
+                    title: '广告名',
+                    //width: '28%',
+                    //templet: "<div><a herf='JavaScript:;' title='{{d.name}}' stytle='text-decoration:none;'>{{d.name}}</a></div>"
+                },  {
+                    field: 'addtime',
+                    title: '注册时间',
+                    //width: '10%',
+                    align: 'center',
+                    sort: true,
+                    templet: function (d) {
+                        Date.prototype.toLocaleString = function () {
+                            return this.getFullYear() + "-" + (this.getMonth() + 1) + "-" +
+                                this.getDate() + "  " + this.getHours() + ":" + this.getMinutes() +
+                                ":" + this.getSeconds();
+                        };
+                        return new Date(d.addtime * 1000).toLocaleString();
+                    }
+                }, 
+                {
+                    field: 'position',
+                    title: '显示位置',
+                    //width: '10%',
+                    align: 'center',
+                    sort: true,
+                    templet:function(d){
+                        return (d.position == 1)? '<span class="label label-secondary ">首页头部轮播</span>' : '<span class="label label-success ">其他</span>' ;
+                    }
+                },
+                // {
+                //     field: 'action',
+                //     title: '跳转页面',
+                //     //width: '10%',
+                //     align: 'center',
+                //     sort: true,
+                // }, 
+                {
+                    field: 'cz',
+                    title: '操作',
+                    width: '10%',
+                    align: 'center',
+                    toolbar: '#barDemo'
+                }]
+            ],
+            done: function (res, curr, count) {
+                //数据渲染完的回调 
+                //console.log(res);
+                currpage = curr;
+            },
+        });
+
+        /*=====  End of 渲染实例  ======*/
 
 
-        <tbody id="news_option">
-        <volist name='adv_list' id="adv">
-            <tr class="text-c">
-                <td>{$adv.id}</td>
-                <td><img src="__DATA__/{$adv.photo}" width="120px" height="60px"></td>
-                <td>{$adv.name}</td>
-                <td>
-                    <if condition="$adv.position eq 1"><span class="label succ">首页头部轮播</span>
-                        <else />
-                        <span class="label err">其他</span>
-                    </if>
-                </td>
-                <td class="obj_1">
-                    <a href="{:U('add')}?adv_id={$adv.id}" >修改</a>&nbsp;|
-                    <a onclick="del_id_url2({$adv.id})">删除</a>
-                </td>
-            </tr>
-        </volist>
-        </tbody>
-        <tr class="text-c">
-            <td colspan="10" class="td_2">
-                {$page}
-            </td>
-        </tr>
-    </table>
-</div>
-<!--_footer 作为公共模版分离出去-->
-<script type="text/javascript" src="__PUBLIC__/admin/lib/jquery/1.9.1/jquery.min.js"></script>
-<script type="text/javascript" src="__PUBLIC__/admin/lib/layer/2.4/layer.js"></script>
-<script type="text/javascript" src="__PUBLIC__/admin/static/h-ui/js/H-ui.min.js"></script>
-<script type="text/javascript" src="__PUBLIC__/admin/static/h-ui.admin/js/H-ui.admin.js"></script> <!--/_footer 作为公共模版分离出去-->
 
-<!--请在下方写此页面业务相关的脚本-->
-<script type="text/javascript" src="__PUBLIC__/admin/lib/My97DatePicker/4.8/WdatePicker.js"></script>
-<script type="text/javascript" src="__PUBLIC__/admin/lib/datatables/1.10.0/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="__PUBLIC__/admin/lib/laypage/1.2/laypage.js"></script>
+        /*=============================================
+        =            监听单元点击更新属性              =
+        =============================================*/
 
+        //监听工具条
+        table.on('tool(test)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+            var data = obj.data; //获得当前行数据
+            var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+            var tr = obj.tr; //获得当前行 tr 的DOM对象
+            //禁用
+            if (layEvent === 'del') { //删除
+                layer.confirm('你确定要执行此操作吗？', function (index) {
+                    layer.close(index);
+                    //向服务端发送删除指令
+                    var url = "{:U('del')}?did=" + data.id;
+                    $.ajax(url, {
+                        method: 'GET',
+                        dataType: 'json',
+                        success: function (e) {
+                            console.log(e);
+                            if (e.code) {
+                                layer.msg(e.msg, {
+                                    icon: 2
+                                });
+                            } else {
+                                tableIns.reload({
+                                    page: {
+                                        curr: currpage //重新从第 当前 页开始
+                                    }
+                                });
+                            }
+                        },
+                        error: function (e) {
+                            console.log(e);
+                        }
+                    });
+                });
+            }
+        });
 
-<script>
-    var type='<?php echo $type; ?>';
+        /*=====  End of 监听单元点击更新属性  ======*/
 
-    function product_option(page){
-        var adv_name = $('#name').val();
-        location="{:U('index')}?adv_name="+adv_name;
-    }
+        // var type = '<?php echo $type; ?>';
 
-    function set_show(id){
-        location="{:U('show')}?adv_id="+id;
-    }
+        // function product_option(page) {
+        //     var adv_name = $('#name').val();
+        //     location = "{:U('index')}?adv_name=" + adv_name;
+        // }
 
-    function del_id_url2(id){
-        if(confirm("确认删除吗？"))
-        {
-            location='{:U("del")}?did='+id;
-        }
-    }
+        // function set_show(id) {
+        //     location = "{:U('show')}?adv_id=" + id;
+        // }
 
-</script>
+        // function del_id_url2(id) {
+        //     if (confirm("确认删除吗？")) {
+        //         location = '{:U("del")}?did=' + id;
+        //     }
+        // }
+    </script>
 
 </body>
+
 </html>
