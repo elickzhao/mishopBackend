@@ -129,15 +129,20 @@ var ChartsData = function () {
         'id': "",
         'url': "",
         'myChart': {},
-        'init': function (id, url) {
+        'init': function (id, url,yname,tname) {
             this.id = id;
             this.url = url;
+            console.log(yname+"--"+tname);
+            option.yAxis.name = yname;
+            option.series[0].name = tname;
             this.myChart = echarts.init(document.getElementById(id),'walden');
             this.t();
         },
         //今天
         t: function (obj) {
             changeGroupBtn(obj);
+            // console.log(option.yAxis);
+            // option.yAxis.name = "关注人数统计";
             option.xAxis.data = dayArray;
             option.series[0].data = getDate(this.url, 'today'); //[3, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 7, 0, 0, 0, 0, 0, 12, 0, 0];
             //console.log(option);

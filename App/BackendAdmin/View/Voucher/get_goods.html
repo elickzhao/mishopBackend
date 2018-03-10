@@ -1,0 +1,225 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="renderer" content="webkit|ie-comp|ie-stand">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <link rel="Bookmark" href="/favicon.ico">
+  <link rel="Shortcut Icon" href="/favicon.ico" />
+  <!--[if lt IE 9]>
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/html5shiv.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/respond.min.js"></script>
+    <![endif]-->
+  <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui/css/H-ui.min.css" />
+  <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/css/H-ui.admin.css" />
+  <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/lib/Hui-iconfont/1.0.8/iconfont.css" />
+  <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/skin/default/skin.css" id="skin" />
+  <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/css/style.css" />
+  <link rel="stylesheet" href="__PUBLIC__/admin/css/common.css">
+  <link rel="stylesheet" href="__PUBLIC__/admin/lib/layui/css/layui.css">
+  <!--[if IE 6]>
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+    <script>DD_belatedPNG.fix('*');</script>
+    <![endif]-->
+  <script type="text/javascript" src="__PUBLIC__/admin/lib/jquery/1.9.1/jquery.min.js"></script>
+  <script type="text/javascript" src="__PUBLIC__/admin/js/action.js"></script>
+  <script type="text/javascript" src="__PUBLIC__/admin/lib/layui/layui.all.js"></script>
+  <style>
+    .layui-table-cell {
+      height: inherit;
+    }
+
+    .layui-table-cell a {
+      text-decoration: none;
+    }
+  </style>
+  <title>选择商品</title>
+</head>
+
+<body style="background-color: #fff;">
+  <div class="panel panel-default" style="border:0px;">
+    <div class="panel-body">
+      <div class="row cl">
+        <div class="col-sm-4">
+            <button class="layui-btn layui-btn-normal" id="transmit">
+              <i class="Hui-iconfont">&#xe603;</i> 选择商品</button>
+        </div>
+        <div class="col-sm-8 f-r">
+          <form class="layui-form f-r" action="">
+            <div class="layui-inline">
+              <div class="layui-input-inline" style="width: 260px;">
+                <select class="lay-search" name="cateid" id="cateid" lay-filter="cid_1" lay-search lay-verify="cateid">
+                  <option value>所有分类</option>
+                  <option value="0">请选择</option>
+                  <volist name="cate_list" id="v">
+                    <if condition="$v.tid eq 1">
+                      <optgroup label="{$v.name}">
+                        <volist name="cate_list" id="vo">
+                          <if condition="$vo['tid'] == $v['id']">
+                            <option value="{$vo.id}">{$vo.name}</option>
+                          </if>
+                        </volist>
+                      </optgroup>
+                    </if>
+                  </volist>
+                </select>
+              </div>
+              <div class="layui-input-inline" style="width: 260px;">
+                <input type="text" name="name" placeholder="请输入商品名称" autocomplete="off" class="layui-input">
+              </div>
+              <div class="layui-input-inline" style="width: 160px;">
+                <input type="text" name="pro_number" placeholder="请输入商品编码" autocomplete="off" class="layui-input">
+              </div>
+              <button class="layui-btn layui-btn-normal" lay-submit name="submit" lay-filter="*">
+                <i class="Hui-iconfont">&#xe665;</i> 搜索</button>
+              <!-- <input class="btn btn-primary radius" type="submit" name="submit" lay-submit lay-filter="*" value="&nbsp;&nbsp;提交&nbsp;&nbsp;"> -->
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="hr-line-dashed"></div>
+      <table id="demo" lay-filter="test" lay-data="{id: 'idTest'}"></table>
+    </div>
+
+    <script src="https://cdn.bootcss.com/lodash.js/4.17.5/lodash.core.min.js"></script>
+    
+    <script type="text/html" id="type">
+      {{# if(d.type == 1){ }}
+      <span style="color:#090;">
+        <strong> 推荐</strong>
+      </span>
+      {{# } }}
+    </script>
+
+    <script>
+      var table = layui.table;
+      var form = layui.form;
+      var goods;
+
+      /*=============================================
+      =            渲染实例            =
+      =============================================*/
+
+      var tableIns = table.render({
+        elem: '#demo',
+        height: 'full-150',
+        url: "{:U('Product/getGoods')}",
+        //even: true,
+        page: true,
+        cellMinWidth: 80,
+        cols: [
+          [{
+            field: 'id',
+            title: 'ID',
+            sort: true,
+            checkbox: true,
+          }, {
+            field: 'photo_x',
+            title: '图片',
+            align: 'center',
+            templet: function (d) {
+              return "<div><img src='/Data/" + d.photo_x + "' width=80px' height=80px'/></div>"
+            }
+          }, {
+            field: 'name',
+            title: '产品名称',
+            templet: function (d) {
+              return "<div><a herf='JavaScript:;' title='" + d.name + "' stytle='text-decoration:none;'>" + d
+                .name + "</a></div>"
+            }
+          }, {
+            field: 'pro_number',
+            title: '商品货号',
+          }, {
+            field: 'price_yh',
+            title: '价格/元',
+
+            align: 'center',
+          }, {
+            field: 'num',
+            title: '库存',
+            align: 'center',
+            sort: true,
+            templet: function (d) {
+              var r = d.num > 10 ? '<span class="c-black">' + d.num + '</span>' :
+                '<span style="color: #FF5722;"  title="库存不足!"><strong>' + d.num +
+                '</strong></span>';
+              return r;
+
+            }
+          }, {
+            field: 'type',
+            title: '推荐',
+            align: 'center',
+            sort: true,
+            templet: "#type"
+
+          }]
+        ],
+        done: function (res, curr, count) {
+          //数据渲染完的回调 
+          //把返回数据赋值给全局函数
+          goods = res.data;
+        },
+      });
+
+      /*=====  End of 渲染实例  ======*/
+
+      /*=============================================
+      =            头部检索表单提交                  =
+      =============================================*/
+
+      form.on('submit(*)', function (data) {
+        console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
+        var field = data.field;
+
+        if (field.name != ' ' || field.pro_number != ' ') {
+          tableIns.reload({
+            url: "{:U('Product/getGoods')}",
+            where: { //设定异步数据接口的额外参数，任意设
+              cid: field.cateid,
+              name: field.name,
+              pro_number: field.pro_number,
+            }
+          });
+        } else {
+          //console.log('ddd');
+          tableIns.reload({
+            url: "{:U('Product/getGoods')}"
+          });
+        }
+        return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+      });
+
+      /*=====  End of 头部检索表单提交  ======*/
+
+
+      //注意：parent 是 JS 自带的全局对象，可用于操作父页面
+      var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+
+      /*----------  处理选中数据 返回 id 数组  ----------*/
+      function getList() {
+        var checkStatus = table.checkStatus('demo'); //test即为基础参数id对应的值
+        var ids = _.map(checkStatus.data, 'id');
+        return ids.toString();
+      }
+
+
+      //给父页面传值
+      $('#transmit').on('click', function () {
+        let ids = getList();
+        //console.log(ids)
+        if(ids != ""){
+          var dd = parent.$('#proid').val(ids);
+        }else{
+          var dd = parent.$('#proid').val('all');
+        }
+        parent.layer.close(index);
+      });
+    </script>
+</body>
+
+</html>

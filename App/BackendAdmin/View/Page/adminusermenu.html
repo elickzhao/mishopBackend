@@ -1,0 +1,118 @@
+<style>
+    .Hui-aside a {
+        text-decoration: none;
+    }
+
+    ::-webkit-scrollbar {
+        width: 0px
+    }
+</style>
+<aside class="Hui-aside" style="top:34px;background-color: #393D49;width:200px;overflow:-moz-scrollbars-none;-ms-overflow-style:none;">
+    <link rel="stylesheet" href="__PUBLIC__/admin/lib/layui/css/layui.css">
+    <ul class="layui-nav layui-nav-tree lay-accordion" lay-filter="test">
+        <!-- 侧边导航: <ul class="layui-nav layui-nav-tree layui-nav-side"> -->
+        <li class="layui-nav-item ">
+            <a href="javascript:;">
+                <i class="Hui-iconfont">&#xe61d;</i>&nbsp;&nbsp; 系统设置</a>
+            <dl class="layui-nav-child">
+                <dd>
+                    <a data-title="小程序配置" data-href="{:U('More/setup')}" href="{:U('More/setup')}" target="iframe">小程序配置</a>
+                </dd>
+            </dl>
+        </li>
+        <li class="layui-nav-item">
+            <a href="javascript:;"><i class="Hui-iconfont">&#xe620;</i>&nbsp;&nbsp; 商品管理</a>
+            <dl class="layui-nav-child">
+                <dd>
+                    <a data-title="添加产品" data-href="{:U('Product/add')}" href="{:U('Product/add')}" target="iframe">添加商品</a>
+                </dd>
+                <dd>
+                    <a data-title="商品管理" data-href="{:U('Product/index')}" href="{:U('Product/index')}" target="iframe">商品管理</a>
+                </dd>
+            </dl>
+        </li>
+        <li class="layui-nav-item">
+            <a href="javascript:;"><i class="Hui-iconfont">&#xe6b6;</i>&nbsp;&nbsp; 品牌管理</a>
+            <dl class="layui-nav-child">
+                <dd>
+                    <a data-title="添加品牌" data-href="{:U('Brand/add')}" href="{:U('Brand/add')}" target="iframe">添加品牌</a>
+                </dd>
+                <dd>
+                    <a data-title="品牌管理" data-href="{:U('Brand/index')}" href="{:U('Brand/index')}" target="iframe">全部品牌</a>
+                </dd>
+            </dl>
+        </li>
+        <li class="layui-nav-item">
+            <a href="javascript:;"><i class="Hui-iconfont">&#xe681;</i>&nbsp;&nbsp; 分类管理</a>
+            <dl class="layui-nav-child">
+                <dd>
+                    <a data-title="添加分类" data-href="{:U('Category/add')}" href="{:U('Category/add')}" target="iframe">添加分类</a>
+                </dd>
+                <dd>
+                    <a data-title="分类管理" data-href="{:U('Category/index')}" href="{:U('Category/index')}" target="iframe">分类管理</a>
+                </dd>
+            </dl>
+        </li>
+        <li class="layui-nav-item">
+            <a href="javascript:;"><i class="Hui-iconfont">&#xe627;</i>&nbsp;&nbsp; 订单管理</a>
+            <dl class="layui-nav-child">
+                <dd>
+                    <a data-title="全部订单" data-href="{:U('Order/index')}" href="{:U('Order/index')}" target="iframe">全部订单</a>
+                </dd>
+            </dl>
+        </li>
+        <li class="layui-nav-item">
+            <a href="javascript:;"><i class="Hui-iconfont">&#xe60d;</i>&nbsp;&nbsp; 会员管理</a>
+            <dl class="layui-nav-child">
+                <dd>
+                    <a data-href="{:U('User/index')}" data-title="会员管理" href="{:U('User/index')}" target="iframe">会员管理</a>
+                </dd>
+            </dl>
+        </li>
+        <li class="layui-nav-item">
+            <a href="javascript:;"><i class="Hui-iconfont">&#xe6ca;</i>&nbsp;&nbsp; 优惠券管理</a>
+            <dl class="layui-nav-child">
+                <dd>
+                    <a data-title="添加优惠券" data-href="{:U('Voucher/add')}" href="{:U('Voucher/add')}" target="iframe">添加优惠券</a>
+                </dd>
+                <dd>
+                    <a data-title="优惠券管理" data-href="{:U('Voucher/index')}" href="{:U('Voucher/index')}" target="iframe">优惠券管理</a>
+                </dd>
+            </dl>
+        </li>
+        <li class="layui-nav-item">
+            <a href="javascript:;"><i class="Hui-iconfont">&#xe68d;</i>&nbsp;&nbsp; 广告管理</a>
+            <dl class="layui-nav-child">
+                <dd>
+                    <a data-title="添加广告" data-href="{:U('Guanggao/add')}" href="{:U('Guanggao/add')}" target="iframe">添加广告</a>
+                </dd>
+                <dd>
+                    <a data-title="广告管理" data-href="{:U('Guanggao/index')}" href="{:U('Guanggao/index')}" target="iframe">广告管理</a>
+                </dd>
+            </dl>
+        </li>
+        <li class="layui-nav-item">
+            <a href="javascript:;"><i class="Hui-iconfont">&#xe62d;</i>&nbsp;&nbsp; 管理员管理</a>
+            <dl class="layui-nav-child">
+                <dd>
+                    <a data-href="{:U('Adminuser/add')}" data-title="添加管理员" href="{:U('Adminuser/add')}" target="iframe">添加管理员</a>
+                </dd>
+                <dd>
+                    <a data-href="{:U('Adminuser/adminuser')}" data-title="管理员管理" href="{:U('Adminuser/adminuser')}" target="iframe">管理员管理</a>
+                </dd>
+            </dl>
+        </li>
+        <li class="layui-nav-item">
+            <a href="javascript:;"><i class="Hui-iconfont">&#xe66a;</i>&nbsp;&nbsp; 门店管理</a>
+            <dl class="layui-nav-child">
+                <dd>
+                    <a data-href="{:U('Shop/add')}" data-title="添加门店" href="{:U('Shop/add')}" target="iframe">添加门店</a>
+                </dd>
+                <dd>
+                    <a data-href="{:U('Shop/index')}" data-title="门店管理" href="{:U('Shop/index')}" target="iframe">门店管理</a>
+                </dd>
+            </dl>
+        </li>
+    </ul>
+</aside>
+<script type="text/javascript" src="__PUBLIC__/admin/lib/layui/layui.all.js"></script>

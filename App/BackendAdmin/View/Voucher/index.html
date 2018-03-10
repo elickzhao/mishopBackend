@@ -1,0 +1,293 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <link rel="Bookmark" href="/favicon.ico">
+    <link rel="Shortcut Icon" href="/favicon.ico" />
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/html5shiv.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/respond.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui/css/H-ui.min.css" />
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/css/H-ui.admin.css" />
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/lib/Hui-iconfont/1.0.8/iconfont.css" />
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/skin/default/skin.css" id="skin" />
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/css/style.css" />
+    <link rel="stylesheet" href="__PUBLIC__/admin/css/common.css">
+    <link rel="stylesheet" href="__PUBLIC__/admin/lib/layui/css/layui.css">
+    <!--[if IE 6]>
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+    <script>DD_belatedPNG.fix('*');</script>
+    <![endif]-->
+    <style>
+        .layui-table-cell {
+            height: inherit;
+        }
+
+        .layui-table-cell a {
+            text-decoration: none;
+        }
+    </style>
+
+    <title>全部优惠券</title>
+</head>
+
+<body>
+
+    <!-- 导航 -->
+    <include File='Page/nav' />
+    <!-- /导航 -->
+    <div class="page-container">
+
+        <div class="panel panel-default mt-40">
+            <div class="panel-header">{$bc[1]}</div>
+            <div class="panel-body">
+                <div class="row cl">
+                    <div class="col-sm-4">
+                        <a href="{:U('Brand/add')}">
+                            <button class="layui-btn layui-btn-normal">
+                                <i class="Hui-iconfont">&#xe603;</i> 添加优惠券</button>
+                        </a>
+                    </div>
+                    <div class="col-sm-8 f-r">
+                        <form class="layui-form f-r" action="">
+                            <div class="layui-inline">
+                                <div class="layui-input-inline" style="width: 260px;">
+                                    <input type="text" name="brand_name" placeholder="请输入优惠券名称" autocomplete="off" class="layui-input" value="">
+                                </div>
+                                <button class="layui-btn layui-btn-normal" lay-submit name="submit" lay-filter="*">
+                                    <i class="Hui-iconfont">&#xe665;</i> 搜索</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="hr-line-dashed"></div>
+
+                <table id="demo" lay-filter="test" lay-data="{id: 'idTest'}"></table>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部 -->
+    <include File='Page/footer' />
+    <!-- /底部 -->
+
+    <script type="text/html" id="barDemo">
+        <a class="layui-btn layui-btn-sm" href="{:U('add')}?id={{d.id}}">编辑</a>
+        <a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del">删除</a>
+    </script>
+    <script>
+        var table = layui.table;
+        var form = layui.form;
+        var currpage;
+
+        /*=============================================
+        =            渲染实例            =
+        =============================================*/
+
+        var tableIns = table.render({
+            elem: '#demo',
+            height: 'full-290',
+            url: "{:U('Voucher/getVouchers')}",
+            limit:20,
+            page: true,
+            cellMinWidth: 80,
+            cols: [
+                [{
+                    field: 'id',
+                    title: 'ID',
+                    width: '7%',
+                    align: 'center',
+                    sort: true,
+                }, {
+                    field: 'title',
+                    title: '优惠券名',
+                    width: '12%',
+                    align: 'center',
+                    templet: function(d){
+                        return "<div><a herf='JavaScript:;' title='"+d.title+"' stytle='text-decoration:none;'>"+d.title+"</a></div>"
+                    }
+                }, {
+                    field: 'full_money',
+                    title: '满减金额',
+                    width: '15%',
+                    align: 'center',
+                    templet: function(d){
+                        return "<div>满<span style='color:red;'>"+d.full_money+"</span>减<span style='color:red;'>"+d.amount+"</span></div>"
+                    }
+                }, {
+                    field: 'start_time',
+                    title: '开始时间',
+                    width: '12%',
+                    align: 'center',
+                    sort: true,
+                    templet: function (d) {
+                        Date.prototype.toLocaleString = function () {
+                            return this.getFullYear() + "-" + (this.getMonth() + 1) + "-" +
+                                this.getDate() + "  " + this.getHours() + ":" + this.getMinutes() +
+                                ":" + this.getSeconds();
+                        };
+                        return new Date(d.start_time * 1000).toLocaleString();
+                    }
+                },{
+                    field: 'end_time',
+                    title: '过期时间',
+                    width: '12%',
+                    align: 'center',
+                    sort: true,
+                    templet: function (d) {
+                        Date.prototype.toLocaleString = function () {
+                            return this.getFullYear() + "-" + (this.getMonth() + 1) + "-" +
+                                this.getDate() + "  " + this.getHours() + ":" + this.getMinutes() +
+                                ":" + this.getSeconds();
+                        };
+                        return new Date(d.end_time * 1000).toLocaleString();
+                    }
+                },{
+                    field: 'point',
+                    title: '所需积分',
+                    width: '8%',
+                    align: 'center',
+                    sort: true,
+                    templet: function(d){
+                        let r = (d.point == 0) ? "免费领取" :d.point;
+                        return r;
+                    }
+                },{
+                    field: 'count',
+                    title: '发行数量',
+                    width: '7%',
+                    align: 'center',
+                    sort: true,
+
+                },{
+                    field: 'receive_num',
+                    title: '领取数量',
+                    width: '7%',
+                    align: 'center',
+                    sort: true,
+
+                },{
+                    field: 'type',
+                    title: '使用属性',
+                    width: '8%',
+                    align: 'center',
+                    sort: true,
+                    templet: function(d){
+                        let r = (d.proid == 'all') ? "<a class='label label-success'>店内通用</a>" :"<a class='label label-secondary'>限定商品</a>";
+                        return r;
+                    }
+                }, {
+                    field: 'cz',
+                    title: '操作',
+                    width: '12%',
+                    align: 'center',
+                    toolbar: '#barDemo'
+                }]
+            ],
+            done: function (res, curr, count) {
+                //数据渲染完的回调 
+                //把返回数据赋值给全局函数
+                currpage = curr;
+            },
+        });
+
+        /*=====  End of 渲染实例  ======*/
+
+
+        /*=============================================
+        =            监听单元点击更新属性              =
+        =============================================*/
+
+        //监听工具条
+        table.on('tool(test)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+            var data = obj.data; //获得当前行数据
+            var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+            var tr = obj.tr; //获得当前行 tr 的DOM对象
+            //禁用
+            if (layEvent === 'del') { //删除
+                var value = (data.del == 1) ? 0 : 1;
+                layer.confirm('你确定要执行此操作吗？', function (index) {
+                    layer.close(index);
+                    //向服务端发送删除指令
+                    var url = "{:U('del')}?did=" + data.id;
+                    $.ajax(url, {
+                        method: 'GET',
+                        dataType: 'json',
+                        success: function (e) {
+                            if (e.code) {
+                                layer.msg(e.msg, {
+                                    icon: 2
+                                });
+                            } else {
+                                tableIns.reload({
+                                    page: {
+                                        curr: currpage //重新从第 1 页开始
+                                    }
+                                });
+                            }
+                        },
+                        error: function (e) {
+                            console.log(e);
+                        }
+                    });
+                });
+            }
+        });
+
+        /*=====  End of 监听单元点击更新属性  ======*/
+
+
+        // function product_option(page) {
+        //     var obj = {
+        //         "name": $("#name").val(),
+        //     }
+        //     //alert(obj);exit();
+        //     var url = '?page=' + page;
+        //     $.each(obj, function (a, b) {
+        //         url += '&' + a + '=' + b;
+        //     });
+        //     location = url;
+        // }
+
+        // function del_id_url2(id) {
+        //     if (confirm('您确定要删除吗？')) {
+        //         window.location.href = "{:U('del')}?did=" + id;
+        //     };
+
+        // }
+
+        // //推荐设置
+        // function pro_tj(id, type) {
+        //     if (!id) {
+        //         return;
+        //     }
+        //     $.post("{:U('set_grouptj')}", {
+        //         id: id
+        //     }, function (data) {
+        //         if (data.status == 1) {
+        //             if (type == 1) {
+        //                 document.getElementById('spans_' + id).innerHTML =
+        //                     '<a class="label succ" onclick="pro_tj(' + id + ',0);">已推荐</a>';
+        //             } else {
+        //                 document.getElementById('spans_' + id).innerHTML =
+        //                     '<a class="label err" onclick="pro_tj(' + id + ',1);">前台推荐</a>';
+        //             }
+        //         } else {
+        //             alert(data.err);
+        //             return false;
+        //         }
+        //     }, 'json');
+        // }
+    </script>
+
+
+</body>
+
+</html>

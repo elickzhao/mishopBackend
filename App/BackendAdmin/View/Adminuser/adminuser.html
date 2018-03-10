@@ -1,0 +1,381 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <link rel="Bookmark" href="/favicon.ico">
+    <link rel="Shortcut Icon" href="/favicon.ico" />
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/html5shiv.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/respond.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui/css/H-ui.min.css" />
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/css/H-ui.admin.css" />
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/lib/Hui-iconfont/1.0.8/iconfont.css" />
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/skin/default/skin.css" id="skin" />
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/css/style.css" />
+    <link rel="stylesheet" href="__PUBLIC__/admin/css/common.css">
+    <link rel="stylesheet" href="__PUBLIC__/admin/lib/layui/css/layui.css">
+    <!--[if IE 6]>
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+    <script>DD_belatedPNG.fix('*');</script>
+    <![endif]-->
+    <style>
+        .layui-table-cell {
+            height: inherit;
+        }
+
+        .layui-table-cell a {
+            text-decoration: none;
+        }
+    </style>
+    <title>管理员列表</title>
+</head>
+
+<body>
+    <!-- 导航 -->
+    <include File='Page/nav' />
+    <!-- /导航 -->
+
+    <div class="page-container">
+        <div class="panel panel-default mt-40">
+            <div class="panel-header">{$bc[1]}</div>
+            <div class="panel-body">
+
+                <div class="row cl">
+                    <div class="col-sm-8 f-r">
+                        <form class="layui-form f-r" action="">
+                            <div class="layui-inline">
+                                <div class="layui-input-inline" style="width: 260px;">
+                                    <input type="text" name="name" placeholder="管理员名" autocomplete="off" class="layui-input" value="">
+                                </div>
+                                <button class="layui-btn layui-btn-normal" lay-submit name="submit" lay-filter="*">
+                                    <i class="Hui-iconfont">&#xe665;</i> 搜索</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="hr-line-dashed"></div>
+
+                <table id="demo" lay-filter="test" lay-data="{id: 'idTest'}"></table>
+
+
+                <!-- <div class="text-c">
+                    <input type="text" class="input-text" style="width:250px" placeholder="输入管理员名称" id="name" value="{$name}">
+                    <button type="button" class="btn btn-success" id="" name="" onclick="product_option(0);">
+                        <i class="Hui-iconfont">&#xe665;</i> 搜索</button>
+                </div>
+                <br>
+                <table class="table table-border table-bordered table-bg">
+                    <thead>
+
+                        <tr class="text-c">
+                            <th width="40">ID</th>
+                            <th width="150">账户名</th>
+                            <th width="130">注册时间</th>
+                            <th width="150">类型</th>
+                            <th width="100">操作</th>
+                        </tr>
+                    </thead>
+
+
+                    <tbody id="news_option">
+
+                        <volist name="userlist" id="v" empty="暂时没有数据">
+                            <tr data-id="{$v.id}" data-name="{$v.name}" class="text-c">
+                                <td>{$v.id}</td>
+                                <td>{$v.name}</td>
+                                <td>{$v.addtime}</td>
+                                <td>
+                                    <if condition="$v.qx eq 4">超级管理员
+                                        <else />普通管理员</if>
+                                </td>
+                                <td class="obj_1">
+                                    <a href="{:U('Adminuser/add')}?id={$v.id}">修改</a> |
+                                    <a onclick='del_id_urls({$v.id},{$page})'>删除</a>
+                                </td>
+                            </tr>
+                        </volist>
+
+                    </tbody>
+                    <tr>
+                        <td colspan="10" class="td_2">
+                            {$page_index}
+                        </td>
+                    </tr>
+                </table> -->
+            </div>
+        </div>
+    </div>
+    <!-- 底部 -->
+    <include File='Page/footer' />
+    <!-- /底部 -->
+
+    <script type="text/html" id="barDemo">
+        <a class="layui-btn layui-btn-sm" href="{:U('add')}?id={{d.id}}">编辑</a>
+        <a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del">删除</a>
+    </script>
+
+
+    <script>
+
+        var table = layui.table;
+        var form = layui.form;
+        var goods;
+
+        /*=============================================
+        =            头部检索表单提交                  =
+        =============================================*/
+
+        form.on('submit(*)', function (data) {
+            //console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
+            var field = data.field;
+
+            if (field.name != ' ') {
+                tableIns.reload({
+                    url: "{:U('getGuanggaos')}",
+                    where: { //设定异步数据接口的额外参数，任意设
+                        name: field.name,
+                    }
+                });
+            } else {
+                //console.log('ddd');
+                tableIns.reload({
+                    url: "{:U('getGuanggaos')}"
+                });
+            }
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+        /*=====  End of 头部检索表单提交  ======*/
+
+        /*=============================================
+        =            渲染实例            =
+        =============================================*/
+
+        var tableIns = table.render({
+            elem: '#demo',
+            height: 'full-280',
+            url: "{:U('Adminuser/getAdminusers')}",
+            page: true,
+            cellMinWidth: 80,
+            cols: [
+                [{
+                    field: 'id',
+                    title: 'ID',
+                    width: '10%',
+                    align: 'center',
+                    sort: true,
+                }, {
+                    field: 'name',
+                    title: '账户名',
+                    align: 'center',
+                    //width: '28%',
+                    //templet: "<div><a herf='JavaScript:;' title='{{d.name}}' stytle='text-decoration:none;'>{{d.name}}</a></div>"
+                },  {
+                    field: 'addtime',
+                    title: '注册时间',
+                    //width: '10%',
+                    align: 'center',
+                    sort: true,
+                    templet: function (d) {
+                        Date.prototype.toLocaleString = function () {
+                            return this.getFullYear() + "-" + (this.getMonth() + 1) + "-" +
+                                this.getDate() + "  " + this.getHours() + ":" + this.getMinutes() +
+                                ":" + this.getSeconds();
+                        };
+                        return new Date(d.addtime * 1000).toLocaleString();
+                    }
+                }, 
+                {
+                    field: 'qx',
+                    title: '类型',
+                    //width: '10%',
+                    align: 'center',
+                    templet:function(d){
+                        return (d.position == 4)? '<span class="label label-secondary ">超级管理员</span>' : '<span class="label label-success ">普通管理员</span>' ;
+                    }
+                },
+                {
+                    field: 'cz',
+                    title: '操作',
+                    //width: '10%',
+                    align: 'center',
+                    toolbar: '#barDemo'
+                }]
+            ],
+            done: function (res, curr, count) {
+                //数据渲染完的回调 
+                //console.log(res);
+                currpage = curr;
+            },
+        });
+
+        /*=====  End of 渲染实例  ======*/
+
+
+
+        /*=============================================
+        =            监听单元点击更新属性              =
+        =============================================*/
+
+        //监听工具条
+        table.on('tool(test)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+            var data = obj.data; //获得当前行数据
+            var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+            var tr = obj.tr; //获得当前行 tr 的DOM对象
+            //禁用
+            if (layEvent === 'del') { //删除
+                layer.confirm('你确定要执行此操作吗？', function (index) {
+                    layer.close(index);
+                    //向服务端发送删除指令
+                    var url = "{:U('del')}?did=" + data.id;
+                    $.ajax(url, {
+                        method: 'GET',
+                        dataType: 'json',
+                        success: function (e) {
+                            console.log(e);
+                            if (e.code) {
+                                layer.msg(e.msg, {
+                                    icon: 2
+                                });
+                            } else {
+                                tableIns.reload({
+                                    page: {
+                                        curr: currpage //重新从第 当前 页开始
+                                    }
+                                });
+                            }
+                        },
+                        error: function (e) {
+                            console.log(e);
+                        }
+                    });
+                });
+            }
+        });
+
+        /*=====  End of 监听单元点击更新属性  ======*/
+
+
+
+
+
+
+        // function product_option(page) {
+        //     var obj = {
+        //         "name": $("#name").val(),
+        //         "tel": $("#tel").val(),
+        //     }
+        //     var url = '?page=' + page;
+        //     $.each(obj, function (a, b) {
+        //         url += '&' + a + '=' + b;
+        //     });
+        //     location = url;
+        // }
+
+        // //更改按钮
+        // if (type == 'xz') {
+        //     $('.obj_1').html(
+        //         '<input type="button" value="选 择" class="aaa_pts_web_3" style="margin:3px 0;" onclick="window_opener(this)">'
+        //     );
+        // }
+
+        // function window_opener(e) {
+        //     var obj = $(e);
+        //     window.opener.document.getElementById('uid').value = obj.parent().parent().attr('data-id');
+        //     window.opener.document.getElementById('user_name').value = obj.parent().parent().attr('data-name');
+
+        //     window.close();
+        // }
+
+        // function del_id_urls(id, page) {
+        //     if (confirm('你确定要执行此操作吗？')) {
+        //         location.href = '{:U("del")}?did=' + id + '&page=' + page;
+        //     }
+        // }
+    </script>
+
+    <script type="text/javascript">
+        // /*
+        //                                      参数解释：
+        //                                      title	标题
+        //                                      url		请求的url
+        //                                      id		需要操作的数据id
+        //                                      w		弹出层宽度（缺省调默认值）
+        //                                      h		弹出层高度（缺省调默认值）
+        //                                      */
+        // /*管理员-增加*/
+        // function admin_add(title, url, w, h) {
+        //     layer_show(title, url, w, h);
+        // }
+        // /*管理员-删除*/
+        // function admin_del(obj, id) {
+        //     layer.confirm('确认要删除吗？', function (index) {
+        //         $.ajax({
+        //             type: 'POST',
+        //             url: '',
+        //             dataType: 'json',
+        //             success: function (data) {
+        //                 $(obj).parents("tr").remove();
+        //                 layer.msg('已删除!', {
+        //                     icon: 1,
+        //                     time: 1000
+        //                 });
+        //             },
+        //             error: function (data) {
+        //                 console.log(data.msg);
+        //             },
+        //         });
+        //     });
+        // }
+
+        // /*管理员-编辑*/
+        // function admin_edit(title, url, id, w, h) {
+        //     layer_show(title, url, w, h);
+        // }
+        // /*管理员-停用*/
+        // function admin_stop(obj, id) {
+        //     layer.confirm('确认要停用吗？', function (index) {
+        //         //此处请求后台程序，下方是成功后的前台处理……
+
+        //         $(obj).parents("tr").find(".td-manage").prepend(
+        //             '<a onClick="admin_start(this,id)" href="javascript:;" title="启用" style="text-decoration:none"><i class="Hui-iconfont">&#xe615;</i></a>'
+        //         );
+        //         $(obj).parents("tr").find(".td-status").html(
+        //             '<span class="label label-default radius">已禁用</span>');
+        //         $(obj).remove();
+        //         layer.msg('已停用!', {
+        //             icon: 5,
+        //             time: 1000
+        //         });
+        //     });
+        // }
+
+        // /*管理员-启用*/
+        // function admin_start(obj, id) {
+        //     layer.confirm('确认要启用吗？', function (index) {
+        //         //此处请求后台程序，下方是成功后的前台处理……
+
+
+        //         $(obj).parents("tr").find(".td-manage").prepend(
+        //             '<a onClick="admin_stop(this,id)" href="javascript:;" title="停用" style="text-decoration:none"><i class="Hui-iconfont">&#xe631;</i></a>'
+        //         );
+        //         $(obj).parents("tr").find(".td-status").html(
+        //             '<span class="label label-success radius">已启用</span>');
+        //         $(obj).remove();
+        //         layer.msg('已启用!', {
+        //             icon: 6,
+        //             time: 1000
+        //         });
+        //     });
+        // }
+    </script>
+
+</body>
+
+</html>

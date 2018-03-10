@@ -1,0 +1,379 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <link rel="Bookmark" href="/favicon.ico">
+    <link rel="Shortcut Icon" href="/favicon.ico" />
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/html5shiv.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/respond.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui/css/H-ui.min.css" />
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/css/H-ui.admin.css" />
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/lib/Hui-iconfont/1.0.8/iconfont.css" />
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/skin/default/skin.css" id="skin" />
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/css/style.css" />
+    <link rel="stylesheet" href="__PUBLIC__/admin/css/common.css">
+    <!--[if IE 6]>
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+    <script>DD_belatedPNG.fix('*');</script>
+    <![endif]-->
+    <script type="text/javascript" src="__PUBLIC__/admin/js/action.js"></script>
+
+    <title>订单详情</title>
+</head>
+
+<body>
+    <!-- 导航 -->
+    <include File='Page/nav' />
+    <!-- /导航 -->
+
+    <div class="page-container">
+        <div class="panel panel-default mt-40">
+            <div class="panel-header">{$bc[1]}</div>
+            <div class="panel-body">
+                <div class="row cl">
+                    <div class="col-sm-4">
+                        <a href="{:U('index')}">
+                            <button class="btn btn-primary radius">
+                                <i class="Hui-iconfont">&#xe66b;</i> 返回订单列表</button>
+                        </a>
+                    </div>
+                    <!-- 应该加个打印功能 -->
+                </div>
+
+                <div class="hr-line-dashed"></div>
+
+                <!-- 订单基本信息 -->
+                <div class="text-c">
+                    <h4>
+                        <i class="Hui-iconfont c-999">&#xe652;</i> 订单基本信息</h4>
+                </div>
+                <table class="table table-border table-hover mt-5" style="border-top:0px">
+                    <thead>
+                        <tr class="text-c">
+                            <th width="50">订单编号</th>
+                            <th width="40">会员</th>
+                            <th width="40">电话</th>
+                            <th width="40">总价</th>
+                            <th width="60">订单状态</th>
+                            <th width="60">下单时间</th>
+                            <th width="60">支付方式</th>
+                        </tr>
+                    </thead>
+                    <tr class="text-c">
+                        <td>{$order_info.order_sn}</td>
+                        <td>{$order_info.uname}</td>
+                        <td>{$order_info['tel']}</td>
+                        <td>￥
+                            <?php echo number_format($order_info['price'],2); ?>
+                        </td>
+                        <td>
+                            <if condition="$order_info.back == 1">
+                                <font style="color:red">申请退款</font>
+                                <elseif condition="$order_info.back == 2" />
+                                <font style="color:#900">已退款</font>
+                                <else />
+                                <font class='font_color' data-status="{$order_info['status']}">
+                                    <strong>{$order_status[$order_info['status']]}</strong>
+                                </font>
+                            </if>
+                        </td>
+                        <td>{$order_info['addtime']|date="Y-m-d H:i:s",###}</td>
+                        <td>{$order_info.type}</td>
+                    </tr>
+                </table>
+                <!-- /订单基本信息 -->
+                <div class="hr-line-dashed"></div>
+
+                <!-- 收货人信息 -->
+                <div class="text-c">
+                    <h4>
+                        <i class="Hui-iconfont c-999">&#xe652;</i> 收货人信息</h4>
+                </div>
+                <table class="table table-border table-hover mt-5" style="border-top:0px">
+                    <thead>
+                        <tr class="text-c">
+                            <th width="50">收货人</th>
+                            <th width="40">联系电话</th>
+                            <th width="40">邮编</th>
+                            <th width="60">收货地址</th>
+                            <th width="40">配送方式</th>
+                        </tr>
+                    </thead>
+                    <tr class="text-c">
+                        <td>{$order_info['receiver']}</td>
+                        <td>{$order_info['tel']}</td>
+                        <td>{$order_info['code']}</td>
+                        <td>{$order_info['address_xq']}</td>
+                        <td>
+                            <!-- XXX 以后改成 快递公司和门店选择 -->
+                            <if condition="$order_info.type == '微信支付'">
+                                快递
+                                <else /> 门店取货
+                            </if>
+                        </td>
+                    </tr>
+                </table>
+                <!-- /收货人信息 -->
+
+                <div class="hr-line-dashed"></div>
+
+                <!--  商品信息   -->
+                <div class="text-c">
+                    <h4>
+                        <i class="Hui-iconfont c-999">&#xe652;</i> 商品信息</h4>
+                </div>
+                <!-- <table class="table table-border table-bordered table-bg"> -->
+                <table class="table table-border table-hover mt-5" style="border-top:0px">
+                    <thead>
+                        <tr class="text-c">
+                            <th width="150">商品名称</th>
+                            <th width="40">商品价格</th>
+                            <th width="40">数量</th>
+                            <th width="40">总价</th>
+                            <!-- <th width="60">商品属性</th> -->
+                        </tr>
+                    </thead>
+
+
+                    <volist name='order_pro' id="pro">
+                        <tr id="concent_tr_{$pro.id}" class="text-c">
+                            <td>{$pro.name}</td>
+                            <td>￥ {$pro.price}</td>
+                            <td>{$pro.num}</td>
+                            <td>
+                                <font style="color:#c00;">￥
+                                    <?php echo number_format($pro['price']*$pro['num'],2); ?>
+                                </font>
+                            </td>
+                            <!-- <td>{$pro.pro_buff}</td> -->
+                        </tr>
+                    </volist>
+                </table>
+                <!--  /商品信息   -->
+
+                <div class="hr-line-dashed"></div>
+
+                <div class="text-c">
+                    <h4>
+                        <i class="Hui-iconfont c-999">&#xe652;</i> 订单操作</h4>
+                </div>
+                <hr>
+
+                <table class="table mt-5">
+                    <tr>
+                        <td>订单号: {$order_info.order_sn}</td>
+                        <td>收货人： {$order_info.receiver}</td>
+                        <td>联系电话： {$order_info.tel}</td>
+                        <td>收货地址： {$order_info.address_xq}</td>
+                        <td>订单总价: ￥
+                            <?php echo number_format($order_info['price'],2); ?>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <font class="c-primary f-14">
+                                <strong>状态修改：</strong>
+                            </font>
+                            <span class="select-box size-MINI" style="width:150px;">
+                                <select class="select" id="zt_order_update">
+                                    <option value="">全部状态</option>
+                                    <?php foreach ($order_status as $key => $val) { ?>
+                                    <?php if($key > 10){ ?>
+                                    <option value="<?php echo $key; ?>" <?php if($order_info[ 'status']==$key) { ?>selected="selected"
+                                        <?php } ?> >-
+                                        <?php echo $val; ?>
+                                    </option>
+                                    <?php } ?>
+                                    <?php } ?>
+                                </select>
+                            </span>
+                        </td>
+                        <td>
+                            发货快递：
+                            <input class="input-text radius size-MINI" style="width:150px;" id="kuaidi_name" value="<?php echo $order_info['kuaidi_name'];?>"
+                            />
+
+                        </td>
+                        <td> 快递单号：
+                            <input class="input-text radius size-MINI" style="width:150px;" id="kuaidi_num" value="<?php echo $order_info['kuaidi_num'];?>"
+                            />
+                        </td>
+                        <?php if($order_info['status'] > 20){ ?>
+                        <td>
+                            <a href="http://www.kuaidi100.com/" target="_blank" class="c-success f-14" style="text-decoration:none">
+                                <strong>查看物流</strong>
+                            </a>
+                        </td>
+                        <?php } ?>
+                    </tr>
+                    <?php if($order_info['back']>0){ ?>
+                    <tr>
+                        <td>
+                            <font class="f-14" style="color:#c00;">
+                                <strong>确认退款：</strong>
+                            </font>
+                            <a class="btn btn-warning radius" onclick="oo()">确认退款</a>
+                        </td>
+
+                        <td colspan="4">
+                            <font class="f-14" style="color:#c00;">
+                                <strong>退款原因：</strong>
+                            </font>
+                            <span class="f-14" style="color:#063559;">
+                                <!-- 我就是要退款我就是要退款我就是要退款我就是要退款我就是要退款我就是要退款 -->
+                                <?php echo $order_info['back_remark'];?>
+                            </span>
+                        </td>
+                    </tr>
+                    <?php } ?>
+                </table>
+
+                <div class="hr-line-dashed"></div>
+                <input type="button" value="提交" onclick="sms_message()" class="btn btn-primary radius" />
+                <br>
+                <input type="hidden" value="<?php echo $order_info['status']; ?>" name="o_status" id="o_status">
+
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部 -->
+    <include File='Page/footer' />
+    <!-- /底部 -->
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/layui/layui.all.js"></script>
+    <script>
+        $(function () {
+            //订单状态字体颜色设置
+            $('.font_color').each(function (index, element) {
+                var obj = $(this);
+                switch (obj.data('status')) {
+                    case 20:
+                        obj.css('color', '#f37b1d');
+                        break;
+                    case 50:
+                    case 30:
+                        obj.css('color', '#090');
+                        break;
+                    case 51:
+                        obj.css('color', '#900');
+                        break;
+                    default:
+                        obj.css('color', '#063559');
+                        break;
+                }
+            });
+
+
+            if ($('.font_color').data('status') > 20) {
+                $('#kuaidi_name').attr('disabled', true);
+                $('#kuaidi_num').attr('disabled', true);
+            }
+        });
+
+
+        function oo() {
+            layer.confirm('确认删除吗？', function (index) {
+                    layer.close(index);
+                    //向服务端发送删除指令
+                    location.href="{:U('back')}?oid={{d.id}}";
+
+                });
+        }
+
+        //删除订单
+        /*function order_show_updata(id,type){
+         if(id=='' || id==null)return;
+         var $val='';
+         if(type!='del'){
+         $val=document.getElementById('pro_beizhu_'+id).value;
+         }
+
+         $.post('include/order_beizhu.php',{"id":id,"beizhu":$val,"type":type},function(data){
+         if(data=='1'){
+         alert('操作成功！');
+         if(type=='del'){window.close(); window.opener.history.go(0);}
+         }else{
+         alert("操作失败");
+         }
+         });
+         }*/
+
+        //保存快递名称，快递单号
+        function sms_message() {
+            try {
+                //if(!confirm('确定发送订单发货短信吗？')) return;
+                //获取订单当前状态
+                var o_status = $('#o_status').val();
+                //获取订单选择状态
+                var order_status = $('#zt_order_update').val();
+                //选择状态不能比当前状态小，已付款的订单不能变成未付款
+                //if (order_status && order_status!=40 && order_status<o_status) {return;};
+                //获取快递名称
+                var kuaidi_name = $('#kuaidi_name').val();
+                if (kuaidi_name.length < 1 && order_status == 30) throw ('快递名称不能为空！');
+                //获取快递单号
+                var kuaidi_num = $('#kuaidi_num').val();
+                if (kuaidi_num.length < 1 && order_status == 30) throw ('运单号不能为空！');
+
+                if (!order_status && kuaidi_num.length < 1 && kuaidi_name.length < 1) {
+                    throw ('请输入快递信息或选择订单状态！');
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: "{:U('sms_up')}",
+                    data: {
+                        'order_status': order_status,
+                        'kuaidi_name': kuaidi_name,
+                        'kuaidi_num': kuaidi_num,
+                        'oid': <?php echo $order_info['id'];?>
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.returns) {
+                            layer.msg('提交成功！', {
+                                icon: 1,
+                                time: 1500
+                            }, function () {
+                                location.replace(location.href);
+                            });
+                            //alert('提交成功！');
+                            //window.reload();
+                        } else {
+                            //alert(data.message);
+                            layer.msg(data.message, {
+                                icon: 2,
+                                time: 1500
+                            });
+                        }
+
+                    },
+                    error: function (msg) {
+                        //alert('网络连接失败！');
+                        layer.msg('网络连接失败！', {
+                            icon: 2
+                        });
+                    }
+                });
+
+            } catch (e) {
+                layer.msg(e, {
+                    icon: 2,
+                    time: 1500
+                });
+                //alert(e);
+            }
+        }
+    </script>
+
+</body>
+
+</html>
