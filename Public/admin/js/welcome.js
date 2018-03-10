@@ -48,7 +48,7 @@ option = {
         axisLabel: {
             //formatter: '{value} °C'
             interval: 5,
-            margin: 16,
+            margin: 25,
         }
     },
     series: [{
@@ -108,8 +108,8 @@ function getDate(url, time) {
         },
         'url': url,
         'success': function (res) {
-            //console.log(res);
-            result = res;
+            console.log(res.sql);
+            result = res.data;
         },
         'error': function (e) {
             console.log(e);
@@ -129,45 +129,57 @@ var ChartsData = function () {
         'id': "",
         'url': "",
         'myChart': {},
+        'option':{},
+        'yname':"",
+        'tname':"",
         'init': function (id, url,yname,tname) {
             this.id = id;
             this.url = url;
-            console.log(yname+"--"+tname);
-            option.yAxis.name = yname;
-            option.series[0].name = tname;
+            //console.log(yname+"--"+tname);
+            this.option = option;
+            this.yname = yname;
+            this.tname = tname;
             this.myChart = echarts.init(document.getElementById(id),'walden');
             this.t();
         },
         //今天
         t: function (obj) {
-            changeGroupBtn(obj);
-            // console.log(option.yAxis);
-            // option.yAxis.name = "关注人数统计";
-            option.xAxis.data = dayArray;
-            option.series[0].data = getDate(this.url, 'today'); //[3, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 7, 0, 0, 0, 0, 0, 12, 0, 0];
-            //console.log(option);
-            this.myChart.setOption(option);
+            changeGroupBtn(obj);          
+            this.option.xAxis.data = dayArray;
+            this.option.series[0].data = getDate(this.url, 'today'); //[3, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 7, 0, 0, 0, 0, 0, 12, 0, 0];
+            //console.log(this.option.yAxis.name);
+            this.option.yAxis.name = this.yname;
+            this.option.series[0].name=this.tname
+            // console.log(this.option);
+            // console.log(this.option.yAxis.name);
+            this.myChart.setOption(this.option);
         },
         //昨天
         y: function (obj) {
             changeGroupBtn(obj);
-            option.xAxis.data = dayArray;
-            option.series[0].data = getDate(this.url, 'yesterday');
-            this.myChart.setOption(option);
+            this.option.xAxis.data = dayArray;
+            this.option.series[0].data = getDate(this.url, 'yesterday');
+            this.option.yAxis.name = this.yname;
+            this.option.series[0].name=this.tname
+            this.myChart.setOption(this.option);
         },
         //本周
         w: function (obj) {
             changeGroupBtn(obj);
-            option.xAxis.data = weekArray;
-            option.series[0].data = getDate(this.url, 'week');
-            this.myChart.setOption(option);
+            this.option.xAxis.data = weekArray;
+            this.option.series[0].data = getDate(this.url, 'week');
+            this.option.yAxis.name = this.yname;
+            this.option.series[0].name=this.tname
+            this.myChart.setOption(this.option);
         },
         //本月
         m: function (obj) {
             changeGroupBtn(obj);
-            option.xAxis.data = monthArray();
-            option.series[0].data = getDate(this.url, 'month');
-            this.myChart.setOption(option);
+            this.option.xAxis.data = monthArray();
+            this.option.series[0].data = getDate(this.url, 'month');
+            this.option.yAxis.name = this.yname;
+            this.option.series[0].name=this.tname
+            this.myChart.setOption(this.option);
         },
         todo: function () {
             console.log(this.myChart);

@@ -256,23 +256,23 @@ class PageController extends PublicController
 
             case 'week':
                 $map['addtime']  = array('between',$this->mysqlDate->weekPeriod());
-                $field = 'COUNT(*) AS count,HOUR(FROM_UNIXTIME(ADDTIME)) AS g ';
+                $field = 'COUNT(*) AS count,DAY(FROM_UNIXTIME(ADDTIME)) AS g ';
                 $total = 7;
                 break;
 
             case 'month':
                 $map['addtime']  = array('between',$this->mysqlDate->monthPeriod());
-                $field = 'COUNT(*) AS count,HOUR(FROM_UNIXTIME(ADDTIME)) AS g ';
+                $field = 'COUNT(*) AS count,DAY(FROM_UNIXTIME(ADDTIME)) AS g ';
                 $total = date('t', strtotime('now'));
                 break;
         }
     
 
-        $list  = $this->order->field($field)->where($map)->group('g')->cache(true, 60)->select();
-        
+        $list  = $this->order->field($field)->where($map)->group('g')->cache(true, 60)->select();        
+        $sql = $this->order->getlastsql();
         $result = $this->formatChartsData($list, $total);
 
-        $this->ajaxReturn($result);
+        $this->ajaxReturn(['data'=>$result,"sql"=>$sql]);
     }
 
         /**
@@ -296,13 +296,13 @@ class PageController extends PublicController
 
             case 'week':
                 $map['addtime']  = array('between',$this->mysqlDate->weekPeriod());
-                $field = 'COUNT(*) AS count,HOUR(FROM_UNIXTIME(ADDTIME)) AS g ';
+                $field = 'COUNT(*) AS count,DAY(FROM_UNIXTIME(ADDTIME)) AS g ';
                 $total = 7;
                 break;
 
             case 'month':
                 $map['addtime']  = array('between',$this->mysqlDate->monthPeriod());
-                $field = 'COUNT(*) AS count,HOUR(FROM_UNIXTIME(ADDTIME)) AS g ';
+                $field = 'COUNT(*) AS count,DAY(FROM_UNIXTIME(ADDTIME)) AS g ';
                 $total = date('t', strtotime('now'));
                 break;
         }
@@ -310,9 +310,10 @@ class PageController extends PublicController
 
         $list  = $this->user->field($field)->where($map)->group('g')->cache(true, 60)->select();
         
+        $sql = $this->order->getlastsql();
         $result = $this->formatChartsData($list, $total);
 
-        $this->ajaxReturn($result);
+        $this->ajaxReturn(['data'=>$result,"sql"=>$sql]);
     }
 
     /**
