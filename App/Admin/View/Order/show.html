@@ -178,7 +178,10 @@
                     </tr>
 
                     <tr>
-                        <td><font class="c-primary f-14"><strong>状态修改：</strong></font>
+                        <td>
+                            <font class="c-primary f-14">
+                                <strong>状态修改：</strong>
+                            </font>
                             <span class="select-box size-MINI" style="width:150px;">
                                 <select class="select" id="zt_order_update">
                                     <option value="">全部状态</option>
@@ -210,106 +213,33 @@
                             </a>
                         </td>
                         <?php } ?>
+                    </tr>
+                    <?php if($order_info['back']>0){ ?>
+                    <tr>
+                        <td>
+                            <font class="f-14" style="color:#c00;">
+                                <strong>确认退款：</strong>
+                            </font>
+                            <a class="btn btn-warning radius" onclick="oo()">确认退款</a>
+                        </td>
 
-                        <?php if($order_info['back']>0){ ?>
-                        <td> 退款原因：
-                            <span style="color:#c00;">
+                        <td colspan="4">
+                            <font class="f-14" style="color:#c00;">
+                                <strong>退款原因：</strong>
+                            </font>
+                            <span class="f-14" style="color:#063559;">
+                                <!-- 我就是要退款我就是要退款我就是要退款我就是要退款我就是要退款我就是要退款 -->
                                 <?php echo $order_info['back_remark'];?>
                             </span>
                         </td>
-                        <?php } ?>
-
                     </tr>
+                    <?php } ?>
                 </table>
 
                 <div class="hr-line-dashed"></div>
                 <input type="button" value="提交" onclick="sms_message()" class="btn btn-primary radius" />
                 <br>
                 <input type="hidden" value="<?php echo $order_info['status']; ?>" name="o_status" id="o_status">
-
-                <!-- <div style="border-bottom:1px solid #b9c9d6;">
-                    
-                    <ul style="margin-top:15px;  padding-bottom:5px; width:500px; float:left;">
-                        <li style="font-size:15px; color:#000;">收货地址信息：</li>
-                        <li style="padding-top:5px;">
-                            <div>收货人：
-                                <?php echo $order_info['receiver']; ?>
-                            </div>
-                            <div>联系电话：
-                                <?php echo $order_info['tel']; ?>
-                            </div>
-                            <div>邮政编码：
-                                <?php echo $order_info['code']; ?>
-                            </div>
-                            <div>收货地址：
-                                <?php echo $order_info['address_xq']; ?>
-                            </div>
-                        </li>
-                    </ul>
-                    <ul style="margin-top:15px; padding-bottom:5px; width:300px; float:left;">
-                        <li style="font-size:15px; color:#000;">买家留言：</li>
-                        <li style="padding:5px 0 0 0; padding-top:5px; color:#090; font-size:14px;">
-                            <?php echo $order_info['remark']; ?>
-                        </li>
-                        <li style="font-size:15px; color:#000;">邮费信息：</li>
-                        <li style="padding:5px 0 0 0; color:#090; font-size:14px;">
-                            <?php if ($post_info) {
-             	echo $post_info['price']."（".$post_info['name']."）"."<br />".$order_info['post_remark'];
-                }else {
-                echo "卖家包邮";
-                } ?>
-                        </li>
-                    </ul>
-                    <ul style="margin-top:15px; padding-bottom:5px; width:300px; float:left;">
-                        <li style="font-size:15px; color:#000;">物流信息：</li>
-                        <li>
-                            暂无
-                        </li>
-                    </ul>
-                </div>
-
-                <div>
-                    <div class="ord_show_5">
-
-                        <br>
-                        <div style="color:#c00; line-height:20px;font-size: 14px">发送待收货短信通知，要求订单状态必须为“待收货”,表示卖家已经发货。</div>
-                        发货快递：
-                        <input id="kuaidi_name" value="<?php echo $order_info['kuaidi_name'];?>" />
-                        <br> 快递单号：
-                        <input id="kuaidi_num" value="<?php echo $order_info['kuaidi_num'];?>" />
-
-                        <br> 状态修改：
-                        <select id="zt_order_update">
-                            <option value="">全部状态</option>
-                            <?php foreach ($order_status as $key => $val) { ?>
-                            <option value="<?php echo $key; ?>" <?php if($order_info[ 'status']==$key) { ?>selected="selected"
-                                <?php } ?> >-
-                                <?php echo $val; ?>
-                            </option>
-                            <?php } ?>
-                        </select>
-                        <br>
-                        <font>订单价格:</font> ￥
-                        <?php echo number_format($order_info['price'],2); ?>
-
-                        <br>
-                        <br>
-                        <input type="button" value="提交" style="" onclick="sms_message()" class="btn btn-success" />
-                        <br>
-                        <input type="hidden" value="<?php echo $order_info['status']; ?>" name="o_status" id="o_status">
-                    </div>
-                </div>
-
-                <?php if($order_info['back']>0){ ?>
-                <div class="ord_show_1">
-                    <div class="ord_show_6" style="float:left;margin-top:10px">
-                        退款原因：
-                        <span style="color:#c00;">
-                            <?php echo $order_info['back_remark'];?>
-                        </span>
-                    </div>
-                </div>
-                <?php } ?> -->
 
             </div>
         </div>
@@ -318,7 +248,7 @@
     <!-- 底部 -->
     <include File='Page/footer' />
     <!-- /底部 -->
-
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/layui/layui.all.js"></script>
     <script>
         $(function () {
             //订单状态字体颜色设置
@@ -346,8 +276,17 @@
                 $('#kuaidi_name').attr('disabled', true);
                 $('#kuaidi_num').attr('disabled', true);
             }
-        })
+        });
 
+
+        function oo() {
+            layer.confirm('确认删除吗？', function (index) {
+                    layer.close(index);
+                    //向服务端发送删除指令
+                    location.href="{:U('back')}?oid={{d.id}}";
+
+                });
+        }
 
         //删除订单
         /*function order_show_updata(id,type){
@@ -402,8 +341,8 @@
                         if (data.returns) {
                             layer.msg('提交成功！', {
                                 icon: 1,
-                                time:1500
-                            }, function(){
+                                time: 1500
+                            }, function () {
                                 location.replace(location.href);
                             });
                             //alert('提交成功！');
@@ -412,7 +351,7 @@
                             //alert(data.message);
                             layer.msg(data.message, {
                                 icon: 2,
-                                time:1500
+                                time: 1500
                             });
                         }
 
@@ -420,15 +359,15 @@
                     error: function (msg) {
                         //alert('网络连接失败！');
                         layer.msg('网络连接失败！', {
-                                icon: 2
-                            });
+                            icon: 2
+                        });
                     }
                 });
 
             } catch (e) {
                 layer.msg(e, {
                     icon: 2,
-                    time:1500
+                    time: 1500
                 });
                 //alert(e);
             }

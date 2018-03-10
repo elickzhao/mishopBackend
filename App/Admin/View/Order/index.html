@@ -199,10 +199,10 @@
         <a class="layui-btn layui-btn-sm" href="{:U('show')}?oid={{d.id}}">查看</a>
         <a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del">删除</a>
         <!-- <a class="layui-btn layui-btn-normal layui-btn-sm" onclick="openDialog2()">测试用</a> -->
-        <if condition="$order.back eq 1">
-            <a class="layui-btn layui-btn-normal layui-btn-sm" lay-event="del">确认退款</a>
-            <a href="{:U('back')}?oid={$order.id}">确认退款</a>
-        </if>
+        {{# if(d.back == 1){ }}
+        <a class="layui-btn layui-btn-normal layui-btn-sm" onclick="oo()">确认退款</a>
+        <!-- <a class="layui-btn layui-btn-normal layui-btn-sm" lay-event="del">确认退款</a> -->
+        {{# } }}
     </script>
     <script type="text/html" id="typeTpl">
         {{# if(d.back == 1){ }}
@@ -310,7 +310,6 @@
                     field: 'cz',
                     title: '操作',
                     //width: '14%',
-                    align: 'center',
                     toolbar: '#barDemo'
                 }]
             ],
@@ -390,6 +389,16 @@
             }
         });
 
+        function oo() {
+            layer.confirm('确认删除吗？', function (index) {
+                layer.close(index);
+                //向服务端发送删除指令
+                location.href = "{:U('back')}?oid={{d.id}}";
+                //location.href = "www.baidu.com";
+
+            });
+        }
+
         /*=====  End of 监听单元点击更新属性  ======*/
 
 
@@ -397,7 +406,7 @@
         // function product_option() {
         //     $('form').submit();
         // }
-        
+
         // //打印订单 不过现在内容是错误的
         // function openDialog() {
         //     //alert('aaa');die();
