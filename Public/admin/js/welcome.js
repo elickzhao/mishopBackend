@@ -108,8 +108,10 @@ function getDate(url, time) {
         },
         'url': url,
         'success': function (res) {
-            console.log(res.sql);
-            result = res.data;
+            // console.log(res.sql);
+            // console.log(res.data);
+            //result = res.data;
+            result = res;
         },
         'error': function (e) {
             console.log(e);
@@ -150,8 +152,6 @@ var ChartsData = function () {
             //console.log(this.option.yAxis.name);
             this.option.yAxis.name = this.yname;
             this.option.series[0].name=this.tname
-            // console.log(this.option);
-            // console.log(this.option.yAxis.name);
             this.myChart.setOption(this.option);
         },
         //昨天

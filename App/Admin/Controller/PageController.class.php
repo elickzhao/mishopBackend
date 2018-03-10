@@ -256,7 +256,7 @@ class PageController extends PublicController
 
             case 'week':
                 $map['addtime']  = array('between',$this->mysqlDate->weekPeriod());
-                $field = 'COUNT(*) AS count,DAY(FROM_UNIXTIME(ADDTIME)) AS g ';
+                $field = 'COUNT(*) AS count,WEEKDAY(FROM_UNIXTIME(ADDTIME)) AS g ';
                 $total = 7;
                 break;
 
@@ -296,7 +296,7 @@ class PageController extends PublicController
 
             case 'week':
                 $map['addtime']  = array('between',$this->mysqlDate->weekPeriod());
-                $field = 'COUNT(*) AS count,DAY(FROM_UNIXTIME(ADDTIME)) AS g ';
+                $field = 'COUNT(*) AS count,WEEKDAY(FROM_UNIXTIME(ADDTIME)) AS g ';
                 $total = 7;
                 break;
 
@@ -310,8 +310,13 @@ class PageController extends PublicController
 
         $list  = $this->user->field($field)->where($map)->group('g')->cache(true, 60)->select();
         
-        $sql = $this->order->getlastsql();
-        $result = $this->formatChartsData($list, $total);
+        $sql = $this->user->getlastsql();
+        if($_GET['time'] == month){
+            $result = $this->formatChartsData($list, $total,1);
+        }else{
+            $result = $this->formatChartsData($list, $total);
+        }
+        
 
         $this->ajaxReturn(['data'=>$result,"sql"=>$sql]);
     }
@@ -322,12 +327,18 @@ class PageController extends PublicController
      * @param  [int/string] $total [x轴坐标总数]
      * @return [array]        [处理后数组]
      */
-    public function formatChartsData($list, $total)
+    public function formatChartsData($list, $total,$month=0)
     {
 
         //抽取小时为单独数组
         $h = Arrays::pluck($list, 'g');
         //dump($h);
+        //因为从0开始所以把日期减一天
+        if($month){
+            $h = Arrays::each($h, function($value) {
+                return $value -1 ; 
+            });
+        }
         //抽取小时统计为单独数组
         $count = Arrays::pluck($list, 'count');
         //dump($count);
