@@ -270,16 +270,16 @@ class PageController extends PublicController
 
         $list  = $this->order->field($field)->where($map)->group('g')->cache(true, 60)->select();
         
-        if($_GET['time'] == month){
-            $result = $this->formatChartsData($list, $total,1);
-        }else{
+        if ($_GET['time'] == month) {
+            $result = $this->formatChartsData($list, $total, 1);
+        } else {
             $result = $this->formatChartsData($list, $total);
         }
 
         $this->ajaxReturn($result);
     }
 
-        /**
+    /**
      * [orderChartsData 图表用户数据]
      * @return [json] [日/周/月的时间段用户数据]
      */
@@ -314,9 +314,9 @@ class PageController extends PublicController
 
         $list  = $this->user->field($field)->where($map)->group('g')->cache(true, 60)->select();
         
-        if($_GET['time'] == month){
-            $result = $this->formatChartsData($list, $total,1);
-        }else{
+        if ($_GET['time'] == 'month') {
+            $result = $this->formatChartsData($list, $total, 1);
+        } else {
             $result = $this->formatChartsData($list, $total);
         }
 
@@ -329,15 +329,15 @@ class PageController extends PublicController
      * @param  [int/string] $total [x轴坐标总数]
      * @return [array]        [处理后数组]
      */
-    public function formatChartsData($list, $total,$month=0)
+    public function formatChartsData($list, $total, $month = 0)
     {
 
         //抽取小时为单独数组
         $h = Arrays::pluck($list, 'g');
         //dump($h);
-        if($month){
-            $h = Arrays::each($h, function($value) {
-                return $value -1 ; 
+        if ($month) {
+            $h = Arrays::each($h, function ($value) {
+                return $value -1 ;
             });
         }
         //抽取小时统计为单独数组
