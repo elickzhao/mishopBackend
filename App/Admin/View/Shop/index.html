@@ -115,7 +115,7 @@
             elem: '#demo',
             height: 'full-280',
             url: "{:U('Shop/getshops')}",
-            limit:20,
+            limit: 20,
             page: true,
             cellMinWidth: 80,
             cols: [
@@ -125,37 +125,38 @@
                     //width: '10%',
                     align: 'center',
                     sort: true,
-                },{
+                }, {
                     field: 'name',
                     title: '店名',
                     align: 'center',
                     //width: '28%',
                     //templet: "<div><a herf='JavaScript:;' title='{{d.name}}' stytle='text-decoration:none;'>{{d.name}}</a></div>"
-                },{
+                }, {
                     field: 'address',
                     title: '地址',
                     align: 'center',
                     //width: '28%',
                     //templet: "<div><a herf='JavaScript:;' title='{{d.name}}' stytle='text-decoration:none;'>{{d.name}}</a></div>"
-                },{
+                }, {
                     field: 'contact',
                     title: '联系人',
                     align: 'center',
                     //width: '28%',
                     //templet: "<div><a herf='JavaScript:;' title='{{d.name}}' stytle='text-decoration:none;'>{{d.name}}</a></div>"
-                },{
+                }, {
                     field: 'phone',
                     title: '联系电话',
                     align: 'center',
                     //width: '28%',
                     //templet: "<div><a herf='JavaScript:;' title='{{d.name}}' stytle='text-decoration:none;'>{{d.name}}</a></div>"
-                },{
+                }, {
                     field: 'sort',
                     title: '排序',
                     align: 'center',
+                    event: 'sort',
                     //width: '28%',
                     //templet: "<div><a herf='JavaScript:;' title='{{d.name}}' stytle='text-decoration:none;'>{{d.name}}</a></div>"
-                },{
+                }, {
                     field: 'cz',
                     title: '操作',
                     width: '10%',
@@ -212,10 +213,64 @@
                     });
                 });
             }
+
+            //修改排序
+            if (layEvent == "sort") {
+                layer.prompt({
+                    formType: 2,
+                    title: '修改 门店  [ ' + data.name + ' ] 的排序',
+                    value: data.sort
+                }, function (value, index) {
+                    if (parseInt(value) < 0 || isNaN(value)) {
+                        layer.alert("请填写正确数字!", {
+                            icon: 2
+                        });
+                    } else {
+                        layer.close(index);
+                        //这里一般是发送修改的Ajax请求
+                        getData(data.id, layEvent, value);
+                        //同步更新表格和缓存对应的值
+                        obj.update({
+                            sort: value
+                        });
+                    }
+                })
+            }
         });
 
         /*=====  End of 监听单元点击更新属性  ======*/
 
+        /*=============================================
+        =            请求后台数据            =
+        =============================================*/
+        function getData(id, filed, value, re) {
+            $.ajax("{:U('Shop/setAtrr')}", {
+                method: 'POST',
+                data: {
+                    id: id,
+                    filed: filed,
+                    val: value,
+                },
+                dataType: 'json',
+                success: function (e) {
+                    //console.log(e);
+                    //批量操作时重读整个页面
+                    if (re) {
+                        tableIns.reload();
+                    }
+                    if (e.code == 0) {
+                        layer.msg('更新数据失败!', {
+                            icon: 2
+                        });
+                    }
+                },
+                error: function (e) {
+                    console.log(e);
+                }
+
+            });
+        }
+        /*=====  End of 请求后台数据  ======*/
     </script>
 
 </body>

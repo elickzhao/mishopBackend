@@ -225,16 +225,18 @@
                     align: 'center',
                     //这样写会报错 因为与tp{}冲突
                     //templet: "<div><img src='/Data/{{d.photo_x}}' width='80px' height='80px'/></div>"
-                    templet: function(d){
-                        return "<div><img src='/Data/"+d.photo_x+"' width='80px' height='80px'/></div>"
+                    templet: function (d) {
+                        return "<div><img src='/Data/" + d.photo_x +
+                            "' width='80px' height='80px'/></div>"
                     }
                 }, {
                     field: 'name',
                     title: '产品名称',
                     width: '25%',
                     //templet: "<div><a herf='JavaScript:;' title='{{d.name}}' stytle='text-decoration:none;'>{{d.name}}</a></div>"
-                    templet: function(d){
-                        return "<div><a herf='JavaScript:;' title='"+d.name+"' stytle='text-decoration:none;'>"+d.name+"</a></div>"
+                    templet: function (d) {
+                        return "<div><a herf='JavaScript:;' title='" + d.name +
+                            "' stytle='text-decoration:none;'>" + d.name + "</a></div>"
                     }
                 }, {
                     field: 'pro_number',
@@ -245,12 +247,14 @@
                     title: '价格/元',
                     width: '7%',
                     align: 'center',
+                    event: 'price_yh'
                 }, {
                     field: 'num',
                     title: '库存',
                     width: '6%',
                     align: 'center',
                     sort: true,
+                    event: 'num',
                     templet: function (d) {
                         var r = d.num > 10 ? '<span class="c-black">' + d.num + '</span>' :
                             '<span style="color: #FF5722;"  title="库存不足!"><strong>' + d.num +
@@ -332,7 +336,7 @@
 
         /*=====  End of 选中操作  ======*/
 
-        
+
         /*----------  处理选中数据 返回 id 数组  ----------*/
         function getList() {
             var checkStatus = table.checkStatus('demo'); //test即为基础参数id对应的值
@@ -348,38 +352,38 @@
         //批量下架
         $("#isDown").click(function () {
             let list = getList();
-            getData(list, 'is_down', 1,1);
+            getData(list, 'is_down', 1, 1);
 
         });
         //批量上架
         $("#isUp").click(function () {
             let list = getList();
-            getData(list, 'is_down', 0,1);
+            getData(list, 'is_down', 0, 1);
 
         });
         //批量新品
         $("#isShow").click(function () {
             let list = getList();
-            getData(list, 'is_show', 1,1);
+            getData(list, 'is_show', 1, 1);
 
         });
         //批量热卖
         $("#isHot").click(function () {
             let list = getList();
-            getData(list, 'is_hot', 1,1);
+            getData(list, 'is_hot', 1, 1);
 
         });
         //批量推荐
         $("#isType").click(function () {
             let list = getList();
-            getData(list, 'type', 1,1);
+            getData(list, 'type', 1, 1);
 
         });
 
         /*=====  End of 批量操作  ======*/
 
 
-        
+
         /*=============================================
         =            头部检索表单提交                  =
         =============================================*/
@@ -405,9 +409,9 @@
             }
             return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
         });
-  
+
         /*=====  End of 头部检索表单提交  ======*/
-        
+
 
         /*=============================================
         =            请求后台数据            =
@@ -424,7 +428,7 @@
                 success: function (e) {
                     //console.log(e);
                     //批量操作时重读整个页面
-                    if(re){
+                    if (re) {
                         tableIns.reload();
                     }
                     if (e.code == 0) {
@@ -443,16 +447,62 @@
 
 
 
-        
+
         /*=============================================
         =            监听单元点击更新属性              =
         =============================================*/
-        
-           //监听工具条
-           table.on('tool(test)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+
+        //监听工具条
+        table.on('tool(test)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
             var data = obj.data; //获得当前行数据
             var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
             var tr = obj.tr; //获得当前行 tr 的DOM对象
+
+            //修改价格
+            if (layEvent == "price_yh") {
+                layer.prompt({
+                    formType: 2,
+                    title: '修改 货号  [ ' + data.pro_number + ' ] 的价格',
+                    value: data.price_yh
+                }, function (value, index) {
+                    if (parseFloat(value).toFixed(2) < 0 || isNaN(value)) {
+                        layer.alert("请填写正确数字!", {
+                            icon: 2
+                        });
+                    } else {
+                        layer.close(index);
+                        //这里一般是发送修改的Ajax请求
+                        getData(data.id, layEvent, value);
+                        num = parseFloat(value).toFixed(2);
+                        //同步更新表格和缓存对应的值
+                        obj.update({
+                            price_yh: num
+                        });
+                    }
+                })
+            }
+            //修改库存
+            if (layEvent == "num") {
+                layer.prompt({
+                    formType: 2,
+                    title: '修改 货号  [ ' + data.pro_number + ' ] 的库存',
+                    value: data.num
+                }, function (value, index) {
+                    if (parseInt(value) < 0 || isNaN(value)) {
+                        layer.alert("请填写正确数字!", {
+                            icon: 2
+                        });
+                    } else {
+                        layer.close(index);
+                        //这里一般是发送修改的Ajax请求
+                        getData(data.id, layEvent, value);
+                        //同步更新表格和缓存对应的值
+                        obj.update({
+                            num: value
+                        });
+                    }
+                })
+            }
 
             //上架
             if (layEvent === 'is_down') {
@@ -507,9 +557,8 @@
                 });
             }
         });
-     
+
         /*=====  End of 监听单元点击更新属性  ======*/
-        
     </script>
 
 </body>

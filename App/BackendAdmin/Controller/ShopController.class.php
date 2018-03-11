@@ -130,4 +130,33 @@ class ShopController extends PublicController
             $this->error('操作失败.');
         }
     }
+
+    /**
+     * [setGoodsAtrr 设置门店属性]
+     */
+    public function setAtrr()
+    {
+        if (IS_POST) {
+            $pro_id = $_POST['id'];
+            $filed = $_POST['filed'];
+            $val = $_POST['val'];
+
+            if (is_array($pro_id)) {
+                $where = 'id in ('. implode(',', $pro_id).')';
+            } else {
+                $where = 'id='.intval($pro_id);
+            }
+
+            $data[$filed] = $val;
+            $up = $this->shop->where($where)->save($data);
+            //$rr = $this->shop->getlastsql();
+
+            $resuslt = [code=>$up,msg=>$up];
+            $this->ajaxReturn($resuslt);
+        } else {
+            $this->ajaxReturn([code=>1,msg=>'非法请求']);
+        }
+    }
+
+
 }
