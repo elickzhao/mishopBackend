@@ -1,0 +1,227 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <link rel="Bookmark" href="/favicon.ico">
+    <link rel="Shortcut Icon" href="/favicon.ico" />
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/html5shiv.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/respond.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui/css/H-ui.min.css" />
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/css/H-ui.admin.css" />
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/lib/Hui-iconfont/1.0.8/iconfont.css" />
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/skin/default/skin.css" id="skin" />
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/css/style.css" />
+    <link rel="stylesheet" href="__PUBLIC__/admin/css/common.css">
+    <link rel="stylesheet" href="__PUBLIC__/admin/lib/layui/css/layui.css">
+    <!--[if IE 6]>
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+    <script>DD_belatedPNG.fix('*');</script>
+    <![endif]-->
+    <style>
+        .layui-table-cell {
+            height: inherit;
+        }
+
+        .layui-table-cell a {
+            text-decoration: none;
+        }
+
+        #commentForm .layui-form-label {
+            text-align: left;
+        }
+    </style>
+    <title>新增广告</title>
+</head>
+
+<body>
+    <!-- 导航 -->
+    <include File='Page/nav' />
+    <!-- /导航 -->
+    <div class="page-container">
+        <div class="panel panel-default mt-40">
+            <div class="panel-header">{$bc[1]}</div>
+            <div class="panel-body">
+
+                <form class="form form-horizontal layui-form" action="#" method="post" id="commentForm" enctype="multipart/form-data">
+                    <div class="row cl">
+                        <div class="col-xs-4 col-sm-2 ml-30">
+                            <label class="layui-form-label">订单号：</label>
+                        </div>
+
+                        <div class="formControls col-xs-8 col-sm-4">
+                            <input type="text" class="input-text" placeholder="订单号. 必填字段!" name="transaction_id" id="transaction_id" value="{$adv_info.transaction_id}"
+                                minlength="2" required>
+                        </div>
+
+                        <label class="layui-form-label">
+                            <span class="c-red text-l">*</span>
+                        </label>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row cl">
+                        <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-2">
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <input class="btn btn-primary radius" lay-submit lay-filter="*" type="submit" name="submit" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
+        <div class="panel panel-default mt-20" id="result" style="display:none">
+            <div class="panel-header">支付查询结果</div>
+            <div class="panel-body">
+                <blockquote class="layui-elem-quote layui-quote-nm">
+                    <!-- <table class="layui-table" lay-even lay-skin="nob">
+                            <tr>
+                                <td>appid :</td>
+                                <td> wx42806525d51bf4c0</td>
+                            </tr>
+                            <tr>
+                                <td>result_code:</td>
+                                <td>SUCCESS</td>
+                            </tr>
+                            <tr>
+                                <td>cash_fee:</td>
+                                <td>14090</td>
+                            </tr>
+                            <tr>
+                                <td>fee_type:</td>
+                                <td>CNY</td>
+                            </tr>
+                        </table> -->
+                    <!-- appid : wx42806525d51bf4c0 attach : 环球集市购买_2018031299509898 bank_type : ICBC_DEBIT cash_fee : 14090 fee_type : CNY is_subscribe
+                        : N mch_id : 1374845202 nonce_str : rFfbjojcgjHKpnxG openid : o9Mz00L1rHCarvgEk7X145SX3u4o out_trade_no
+                        : 2018031299509898 result_code : SUCCESS return_code : SUCCESS return_msg : OK sign : CE2FEBC58C8E88DAE52C2C089547178F
+                        time_end : 20180312151832 total_fee : 14090 trade_state : SUCCESS trade_type : JSAPI transaction_id :
+                        4200000073201803127435414966 -->
+
+                    <table class="table table-border table-hover  table-striped">
+                        <tr>
+                            <td>订单号 :</td>
+                            <td id="order_id"> 2018031153100545</td>
+                            <td>支付总额 :</td>
+                            <td id="order_price"> 20180 </td>
+                        </tr>
+                        <tr>
+                            <td>支付结果:</td>
+                            <td id="order_result">SUCCESS</td>
+                            <td>交易状态:</td>
+                            <td id="order_status">SUCCESS</td>
+                        </tr>
+                        <tr>
+                            <td>支付账户:</td>
+                            <td id="order_user">环球集市购买_2018030949511004 </td>
+                            <td>支付完成时间 :</td>
+                            <td id="order_time">20180311140459 </td>
+                        </tr>
+                    </table>
+                </blockquote>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 底部 -->
+    <div style="position:fixed; bottom:0; width:100%">
+        <include File='Page/footer' />
+    </div>
+    <!-- /底部 -->
+
+    <script>
+        var form = layui.form;
+
+        $("#commentForm").validate({
+            rules: {
+                transaction_id: {
+                    number: true
+                }
+            }
+        });
+
+        /*=============================================
+        =            请求后台数据            =
+        =============================================*/
+        function getData(url, value) {
+            let dd;
+            $.ajax(url, {
+                method: 'POST',
+                data: {
+                    'transaction_id': value,
+                },
+                dataType: 'json',
+                success: function (e) {
+                    switch (e.code) {
+                        case 0:
+                            layer.msg(e.msg, {
+                                icon: 2
+                            });
+                            console.log(e.data);
+                            break;
+                        case 1:
+                            orderStatus(e.data);
+                            break;
+                        case 2:
+                            orderStatus(e.data);
+                            break;
+                        case 3:
+                            console.log(e.msg + ": " + e.data);
+                            break;
+                    }
+                },
+                error: function (e) {
+                    console.log(e);
+                }
+
+            });
+        }
+        /*=====  End of 请求后台数据  ======*/
+
+        /*=============================================
+        =            头部检索表单提交                  =
+        =============================================*/
+
+        form.on('submit(*)', function (data) {
+            //console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
+            let value = data.field.transaction_id;
+            if (parseInt(value) < 0 || isNaN(value) || value == "") {
+                layer.alert("请填写正确数字!", {
+                    icon: 2
+                });
+            } else {
+                console.log(value);
+                // //这里一般是发送修改的Ajax请求
+                getData("{:U('getData')}", value);
+            }
+
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+        /*=====  End of 头部检索表单提交  ======*/
+
+
+        function orderStatus(data) {
+            $("#order_id").html(data.did);
+            $("#order_price").html(data.total_fee);
+            $("#order_result").html(data.result_code);
+            $("#order_status").html(data.status);
+            $("#order_time").html(data.time_end);
+            $("#order_user").html(data.user);
+            $("#result").show(1000);
+        }
+    </script>
+
+
+</body>
+
+</html>
