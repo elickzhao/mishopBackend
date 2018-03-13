@@ -54,7 +54,7 @@ class FinanceController extends PublicController
 
         if ($order_status['return_code'] == "FAIL") {
             $resuslt = ['code'=>0,msg=>'尚未支付!','data'=>$order_status['return_msg']];
-        } elseif ($order_status['return_code'] == "SUCCESS" && $order_status['result_code'] == "SUCCESS") {
+        } elseif ($order_status['trade_state'] == "SUCCESS" && $order_status['result_code'] == "SUCCESS") {
             $resuslt = ['code'=>1,msg=>'支付成功!','data'=>$order_status];
         } elseif ($order_status['return_code'] == "SUCCESS" && $order_status['trade_state'] == "REFUND") {
             $resuslt = ['code'=>2,msg=>'退款的支付!','data'=>$order_status];
@@ -63,6 +63,41 @@ class FinanceController extends PublicController
         }
         $this->ajaxReturn($resuslt);
     }
+
+    public function getRefund()
+    {
+
+        $status = ['SUCCESS'=>'退款成功','REFUNDCLOSE'=>'退款关闭','PROCESSING'=>'退款处理中','CHANGE'=>'退款异常，退款到银行发现用户的卡作废或者冻结了，导致原路退款银行卡失败'];
+        $channel = ['ORIGINAL'=>'原路退款','BALANCE'=>'退回到余额','OTHER_BALANCE'=>'原账户异常退到其他余额账户','OTHER_BANKCARD'=>'原银行卡异常退到其他银行卡'];
+
+        $did = $_REQUEST["transaction_id"];
+        $transaction_id = $this->order->where('order_sn ='.$did)->getField('trade_no');
+
+        // $input = new \WxPayOrderQuery();
+        // $input->SetTransaction_id($transaction_id);
+        // $order_status = \WxPayApi::orderQuery($input);
+
+        $input = new \WxPayRefundQuery();
+        $input->SetTransaction_id($transaction_id);
+        $refund_status = \WxPayApi::refundQuery($input);
+
+        $refund_status['did'] = $did;
+        //$refund_status['total_fee'] = $refund_status['total_fee'] / 100;
+        $refund_status['total_fee'] = $refund_status['refund_fee_0'] / 100;
+        $refund_status['status'] = $status[$refund_status['refund_status_0']];
+        $refund_status['user'] = $channel[$refund_status['refund_channel_0']];
+
+
+        if ($refund_status['return_code'] == "FAIL") {
+            $resuslt = ['code'=>0,msg=>$refund_status['return_msg'],'data'=>$refund_status['return_msg']];
+        } elseif ($refund_status['return_code'] == "SUCCESS" && $refund_status['result_code'] == "SUCCESS") {
+            $resuslt = ['code'=>1,msg=>'退款成功!','data'=>$refund_status];
+        } else {
+            $resuslt = ['code'=>2,msg=>'其他!','data'=>$refund_status];
+        }
+        $this->ajaxReturn($resuslt);
+    }
+
 
     public function printf_info($data)
     {
