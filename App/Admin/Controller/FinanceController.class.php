@@ -1,5 +1,5 @@
 <?php
-namespace BackendAdmin\Controller;
+namespace Admin\Controller;
 
 use Think\Controller;
 
@@ -99,10 +99,24 @@ class FinanceController extends PublicController
     }
 
 
-    public function printf_info($data)
+    public function downloadbill()
     {
-        foreach ($data as $key => $value) {
-            echo "<font color='#f00;'>$key</font> : $value <br/>";
+        if (IS_POST) {
+            if (isset($_REQUEST["bill_date"]) && $_REQUEST["bill_type"] != "") {
+                $bill_date = $_REQUEST["bill_date"];
+                $bill_type = $_REQUEST["bill_type"];
+                $input = new \WxPayDownloadBill();
+                $input->SetBill_date($bill_date);
+                $input->SetBill_type($bill_type);
+                $file = \WxPayApi::downloadBill($input);
+                echo $file;
+                //TODO 对账单文件处理
+                exit(0);
+            }
         }
+
+        $bc = ['财务管理','下载对账单'];
+        $this->assign('bc', $bc);
+        $this->display();
     }
 }
