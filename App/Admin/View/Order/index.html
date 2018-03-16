@@ -200,7 +200,7 @@
         <a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del">删除</a>
         <!-- <a class="layui-btn layui-btn-normal layui-btn-sm" onclick="openDialog2()">测试用</a> -->
         {{# if(d.back == 1){ }}
-        <a class="layui-btn layui-btn-normal layui-btn-sm" id="refund" data-did="{{d.id}}" onclick="oo()">确认退款</a>
+        <a class="layui-btn layui-btn-normal layui-btn-sm"  data-did="{{d.id}}" onclick="oo(this)">确认退款</a>
         <!-- <a class="layui-btn layui-btn-normal layui-btn-sm" lay-event="del">确认退款</a> -->
         {{# } }}
     </script>
@@ -389,10 +389,10 @@
             }
         });
 
-        function oo() {
-            layer.confirm('确认退款吗？', function (index) {
+        function oo(obj) {
+            let did = $(obj).data("did");
+            layer.confirm('确认ID: '+did+' 的订单退款吗？', function (index) {
                 layer.close(index);
-                let did = $("#refund").data("did");
                 //向服务端发送删除指令
                 location.href = "{:U('back')}?oid="+did;
                 //location.href = "www.baidu.com";
