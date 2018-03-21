@@ -174,12 +174,12 @@
                     sort: true,
                 }, {
                     field: 'photo',
-                    title: '头像',
+                    title: '广告图',
                     // width: '20%',
                     align: 'center',
                     templet: function (d) {
                         //还有个问题是直接用 "" 字符串形式的话 使用{} 可能造成tp的冲突而报错
-                        return "<div><img src='" + d.photo + "' width='120px' height='60px'/></div>" //千万注意没有外层div是不可以的
+                        return "<div><img src='/Data/" + d.photo + "' width='120px' height='60px'/></div>" //千万注意没有外层div是不可以的
                     }
                 }, {
                     field: 'name',

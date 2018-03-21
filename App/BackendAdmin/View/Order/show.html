@@ -283,7 +283,7 @@
             layer.confirm('确认退款吗？', function (index) {
                     layer.close(index);
                     //向服务端发送删除指令
-                    location.href="{:U('back')}?oid={{d.id}}";
+                    location.href="{:U('back')}?oid={$order_info.id}";
 
                 });
         }
@@ -334,7 +334,7 @@
                         'order_status': order_status,
                         'kuaidi_name': kuaidi_name,
                         'kuaidi_num': kuaidi_num,
-                        'oid': <?php echo $order_info['id'];?>
+                        'oid': "<?php echo $order_info['id'];?>"
                     },
                     dataType: "json",
                     success: function (data) {
