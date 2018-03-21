@@ -336,6 +336,7 @@ class PageController extends PublicController
         $h = Arrays::pluck($list, 'g');
         //dump($h);
         if ($month) {
+            //因坐标系从0开始还得-1
             $h = Arrays::each($h, function ($value) {
                 return $value -1 ;
             });

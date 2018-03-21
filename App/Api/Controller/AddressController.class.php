@@ -1,35 +1,40 @@
 <?php
 namespace Api\Controller;
+
 use Think\Controller;
-class AddressController extends PublicController {
-	//***************************
-	//  获取会员地址数据接口
-	//***************************
-    public function index(){
+
+class AddressController extends PublicController
+{
+    //***************************
+    //  获取会员地址数据接口
+    //***************************
+    public function index()
+    {
         $user_id=intval($_REQUEST['user_id']);
-        if (!$user_id){
+        if (!$user_id) {
             echo json_encode(array('status'=>0,'err'=>'网络异常.'.__LINE__));
             exit();
         }
 
-    	//所有地址
-    	$addressModel = M('address');
-		$adds_list=$addressModel->where('uid='.intval($user_id))->order('is_default desc,id desc')->select();
-    	
-    	//所有省份
-		// $china_city=M("china_city");
-  //       $sheng = $china_city->where('tid=0')->field('id,name')->select();
+        //所有地址
+        $addressModel = M('address');
+        $adds_list=$addressModel->where('uid='.intval($user_id))->order('is_default desc,id desc')->select();
+        
+        //所有省份
+        // $china_city=M("china_city");
+        //       $sheng = $china_city->where('tid=0')->field('id,name')->select();
 
-		echo json_encode(array('status'=>1,'adds'=>$adds_list,'sheng_list'=>$sheng));
-		exit();
+        echo json_encode(array('status'=>1,'adds'=>$adds_list,'sheng_list'=>$sheng));
+        exit();
     }
 
     //***************************
     //  会员添加地址接口
     //***************************
-    public function add_adds(){
+    public function add_adds()
+    {
         $user_id=intval($_REQUEST['user_id']);
-        if (!$user_id){
+        if (!$user_id) {
             echo json_encode(array('status'=>0,'err'=>'网络异常.'.__LINE__));
             exit();
         }
@@ -50,8 +55,13 @@ class AddressController extends PublicController {
             exit();
         }
         if (!$data['sheng'] || !$data['city'] || !$data['quyu']) {
-            echo json_encode(array('status'=>0,'err'=>'请选择省市区.'));
-            exit();
+            $data['sheng'] = M('china_city')->where('name="'.$_POST['sheng'].'"')->getField('id');
+            $data['city'] = M('china_city')->where('name="'.$_POST['city'].'"')->getField('id');
+            $data['quyu'] = M('china_city')->where('name="'.$_POST['quyu'].'"')->getField('id');
+            if (!$data['sheng'] || !$data['city'] || !$data['quyu']) {
+                echo json_encode(array('status'=>0,'err'=>'请选择省市区.'));
+                exit();
+            }
         }
         $check_id = M('address')->where($data)->getField('id');
         if ($check_id) {
@@ -71,7 +81,7 @@ class AddressController extends PublicController {
             $arr['addr_xq'] = $data['address_xq'];
             echo json_encode(array('status'=>1,'add_arr'=>$arr));
             exit();
-        }else{
+        } else {
             echo json_encode(array('status'=>0,'err'=>'操作失败.'));
             exit();
         }
@@ -80,7 +90,8 @@ class AddressController extends PublicController {
     //***************************
     //  会员获取单个地址接口
     //***************************
-    public function details(){
+    public function details()
+    {
         $addr_id = intval($_REQUEST['addr_id']);
         if (!$addr_id) {
             echo json_encode(array('status'=>0));
@@ -105,24 +116,25 @@ class AddressController extends PublicController {
     //***************************
     //  会员删除地址接口
     //***************************
-    public function del_adds(){
+    public function del_adds()
+    {
         $user_id=intval($_REQUEST['user_id']);
-        if (!$user_id){
+        if (!$user_id) {
             echo json_encode(array('status'=>0,'err'=>'网络异常.'.__LINE__));
             exit();
         }
 
-        $id_arr = trim($_POST['id_arr'],',');
+        $id_arr = trim($_POST['id_arr'], ',');
         if ($id_arr) {
             $res = M('address')->where('uid='.intval($user_id).' AND id IN ('.$id_arr.')')->delete();
             if ($res) {
                 echo json_encode(array('status'=>1));
                 exit();
-            }else{
+            } else {
                 echo json_encode(array('status'=>0,'err'=>'操作失败.'));
                 exit();
             }
-        }else{
+        } else {
             echo json_encode(array('status'=>0,'err'=>'没有找到要删除的数据.'));
             exit();
         }
@@ -131,7 +143,8 @@ class AddressController extends PublicController {
     //***************************
     //  获取省份数据接口
     //***************************
-    public function get_province(){
+    public function get_province()
+    {
         //所有省份
         $china_city=M("china_city");
         $list = $china_city->where('tid=0')->field('id,name')->select();
@@ -143,9 +156,10 @@ class AddressController extends PublicController {
     //***************************
     //  获取城市数据接口
     //***************************
-    public function get_city(){
+    public function get_city()
+    {
         $sheng=intval($_REQUEST['sheng']);
-        if (!$sheng){
+        if (!$sheng) {
             echo json_encode(array('status'=>0,'err'=>'请选择省份.'.__LINE__));
             exit();
         }
@@ -162,9 +176,10 @@ class AddressController extends PublicController {
     //***************************
     //  获取区域数据接口
     //***************************
-    public function get_area(){
+    public function get_area()
+    {
         $city=intval($_REQUEST['city']);
-        if (!$city){
+        if (!$city) {
             echo json_encode(array('status'=>0,'err'=>'请选择城市.'.__LINE__));
             exit();
         }
@@ -181,7 +196,8 @@ class AddressController extends PublicController {
     //***************************
     //  获取邮政编号接口
     //***************************
-    public function get_code(){
+    public function get_code()
+    {
         $quyu=intval($_REQUEST['quyu']);
         
         //所有省份
@@ -195,9 +211,10 @@ class AddressController extends PublicController {
     //***************************
     //  设置默认地址
     //***************************
-    public function set_default(){
+    public function set_default()
+    {
         $uid=intval($_REQUEST['uid']);
-        if (!$uid){
+        if (!$uid) {
             echo json_encode(array('status'=>0,'err'=>'登录状态异常.'));
             exit();
         }
@@ -221,10 +238,9 @@ class AddressController extends PublicController {
         if ($up2) {
             echo json_encode(array('status'=>1));
             exit();
-        }else{
+        } else {
             echo json_encode(array('status'=>0,'err'=>'设置失败.'.__LINE__));
             exit();
         }
     }
-
 }

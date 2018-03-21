@@ -335,6 +335,7 @@ class PageController extends PublicController
         //dump($h);
         //因为从0开始所以把日期减一天
         if ($month) {
+            //因坐标系从0开始还得-1
             $h = Arrays::each($h, function ($value) {
                 return $value -1 ;
             });
