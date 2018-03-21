@@ -99,15 +99,20 @@
         <include File='Page/footer' />
     </div>
     <!-- /底部 -->
+    <script src="https://cdn.bootcss.com/moment.js/2.21.0/moment.min.js"></script>
     <script>
         $("#commentForm").validate();
         var form = layui.form;
-
+        
+        //三个月前 对账单只能下载三个月内的
+        let start_time = moment().subtract(3, 'M').format('Y-MM-DD HH:mm:ss');
         var laydate = layui.laydate;
         //执行一个laydate实例
         laydate.render({
             elem: '#bill_date',
-            format : 'yyyyMMdd'
+            format : 'yyyyMMdd',
+            min: start_time,
+            max:0
         });
 
         /*=============================================
