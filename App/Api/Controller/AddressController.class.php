@@ -72,6 +72,10 @@ class AddressController extends PublicController
         $city_name = M('china_city')->where('id='.intval($data['city']))->getField('name');
         $quyu_name = M('china_city')->where('id='.intval($data['quyu']))->getField('name');
         $data['address_xq'] = $province.' '.$city_name.' '.$quyu_name.' '.$data['address'];
+        //如果没有地址设为默认地址
+        if (M('address')->where(['uid'=>$data['uid']])->count() == 0) {
+            $data['is_default']=1;
+        }
         $res = M('address')->add($data);
         if ($res) {
             $arr = array();
@@ -242,5 +246,17 @@ class AddressController extends PublicController
             echo json_encode(array('status'=>0,'err'=>'设置失败.'.__LINE__));
             exit();
         }
+    }
+
+    public function getShop()
+    {
+        $r = M('shop')->getField('name', true);
+        if ($r) {
+            $resuslt = ['status'=>1,'msg'=>'成功.','data'=>$r];
+        } else {
+            $resuslt = ['status'=>0,'msg'=>'失败.','data'=>$r];
+        }
+
+        $this->ajaxReturn($resuslt);
     }
 }

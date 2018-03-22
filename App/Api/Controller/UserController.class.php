@@ -22,7 +22,7 @@ class UserController extends PublicController {
 		$order = array();
 		$order['pay_num'] = intval(M('order')->where('uid='.intval($uid).' AND status=10 AND del=0')->getField('COUNT(id)'));
 		$order['rec_num'] = intval(M('order')->where('uid='.intval($uid).' AND status=30 AND del=0 AND back="0"')->getField('COUNT(id)'));
-		$order['finish_num'] = intval(M('order')->where('uid='.intval($uid).' AND status>30 AND del=0 AND back="0"')->getField('COUNT(id)'));
+		$order['finish_num'] = intval(M('order')->where('uid='.intval($uid).' AND status=50 AND del=0 AND back="0"')->getField('COUNT(id)'));
 		$order['refund_num'] = intval(M('order')->where('uid='.intval($uid).' AND back>"0"')->getField('COUNT(id)'));
 		echo json_encode(array('status'=>1,'orderInfo'=>$order));
 		exit();

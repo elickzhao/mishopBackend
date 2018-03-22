@@ -243,17 +243,17 @@ class PaymentController extends PublicController
             //$pro['zprice']+=$pro[$k]['zprice'];
             //    $buff_text='';
             // if($pro[$k]['buff']){
-            // 	//验证属性
-            // 	$buff = explode(',',$pro[$k]['buff']);
-            // 	if(is_array($buff)){
-            // 		foreach($buff as $keys => $val){
-            // 			$ggid=M("guige")->where('id='.intval($val))->getField('name');
-            // 			//$buff_text .= select('name','aaa_cpy_category','id='.$val['id']).':'.select('name','aaa_cpy_category','id='.$val['val']).' ';
-            // 			$buff_text .=' '.$ggid.' ';
-            // 		}
-            // 	}
+            //  //验证属性
+            //  $buff = explode(',',$pro[$k]['buff']);
+            //  if(is_array($buff)){
+            //      foreach($buff as $keys => $val){
+            //          $ggid=M("guige")->where('id='.intval($val))->getField('name');
+            //          //$buff_text .= select('name','aaa_cpy_category','id='.$val['id']).':'.select('name','aaa_cpy_category','id='.$val['val']).' ';
+            //          $buff_text .=' '.$ggid.' ';
+            //      }
+            //  }
             // }
-            // 	$pro[$k]['buff']=$buff_text;
+            //  $pro[$k]['buff']=$buff_text;
             //获取可用优惠券
             $vou = $this->get_voucher($uid, intval($pro[$k]['pid']), $id);
         }
@@ -374,10 +374,11 @@ class PaymentController extends PublicController
             $data['status'] = 10;
 
             $adds_id = intval($_POST['aid']);
-            if (!$adds_id) {
+            if (!$adds_id && $_POST['address'] == '') {
                 throw new \Exception('请选择收货地址.'.__LINE__);
             }
-            $adds_info = M('address')->where('id='.intval($adds_id))->find();
+            //$adds_info =  M('address')->where('id='.intval($adds_id))->find();
+            $adds_info = ($_POST['address'] == '') ? M('address')->where('id='.intval($adds_id))->find() : json_decode($_POST['address'], true);
             $data['receiver'] = $adds_info['name'];
             $data['tel'] = $adds_info['tel'];
             $data['address_xq'] = $adds_info['address_xq'];
