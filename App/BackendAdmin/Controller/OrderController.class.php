@@ -496,6 +496,31 @@ class OrderController extends PublicController
         }
     }
 
+    /**
+     * [cancelBack 取消退款]
+     * @return [type] [description]
+     */
+    public function cancelBack()
+    {
+        $id = (int) $_GET['oid'];
+
+        $back_info = $this->order->where('id='.intval($id))->find();
+
+        if (!$back_info || 1 != intval($back_info['back'])) {
+            $this->error('订单信息错误.');
+        }
+
+        
+        $up_back = $this->order->where('id='.$id)->save(['back'=>0]); // 根据条件更新记录
+
+
+        if ($up_back) {
+            $this->success('操作成功.');
+        } else {
+            $this->error('操作失败.');
+        }
+    }
+
     /*
 
     *
