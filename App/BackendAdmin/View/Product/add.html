@@ -299,7 +299,7 @@
                         </div>
 
                         <div class="formControls col-xs-8 col-sm-4">
-                            <input type="text" class="input-text number" placeholder="库存" name="num" id="num" value="<?php echo $pro_allinfo['num']==0 ? 999999 : $pro_allinfo['num']; ?>"
+                            <input type="text" class="input-text number" lay-verify="num" placeholder="库存" name="num" id="num" value="<?php echo $pro_allinfo['num']==0 ? 999999 : $pro_allinfo['num']; ?>"
                                 required>
                         </div>
                         <label class="layui-form-label">
@@ -651,7 +651,11 @@
                     return "请先上传图片!";
                 }
             },
-
+            num: function (value) {
+                if (parseInt(value) < 0 || isNaN(value)) {
+                    return "请填写正确数字!";
+                }
+            }
         });
 
         //提交监听事件    //没这个是不行的 否则自定义验证不生效
@@ -980,7 +984,8 @@
                                     dataType: 'json'
                                 }).done(function (response) {
                                     if (response.result) {
-                                        img = $('<img src="' + response.result + '">');
+                                        img = $('<img src="' + response.result +
+                                            '">');
                                         $wrap.empty().append(img);
                                     } else {
                                         $wrap.text("预览出错");
@@ -1060,7 +1065,8 @@
                             });
                         } else {
                             $wrap.css('filter',
-                                'progid:DXImageTransform.Microsoft.BasicImage(rotation=' + (~~(
+                                'progid:DXImageTransform.Microsoft.BasicImage(rotation=' +
+                                (~~(
                                     (file.rotation / 90) % 4 + 4) % 4) + ')');
 
                         }
