@@ -354,4 +354,24 @@ class PageController extends PublicController
         }
         return Arrays::sortKeys($c);    //重新排序
     }
+
+    /**
+     * [closeOrder 定时关闭订单返回库存]
+     * @return [type] [void] [定时关闭订单返回库存]
+     */
+    public function closeOrder()
+    {
+        $arr = M('order')->where("STATUS = 10 AND ADDTIME  < UNIX_TIMESTAMP(DATE_SUB(CURDATE(),INTERVAL 2 DAY))")->getField('id', true);
+        foreach ($arr as $k => $v) {
+            M('order')->where("id=".$v)->save(['status'=>51]);  //关闭订单
+            \Think\Log::write('[Close Order] 订单 ID: '.$v.' 未付款超过时长,自动关闭订单', 'INFO ');
+            //增加库存
+            $r = M('order_product')->where('order_id='.$v)->getField('pid,num');
+            foreach ($r as $key => $value) {
+                M('product')->where('id='.$key)->setInc('num', $value);
+            }
+            //dump($r);
+        }
+        //dump($r);
+    }
 }
