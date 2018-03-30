@@ -361,7 +361,8 @@ class PageController extends PublicController
      */
     public function closeOrder()
     {
-        $arr = M('order')->where("STATUS = 10 AND ADDTIME  < UNIX_TIMESTAMP(DATE_SUB(CURDATE(),INTERVAL 2 DAY))")->getField('id', true);
+        //当前为两天未付款就关闭订单
+        $arr = M('order')->where("STATUS = 10 AND ADDTIME  < UNIX_TIMESTAMP(DATE_SUB(CURDATE(),INTERVAL 3 DAY))")->getField('id', true);
         foreach ($arr as $k => $v) {
             M('order')->where("id=".$v)->save(['status'=>51]);  //关闭订单
             \Think\Log::write('[Close Order] 订单 ID: '.$v.' 未付款超过时长,自动关闭订单', 'INFO ');

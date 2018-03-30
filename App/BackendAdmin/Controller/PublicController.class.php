@@ -191,7 +191,8 @@ class PublicController extends Controller
                 if ($_REQUEST['flag'] == 'logo') {
                     $this->ajaxReturn($info['file']);
                 } else {
-                    $str = '/Data/UploadFiles/'.$info['file']['savepath'].$info['file']['savename'];
+                    // $str = '/Data/UploadFiles/'.$info['file']['savepath'].$info['file']['savename']; //为了和老数据同步 所以还是改成原来的地址写法吧
+                    $str = 'UploadFiles/'.$info['file']['savepath'].$info['file']['savename'];
                     $this->ajaxReturn([errno=>0,data=>$str]);
                 }
             }
@@ -205,7 +206,7 @@ class PublicController extends Controller
     * 图片上传的公共方法
     *  $file 文件数据流 $exts 文件类型 $path 子目录名称
     */
-    public function upload_images($file, $exts, $path, $type=2)
+    public function upload_images($file, $exts, $path, $type = 2)
     {
         $upload = new \Think\Upload();// 实例化上传类
         $upload->maxSize   =  2097152 ;// 设置附件上传大小2M

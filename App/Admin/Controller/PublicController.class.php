@@ -191,7 +191,8 @@ class PublicController extends Controller
                 if ($_REQUEST['flag'] == 'logo') {
                     $this->ajaxReturn($info['file']);
                 } else {
-                    $str = '/Data/UploadFiles/'.$info['file']['savepath'].$info['file']['savename'];
+                    // $str = '/Data/UploadFiles/'.$info['file']['savepath'].$info['file']['savename']; //为了和老数据同步 所以还是改成原来的地址写法吧
+                    $str = 'UploadFiles/'.$info['file']['savepath'].$info['file']['savename'];
                     $this->ajaxReturn([errno=>0,data=>$str]);
                 }
             }

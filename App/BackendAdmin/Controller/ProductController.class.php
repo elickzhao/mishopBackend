@@ -254,7 +254,7 @@ class ProductController extends PublicController
                 if (intval($id)>0) {
                     $imgs = M('product')->where('id='.intval($id))->getField('photo_string');
                     if ($imgs && $array['photo_string']) {
-                        $array['photo_string'] = $imgs.$array['photo_string'];
+                        $array['photo_string'] = $imgs.','.$array['photo_string'];
                     }
 
                     //将空数据排除掉，防止将原有数据空置
