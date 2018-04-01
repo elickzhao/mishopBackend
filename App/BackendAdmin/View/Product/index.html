@@ -237,7 +237,8 @@
                     templet: function (d) {
                         return "<div><a herf='JavaScript:;' title='" + d.name +
                             "' stytle='text-decoration:none;'>" + d.name + "</a></div>"
-                    }
+                    },
+                    event: 'name'
                 }, {
                     field: 'pro_number',
                     title: '商品货号',
@@ -499,6 +500,28 @@
                         //同步更新表格和缓存对应的值
                         obj.update({
                             num: value
+                        });
+                    }
+                })
+            }
+            //修改标题
+            if (layEvent == "name") {
+                layer.prompt({
+                    formType: 2,
+                    title: '修改 货号  [ ' + data.pro_number + ' ] 的名称',
+                    value: data.name
+                }, function (value, index) {
+                    if (value == '') {
+                        layer.alert("名称不能为空!", {
+                            icon: 2
+                        });
+                    } else {
+                        layer.close(index);
+                        //这里一般是发送修改的Ajax请求
+                        getData(data.id, layEvent, value);
+                        //同步更新表格和缓存对应的值
+                        obj.update({
+                            name: value
                         });
                     }
                 })
