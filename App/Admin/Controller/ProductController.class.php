@@ -256,14 +256,15 @@ class ProductController extends PublicController
                     if ($imgs && $array['photo_string']) {
                         $array['photo_string'] = $imgs.','.$array['photo_string'];
                     }
-
+                    if ($array['photo_string'] == "") {
+                        unset($array['photo_string']);
+                    }
                     //将空数据排除掉，防止将原有数据空置
                     foreach ($array as $k => $v) {
                         if (empty($v)) {
                             unset($v);
                         }
                     }
-
                     $sql = M('product')->where('id='.intval($id))->save($array);
                 } else {
                     $array['addtime']=time();
@@ -384,6 +385,7 @@ class ProductController extends PublicController
                 @unlink($url);
             }
 
+            // rmdir(dirname($url));    //这句暂时没用 以现在按货号生成的目录 如果商品再次上传图片就还得再生成目录 其实没什么太多意义 留在删除商品时直接删除整个目录吧
             echo json_encode(array('status'=>1));
             exit();
         } else {

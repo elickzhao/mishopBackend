@@ -256,7 +256,9 @@ class ProductController extends PublicController
                     if ($imgs && $array['photo_string']) {
                         $array['photo_string'] = $imgs.','.$array['photo_string'];
                     }
-
+                    if ($array['photo_string'] == "") {
+                        unset($array['photo_string']);
+                    }
                     //将空数据排除掉，防止将原有数据空置
                     foreach ($array as $k => $v) {
                         if (empty($v)) {

@@ -523,6 +523,7 @@
 
     <script>
         /*----------  单个input验证 不会像layui 验证弹出提示 ----------*/
+        var pro_number;
         $(function () {
             //开启验证
             $("#commentForm").validate();
@@ -530,8 +531,10 @@
             //自动生成商品编号
             var pn = $("#pro_number").val();
             if (pn == "" || pn == 0) {
-                var v = pr();
-                $("#pro_number").val(v);
+                pro_number = pr();
+                $("#pro_number").val(pro_number);
+            } else {
+                pro_number = pn;
             }
         })
 
@@ -547,7 +550,7 @@
         var E = window.wangEditor
         var editor = new E('#editor')
         // 配置服务器端地址
-        var url = '{:U("Upload/contentImage?flag=")}' + '?flag=' + pr();
+        var url = '{:U("Upload/contentImage?flag=")}' + '?flag=' + pro_number;
         editor.customConfig.uploadImgServer = url;
         // 将图片大小限制为 3M
         editor.customConfig.uploadImgMaxSize = 2 * 1024 * 1024;
@@ -669,7 +672,7 @@
         //图片删除
         function del_img(img, obj) {
             var pro_id = $('#pro_id').val();
-            if (confirm('是否确认删除？')) {
+            layer.confirm('是否确认删除？', {icon: 3, title:'提示'}, function (index) {
                 $.post('{:U("img_del")}', {
                     img_url: img,
                     pro_id: pro_id
@@ -682,7 +685,8 @@
                         return false;
                     }
                 }, "json");
-            };
+                layer.close(index);
+            });
         }
 
 
@@ -839,7 +843,7 @@
                     return;
                 }
 
-                var url = '{:U("Upload/UploadImage")}' + '?flag=product/' + pr();
+                var url = '{:U("Upload/UploadImage")}' + '?flag=product/' + pro_number;
                 /*----------  实例化uploader  ----------*/
                 uploader = WebUploader.create({
                     pick: {
