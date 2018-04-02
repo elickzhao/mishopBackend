@@ -44,13 +44,14 @@
     <div class="panel-body">
       <div class="row cl">
         <div class="col-sm-4">
-            <button class="layui-btn layui-btn-normal" id="transmit">
-              <i class="Hui-iconfont">&#xe603;</i> 选择商品</button>
+          <button class="layui-btn layui-btn-normal" id="transmit">
+            <i class="Hui-iconfont">&#xe603;</i> 选择商品</button>
         </div>
         <div class="col-sm-8 f-r">
           <form class="layui-form f-r" action="">
             <div class="layui-inline">
               <div class="layui-input-inline" style="width: 260px;">
+                <?php  $cate_list= M('category')->where('1=1')->select(); ?>
                 <select class="lay-search" name="cateid" id="cateid" lay-filter="cid_1" lay-search lay-verify="cateid">
                   <option value>所有分类</option>
                   <option value="0">请选择</option>
@@ -85,7 +86,7 @@
     </div>
 
     <script src="https://cdn.bootcss.com/lodash.js/4.17.5/lodash.core.min.js"></script>
-    
+
     <script type="text/html" id="type">
       {{# if(d.type == 1){ }}
       <span style="color:#090;">
@@ -97,6 +98,7 @@
     <script>
       var table = layui.table;
       var form = layui.form;
+      form.render('select'); //必须先渲染下 否则下拉框不显示
       var goods;
 
       /*=============================================
@@ -212,9 +214,9 @@
       $('#transmit').on('click', function () {
         let ids = getList();
         //console.log(ids)
-        if(ids != ""){
+        if (ids != "") {
           var dd = parent.$('#proid').val(ids);
-        }else{
+        } else {
           var dd = parent.$('#proid').val('all');
         }
         parent.layer.close(index);

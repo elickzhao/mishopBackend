@@ -45,7 +45,7 @@
       <div class="row cl">
         <div class="col-sm-4">
           <button class="layui-btn layui-btn-normal" id="transmit">
-            <i class="Hui-iconfont">&#xe603;</i> 选择商品</button>
+            <i class="Hui-iconfont">&#xe603;</i> 返回</button>
         </div>
         <div class="col-sm-8 f-r">
           <form class="layui-form f-r" action="">
@@ -98,8 +98,9 @@
     <script>
       var table = layui.table;
       var form = layui.form;
-      form.render('select'); //必须先渲染下 否则下拉框不显示
+      form.render('select');  //必须先渲染下 否则下拉框不显示
       var goods;
+      var bid = getQueryVariable("bid"); //品牌id
 
       /*=============================================
       =            渲染实例            =
@@ -108,7 +109,7 @@
       var tableIns = table.render({
         elem: '#demo',
         height: 'full-150',
-        url: "{:U('Product/getGoods')}",
+        url: "{:U('getGoods')}?bid=" + bid,
         //even: true,
         page: true,
         cellMinWidth: 80,
@@ -116,11 +117,13 @@
           [{
             field: 'id',
             title: 'ID',
+            width: '7%',
             sort: true,
-            checkbox: true,
+            align: 'center',
           }, {
             field: 'photo_x',
             title: '图片',
+            width: '10%',
             align: 'center',
             templet: function (d) {
               return "<div><img src='/Data/" + d.photo_x + "' width=80px' height=80px'/></div>"
@@ -128,6 +131,7 @@
           }, {
             field: 'name',
             title: '产品名称',
+            event: 'name',
             templet: function (d) {
               return "<div><a herf='JavaScript:;' title='" + d.name + "' stytle='text-decoration:none;'>" + d
                 .name + "</a></div>"
@@ -135,15 +139,26 @@
           }, {
             field: 'pro_number',
             title: '商品货号',
+            width: '10%',
+            align: 'center',
           }, {
             field: 'price_yh',
             title: '价格/元',
-
+            width: '10%',
             align: 'center',
+            event: 'price_yh'
+          }, {
+            field: 'company',
+            title: '进货价',
+            width: '10%',
+            align: 'center',
+            event: 'company'
           }, {
             field: 'num',
             title: '库存',
+            width: '10%',
             align: 'center',
+            event: 'num',
             sort: true,
             templet: function (d) {
               var r = d.num > 10 ? '<span class="c-black">' + d.num + '</span>' :
@@ -152,13 +167,6 @@
               return r;
 
             }
-          }, {
-            field: 'type',
-            title: '推荐',
-            align: 'center',
-            sort: true,
-            templet: "#type"
-
           }]
         ],
         done: function (res, curr, count) {
@@ -180,17 +188,18 @@
 
         if (field.name != ' ' || field.pro_number != ' ') {
           tableIns.reload({
-            url: "{:U('Product/getGoods')}",
+            url: "{:U('getGoods')}",
             where: { //设定异步数据接口的额外参数，任意设
               cid: field.cateid,
               name: field.name,
               pro_number: field.pro_number,
+              bid:bid,
             }
           });
         } else {
           //console.log('ddd');
           tableIns.reload({
-            url: "{:U('Product/getGoods')}"
+            url: "{:U('getGoods')}"
           });
         }
         return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
@@ -212,15 +221,222 @@
 
       //给父页面传值
       $('#transmit').on('click', function () {
-        let ids = getList();
-        //console.log(ids)
-        if (ids != "") {
-          var dd = parent.$('#proid').val(ids);
-        } else {
-          var dd = parent.$('#proid').val('all');
-        }
         parent.layer.close(index);
       });
+
+
+      /*=============================================
+      =            获取url参数                      =
+      =============================================*/
+      /**
+       * http://www.runoob.com/index.php?id=1&image=awesome.jpg
+        调用 getQueryVariable("id") 返回 1。
+        调用 getQueryVariable("image") 返回 "awesome.jpg"。
+       */
+
+      function getQueryVariable(variable) {
+        var query = window.location.search.substring(1);
+        var vars = query.split("&");
+        for (var i = 0; i < vars.length; i++) {
+          var pair = vars[i].split("=");
+          if (pair[0] == variable) {
+            return pair[1];
+          }
+        }
+        return (false);
+      }
+
+      /*=====     End of 获取url参数         ======*/
+
+      /*=============================================
+      =            请求后台数据            =
+      =============================================*/
+      function getData(id, filed, value, re) {
+        $.ajax("{:U('Product/setGoodsAtrr')}", {
+          method: 'POST',
+          data: {
+            id: id,
+            filed: filed,
+            val: value,
+          },
+          dataType: 'json',
+          success: function (e) {
+            //console.log(e);
+            //批量操作时重读整个页面
+            if (re) {
+              tableIns.reload();
+            }
+            if (e.code == 0) {
+              layer.msg('更新数据失败!', {
+                icon: 2
+              });
+            }
+          },
+          error: function (e) {
+            console.log(e);
+          }
+
+        });
+      }
+      /*=====  End of 请求后台数据  ======*/
+
+      /*=============================================
+        =            监听单元点击更新属性              =
+        =============================================*/
+
+      //监听工具条
+      table.on('tool(test)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+        var data = obj.data; //获得当前行数据
+        var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+        var tr = obj.tr; //获得当前行 tr 的DOM对象
+
+        //修改价格
+        if (layEvent == "price_yh") {
+          layer.prompt({
+            formType: 2,
+            title: '修改 货号  [ ' + data.pro_number + ' ] 的价格',
+            value: data.price_yh
+          }, function (value, index) {
+            if (parseFloat(value).toFixed(2) < 0 || isNaN(value)) {
+              layer.alert("请填写正确数字!", {
+                icon: 2
+              });
+            } else {
+              layer.close(index);
+              //这里一般是发送修改的Ajax请求
+              getData(data.id, layEvent, value);
+              num = parseFloat(value).toFixed(2);
+              //同步更新表格和缓存对应的值
+              obj.update({
+                price_yh: num
+              });
+            }
+          })
+        }
+
+        //修改进货价格
+        if (layEvent == "company") {
+          layer.prompt({
+            formType: 2,
+            title: '修改 货号  [ ' + data.pro_number + ' ] 的进货价格',
+            value: data.company
+          }, function (value, index) {
+            if (parseFloat(value).toFixed(2) < 0 || isNaN(value)) {
+              layer.alert("请填写正确数字!", {
+                icon: 2
+              });
+            } else {
+              layer.close(index);
+              //这里一般是发送修改的Ajax请求
+              getData(data.id, layEvent, value);
+              num = parseFloat(value).toFixed(2);
+              //同步更新表格和缓存对应的值
+              obj.update({
+                company: num
+              });
+            }
+          })
+        }
+        //修改库存
+        if (layEvent == "num") {
+          layer.prompt({
+            formType: 2,
+            title: '修改 货号  [ ' + data.pro_number + ' ] 的库存',
+            value: data.num
+          }, function (value, index) {
+            if (parseInt(value) < 0 || isNaN(value)) {
+              layer.alert("请填写正确数字!", {
+                icon: 2
+              });
+            } else {
+              layer.close(index);
+              //这里一般是发送修改的Ajax请求
+              getData(data.id, layEvent, value);
+              //同步更新表格和缓存对应的值
+              obj.update({
+                num: value
+              });
+            }
+          })
+        }
+        //修改标题
+        if (layEvent == "name") {
+          layer.prompt({
+            formType: 2,
+            title: '修改 货号  [ ' + data.pro_number + ' ] 的名称',
+            value: data.name
+          }, function (value, index) {
+            if (value == '') {
+              layer.alert("名称不能为空!", {
+                icon: 2
+              });
+            } else {
+              layer.close(index);
+              //这里一般是发送修改的Ajax请求
+              getData(data.id, layEvent, value);
+              //同步更新表格和缓存对应的值
+              obj.update({
+                name: value
+              });
+            }
+          })
+        }
+
+        //上架
+        if (layEvent === 'is_down') {
+          var value = (data.is_down == 1) ? 0 : 1;
+          //如果用这个更新就不能用 回调函数那么写 templet
+          obj.update({
+            is_down: value
+          });
+          getData(data.id, layEvent, value);
+        }
+        //新品
+        if (layEvent === 'is_show') {
+          var value = (data.is_show == 1) ? 0 : 1;
+          obj.update({
+            is_show: value
+          });
+          getData(data.id, layEvent, value);
+        }
+        //热卖
+        if (layEvent === 'is_hot') {
+          var value = (data.is_hot == 1) ? 0 : 1;
+          obj.update({
+            is_hot: value
+          });
+          getData(data.id, layEvent, value);
+        }
+        //推荐
+        if (layEvent === 'type') {
+          var value = (data.type == 1) ? 0 : 1;
+          obj.update({
+            type: value
+          });
+          getData(data.id, layEvent, value);
+        }
+        //删除
+        if (layEvent === 'del') { //删除
+          layer.confirm('真的删除行么', function (index) {
+            obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+            layer.close(index);
+            //向服务端发送删除指令
+            var url = "{:U('getDel')}?did=" + data.id;
+            $.ajax(url, {
+              method: 'GET',
+              dataType: 'json',
+              success: function (e) {
+                console.log(e);
+              },
+              error: function (e) {
+                console.log(e);
+              }
+            });
+          });
+        }
+      });
+
+      /*=====  End of 监听单元点击更新属性  ======*/
     </script>
 </body>
 

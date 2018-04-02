@@ -220,4 +220,10 @@ class FinanceController extends PublicController
         // }
         //return $result;
     }
+
+    public function apitest()
+    {
+        $input = new \WxApiTest();
+        $refund_status = \WxPayApi::apiTest($input);
+    }
 }

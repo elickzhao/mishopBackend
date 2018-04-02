@@ -74,7 +74,7 @@
                             <i class="Hui-iconfont f-16">&#xe676;</i> 全选</span>
                     </div>
 
-<!--                 批量删除会检测品牌下商品 但是不能有效提示那个品牌有商品所以还是单个删除吧    
+                    <!--                 批量删除会检测品牌下商品 但是不能有效提示那个品牌有商品所以还是单个删除吧    
                     <div class="btn-group l ml-5">
                         <span class="btn btn-primary" title="删除" id="isDel">
                             <i class="Hui-iconfont f-16">&#xe6dc;</i> 删除</span>
@@ -98,6 +98,7 @@
 
     <script type="text/html" id="barDemo">
         <a class="layui-btn layui-btn-sm" href="{:U('Brand/add')}?id={{d.id}}">编辑</a>
+        <a class="layui-btn layui-btn-sm  layui-btn-normal" lay-event="to">查看产品</a>
         <a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del">删除</a>
     </script>
 
@@ -118,9 +119,13 @@
 
     <script type="text/html" id="photo">
         {{# if(d.photo === ""){ }}
-            <div><img src='/Public/admin/images/nophoto.png' width='80px' height='80px'/></div>
+        <div>
+            <img src='/Public/admin/images/nophoto.png' width='80px' height='80px' />
+        </div>
         {{# }else{ }}
-            <div><img src='/Data/{{d.photo}}' width='80px' height='80px'/></div>
+        <div>
+            <img src='/Data/{{d.photo}}' width='80px' height='80px' />
+        </div>
         {{# } }}
     </script>
 
@@ -137,7 +142,7 @@
             //console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
             var field = data.field;
 
-            if ( field.brand_name != ' ') {
+            if (field.brand_name != ' ') {
                 tableIns.reload({
                     url: "{:U('Brand/getBrands')}",
                     where: { //设定异步数据接口的额外参数，任意设
@@ -185,11 +190,28 @@
                     templet: '#photo'
                 }, {
                     field: 'name',
-                    title: '产品名称',
-                    width: '41%',
+                    title: '品牌名称',
+                    width: '12%',
                     //templet: "<div><a herf='JavaScript:;' title='{{d.name}}' stytle='text-decoration:none;'>{{d.name}}</a></div>"
-                    templet:function(d){
-                        return "<div><a herf='JavaScript:;' title='"+d.name+"' stytle='text-decoration:none;'>"+d.name+"</a></div>"
+                    templet: function (d) {
+                        return "<div><a herf='JavaScript:;' title='" + d.name +
+                            "' stytle='text-decoration:none;'>" + d.name + "</a></div>"
+                    }
+                }, {
+                    field: 'company',
+                    title: '公司名称',
+                    width: '20%',
+                    templet: function (d) {
+                        return "<div><a herf='JavaScript:;' title='" + d.company +
+                            "' stytle='text-decoration:none;'>" + d.company + "</a></div>"
+                    }
+                }, {
+                    field: 'tel',
+                    title: '联系电话',
+                    width: '10%',
+                    templet: function (d) {
+                        return "<div><a herf='JavaScript:;' title='" + d.tel +
+                            "' stytle='text-decoration:none;'>" + d.tel + "</a></div>"
                     }
                 }, {
                     field: 'type',
@@ -290,6 +312,19 @@
                             console.log(e);
                         }
                     });
+                });
+            }
+
+            //查看
+            if (layEvent === 'to') {
+                layer.open({
+                    type: 2,
+                    title: '品牌下商品',
+                    area: ['1280px', '800px'],
+                    fixed: false, //不固定
+                    maxmin: true,
+                    shadeClose: true,
+                    content: "{:U('get_goods')}?bid=" + data.id
                 });
             }
         });

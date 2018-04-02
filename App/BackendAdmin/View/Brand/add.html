@@ -97,6 +97,49 @@
                     <div class="hr-line-dashed"></div>
 
                     <div class="row cl">
+                        <div class="col-xs-4 col-sm-2 ml-30">
+                            <label class="layui-form-label">公司名称：</label>
+                        </div>
+                        <div class="formControls col-xs-8 col-sm-4">
+                            <input type="text" class="input-text" placeholder="公司名称. 必填字段!" name="company" id="company" value="{$info.company}" minlength="2"
+                                type="text" lay-verify="required">
+                        </div>
+                        <label class="layui-form-label">
+                            <span class="c-red text-l">*</span>
+                        </label>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row cl">
+                        <div class="col-xs-4 col-sm-2 ml-30">
+                            <label class="layui-form-label">联系电话：</label>
+                        </div>
+                        <div class="formControls col-xs-8 col-sm-4">
+                            <input type="text" class="input-text" placeholder="联系电话" name="tel" id="tel" value="{$info.tel}" lay-verify="phone">
+                        </div>
+                        <!-- <label class="layui-form-label">
+                            <span class="c-red text-l">*</span>
+                        </label> -->
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row cl">
+                        <div class="col-xs-4 col-sm-2 ml-30">
+                            <label class="layui-form-label">联系地址：</label>
+                        </div>
+                        <div class="formControls col-xs-8 col-sm-4">
+                            <input type="text" class="input-text" placeholder="联系地址" name="address" id="address" value="{$info.address}">
+                        </div>
+                        <!-- <label class="layui-form-label">
+                            <span class="c-red text-l">*</span>
+                        </label> -->
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row cl">
                         <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-2">
                             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                             <input class="btn btn-primary radius" lay-submit lay-filter="*" type="submit" name="submit" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">

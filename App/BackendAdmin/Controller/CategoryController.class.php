@@ -31,7 +31,7 @@ class CategoryController extends PublicController
     */
     public function index()
     {
-        $bc = ['品牌管理','管理品牌'];
+        $bc = ['分类管理','管理分类'];
         $this->assign('bc', $bc);
         $this->display(); // 输出模板
     }

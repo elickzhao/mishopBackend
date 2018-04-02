@@ -149,7 +149,7 @@ class VoucherController extends PublicController
     }
 
     /**
-     * [getGoods ajax获取优惠券列表]
+     * [getVouchers ajax获取优惠券列表]
      * @return [json] [优惠券数据]
      */
     public function getVouchers()

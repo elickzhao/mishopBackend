@@ -83,6 +83,46 @@ class BrandController extends PublicController
         $this->ajaxReturn($resuslt);
     }
 
+    /**
+     * [getGoods ajax获取商品列表]
+     * @return [json] [商品数据]
+     */
+    public function getGoods()
+    {
+        $where="1=1 AND pro_type = 1 AND del<1 AND brand_id=".$_GET['bid'];
+
+        if ($_GET['cid'] == 0) {
+            unset($_GET['cid']);
+        }
+
+        //搜索优先级查询
+        $arr = ['pro_number','name','cid'];
+        foreach ($arr as $key => $value) {
+            if ($_GET[$value] != '') {
+                if ($value == 'name') {
+                    $where .= ' AND '.$value.' like "%'. $_GET[$value].'%"';
+                } else {
+                    $where .= ' AND '.$value.' = '. $_GET[$value];
+                }
+                break;
+            }
+        }
+
+        $count=M('product')->where($where)->count();
+        $rows=ceil($count/rows);
+        $page = (int) -- $_GET['page'] ;
+        $rows = $_GET['limit'] ? $_GET['limit'] : 10;
+        $limit= $page*$rows;
+        $productlist=M('product')->where($where)->order('updatetime desc')->limit($limit, $rows)->select();
+        $sql = M('product')->getlastsql();
+
+        //$resuslt = [code=>0,msg=>'',count=>$count,data=>$productlist,sql=>$sql];
+        $resuslt = [code=>0,msg=>'',count=>$count,data=>$productlist];
+
+        $this->ajaxReturn($resuslt);
+    }
+
+
 
     /*
     *
