@@ -219,7 +219,7 @@ class OrderController extends PublicController
         // }
         
         //搜索优先级查询
-        $arr = ['tel','pay_status','type'];
+        $arr = ['order_sn','tel','pay_status','type'];
         foreach ($arr as $key => $value) {
             if ($_GET[$value] != '') {
                 if ($value == 'pay_status') {

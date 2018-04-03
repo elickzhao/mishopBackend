@@ -32,6 +32,10 @@
         .layui-table-cell a {
             text-decoration: none;
         }
+        
+        ::-webkit-scrollbar {
+            display: none
+        }
     </style>
 
     <title>门店管理</title>
@@ -113,7 +117,7 @@
 
         var tableIns = table.render({
             elem: '#demo',
-            height: 'full-280',
+            height: 'full-290',
             url: "{:U('Shop/getshops')}",
             limit: 20,
             page: true,
@@ -122,7 +126,7 @@
                 [{
                     field: 'id',
                     title: 'ID',
-                    //width: '10%',
+                    width: '10%',
                     align: 'center',
                     sort: true,
                 }, {
@@ -147,14 +151,14 @@
                     field: 'phone',
                     title: '联系电话',
                     align: 'center',
-                    //width: '28%',
+                    width: '12%',
                     //templet: "<div><a herf='JavaScript:;' title='{{d.name}}' stytle='text-decoration:none;'>{{d.name}}</a></div>"
                 }, {
                     field: 'sort',
                     title: '排序',
                     align: 'center',
                     event: 'sort',
-                    //width: '28%',
+                    width: '12%',
                     //templet: "<div><a herf='JavaScript:;' title='{{d.name}}' stytle='text-decoration:none;'>{{d.name}}</a></div>"
                 }, {
                     field: 'cz',

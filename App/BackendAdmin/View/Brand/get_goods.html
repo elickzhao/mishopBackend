@@ -35,6 +35,10 @@
     .layui-table-cell a {
       text-decoration: none;
     }
+
+    ::-webkit-scrollbar {
+      display: none
+    }
   </style>
   <title>选择商品</title>
 </head>
@@ -98,7 +102,7 @@
     <script>
       var table = layui.table;
       var form = layui.form;
-      form.render('select');  //必须先渲染下 否则下拉框不显示
+      form.render('select'); //必须先渲染下 否则下拉框不显示
       var goods;
       var bid = getQueryVariable("bid"); //品牌id
 
@@ -112,6 +116,7 @@
         url: "{:U('getGoods')}?bid=" + bid,
         //even: true,
         page: true,
+        limit: 20,
         cellMinWidth: 80,
         cols: [
           [{
@@ -193,7 +198,7 @@
               cid: field.cateid,
               name: field.name,
               pro_number: field.pro_number,
-              bid:bid,
+              bid: bid,
             }
           });
         } else {

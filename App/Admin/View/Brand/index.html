@@ -33,6 +33,10 @@
         .layui-table-cell a {
             text-decoration: none;
         }
+
+        ::-webkit-scrollbar {
+            display: none
+        }
     </style>
 
     <title>品牌管理</title>
@@ -51,7 +55,7 @@
                     <div class="col-sm-4">
                         <a href="{:U('Brand/add')}">
                             <button class="layui-btn layui-btn-normal">
-                                <i class="Hui-iconfont">&#xe603;</i> 添加品牌</button>
+                                <i class="Hui-iconfont">&#xe603;</i> 添加供货商</button>
                         </a>
                     </div>
                     <div class="col-sm-8 f-r">
@@ -168,6 +172,7 @@
             height: 'full-320',
             url: "{:U('Brand/getBrands')}",
             page: true,
+            limit: 20,
             cellMinWidth: 80,
             cols: [
                 [{
@@ -185,13 +190,13 @@
                 }, {
                     field: 'photo',
                     title: 'LOGO图片',
-                    width: '20%',
+                    width: '15%',
                     align: 'center',
                     templet: '#photo'
                 }, {
                     field: 'name',
                     title: '品牌名称',
-                    width: '12%',
+                    //width: '12%',
                     //templet: "<div><a herf='JavaScript:;' title='{{d.name}}' stytle='text-decoration:none;'>{{d.name}}</a></div>"
                     templet: function (d) {
                         return "<div><a herf='JavaScript:;' title='" + d.name +
@@ -200,7 +205,7 @@
                 }, {
                     field: 'company',
                     title: '公司名称',
-                    width: '20%',
+                    //width: '20%',
                     templet: function (d) {
                         return "<div><a herf='JavaScript:;' title='" + d.company +
                             "' stytle='text-decoration:none;'>" + d.company + "</a></div>"
@@ -224,7 +229,7 @@
                 }, {
                     field: 'cz',
                     title: '操作',
-                    width: '14%',
+                    //width: '14%',
                     align: 'center',
                     toolbar: '#barDemo'
                 }]

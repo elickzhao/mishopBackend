@@ -33,6 +33,10 @@
         .layui-table-cell a {
             text-decoration: none;
         }
+
+        ::-webkit-scrollbar {
+            display: none
+        }
     </style>
     <title>会员列表</title>
 </head>
@@ -183,6 +187,7 @@
             height: 'full-280',
             url: "{:U('User/getUsers')}",
             page: true,
+            limit: 20,
             cellMinWidth: 80,
             cols: [
                 [{
@@ -196,19 +201,19 @@
                     title: '头像',
                     width: '20%',
                     align: 'center',
-                    templet: function(d){
+                    templet: function (d) {
                         //还有个问题是直接用 "" 字符串形式的话 使用{} 可能造成tp的冲突而报错
-                        return "<div><img src='"+d.photo+"' width='80px' height='80px'/></div>" //千万注意没有外层div是不可以的
+                        return "<div><img src='" + d.photo + "' width='80px' height='80px'/></div>" //千万注意没有外层div是不可以的
                     }
                 }, {
                     field: 'name',
                     title: '账户名',
-                    width: '28%',
+                    //width: '28%',
                     //templet: "<div><a herf='JavaScript:;' title='{{d.name}}' stytle='text-decoration:none;'>{{d.name}}</a></div>"
                 }, {
                     field: 'addtime',
                     title: '注册时间',
-                    width: '10%',
+                    width: '12%',
                     align: 'center',
                     sort: true,
                     templet: function (d) {

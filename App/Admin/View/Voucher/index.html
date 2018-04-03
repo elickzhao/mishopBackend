@@ -32,6 +32,10 @@
         .layui-table-cell a {
             text-decoration: none;
         }
+
+        ::-webkit-scrollbar {
+            display: none
+        }
     </style>
 
     <title>全部优惠券</title>
@@ -95,7 +99,7 @@
             elem: '#demo',
             height: 'full-290',
             url: "{:U('Voucher/getVouchers')}",
-            limit:20,
+            limit: 20,
             page: true,
             cellMinWidth: 80,
             cols: [
@@ -108,18 +112,20 @@
                 }, {
                     field: 'title',
                     title: '优惠券名',
-                    width: '12%',
+                    //width: '12%',
                     align: 'center',
-                    templet: function(d){
-                        return "<div><a herf='JavaScript:;' title='"+d.title+"' stytle='text-decoration:none;'>"+d.title+"</a></div>"
+                    templet: function (d) {
+                        return "<div><a herf='JavaScript:;' title='" + d.title +
+                            "' stytle='text-decoration:none;'>" + d.title + "</a></div>"
                     }
                 }, {
                     field: 'full_money',
                     title: '满减金额',
                     width: '15%',
                     align: 'center',
-                    templet: function(d){
-                        return "<div>满<span style='color:red;'>"+d.full_money+"</span>减<span style='color:red;'>"+d.amount+"</span></div>"
+                    templet: function (d) {
+                        return "<div>满<span style='color:red;'>" + d.full_money +
+                            "</span>减<span style='color:red;'>" + d.amount + "</span></div>"
                     }
                 }, {
                     field: 'start_time',
@@ -135,7 +141,7 @@
                         };
                         return new Date(d.start_time * 1000).toLocaleString();
                     }
-                },{
+                }, {
                     field: 'end_time',
                     title: '过期时间',
                     width: '12%',
@@ -149,38 +155,39 @@
                         };
                         return new Date(d.end_time * 1000).toLocaleString();
                     }
-                },{
+                }, {
                     field: 'point',
                     title: '所需积分',
                     width: '8%',
                     align: 'center',
                     sort: true,
-                    templet: function(d){
-                        let r = (d.point == 0) ? "免费领取" :d.point;
+                    templet: function (d) {
+                        let r = (d.point == 0) ? "免费领取" : d.point;
                         return r;
                     }
-                },{
+                }, {
                     field: 'count',
                     title: '发行数量',
                     width: '7%',
                     align: 'center',
                     sort: true,
 
-                },{
+                }, {
                     field: 'receive_num',
                     title: '领取数量',
                     width: '7%',
                     align: 'center',
                     sort: true,
 
-                },{
+                }, {
                     field: 'type',
                     title: '使用属性',
                     width: '8%',
                     align: 'center',
                     sort: true,
-                    templet: function(d){
-                        let r = (d.proid == 'all') ? "<a class='label label-success'>店内通用</a>" :"<a class='label label-secondary'>限定商品</a>";
+                    templet: function (d) {
+                        let r = (d.proid == 'all') ? "<a class='label label-success'>店内通用</a>" :
+                            "<a class='label label-secondary'>限定商品</a>";
                         return r;
                     }
                 }, {

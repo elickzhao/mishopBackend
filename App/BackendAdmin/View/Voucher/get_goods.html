@@ -35,6 +35,10 @@
     .layui-table-cell a {
       text-decoration: none;
     }
+
+    ::-webkit-scrollbar {
+      display: none
+    }
   </style>
   <title>选择商品</title>
 </head>
@@ -111,6 +115,7 @@
         url: "{:U('Product/getGoods')}",
         //even: true,
         page: true,
+        limit: 20,
         cellMinWidth: 80,
         cols: [
           [{

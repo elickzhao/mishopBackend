@@ -33,6 +33,10 @@
         .layui-table-cell a {
             text-decoration: none;
         }
+
+        ::-webkit-scrollbar {
+            display: none
+        }
     </style>
     <title>产品管理</title>
 </head>
@@ -209,6 +213,7 @@
             height: 'full-320',
             url: "{:U('Product/getGoods')}",
             //even: true,
+            limit: 20,
             page: true,
             cellMinWidth: 80,
             cols: [
@@ -232,7 +237,7 @@
                 }, {
                     field: 'name',
                     title: '产品名称',
-                    width: '25%',
+                    //width: '25%',
                     //templet: "<div><a herf='JavaScript:;' title='{{d.name}}' stytle='text-decoration:none;'>{{d.name}}</a></div>"
                     templet: function (d) {
                         return "<div><a herf='JavaScript:;' title='" + d.name +

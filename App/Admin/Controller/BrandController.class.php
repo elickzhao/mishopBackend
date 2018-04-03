@@ -50,7 +50,7 @@ class BrandController extends PublicController
         $list = $this->Brand->where($condition)->limit($Page->firstRow.','.$Page->listRows)->select();
 
 
-        $bc = ['品牌管理','全部品牌'];
+        $bc = ['供货商管理','全部供货商'];
         $this->assign('bc', $bc);
 
         $this->assign('list', $list);
@@ -137,7 +137,7 @@ class BrandController extends PublicController
             $brand_info = $this->Brand->where('id='.intval($id))->find();
             $this->assign('info', $brand_info);
         }
-        $bc = ['品牌管理','添加品牌'];
+        $bc = ['供货商管理','全部供货商'];
         $this->assign('bc', $bc);
         $this->display();
     }

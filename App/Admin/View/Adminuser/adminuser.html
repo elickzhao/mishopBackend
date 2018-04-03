@@ -32,6 +32,10 @@
         .layui-table-cell a {
             text-decoration: none;
         }
+
+        ::-webkit-scrollbar {
+            display: none
+        }
     </style>
     <title>管理员列表</title>
 </head>
@@ -47,6 +51,12 @@
             <div class="panel-body">
 
                 <div class="row cl">
+                    <div class="col-sm-4">
+                        <a href="{:U('Adminuser/add')}">
+                            <button class="layui-btn layui-btn-normal">
+                                <i class="Hui-iconfont">&#xe603;</i> 添加管理员</button>
+                        </a>
+                    </div>
                     <div class="col-sm-8 f-r">
                         <form class="layui-form f-r" action="">
                             <div class="layui-inline">
@@ -123,7 +133,6 @@
 
 
     <script>
-
         var table = layui.table;
         var form = layui.form;
         var goods;
@@ -159,54 +168,58 @@
 
         var tableIns = table.render({
             elem: '#demo',
-            height: 'full-280',
+            height: 'full-290',
             url: "{:U('Adminuser/getAdminusers')}",
             page: true,
+            limit: 20,
             cellMinWidth: 80,
             cols: [
                 [{
-                    field: 'id',
-                    title: 'ID',
-                    width: '10%',
-                    align: 'center',
-                    sort: true,
-                }, {
-                    field: 'name',
-                    title: '账户名',
-                    align: 'center',
-                    //width: '28%',
-                    //templet: "<div><a herf='JavaScript:;' title='{{d.name}}' stytle='text-decoration:none;'>{{d.name}}</a></div>"
-                },  {
-                    field: 'addtime',
-                    title: '注册时间',
-                    //width: '10%',
-                    align: 'center',
-                    sort: true,
-                    templet: function (d) {
-                        Date.prototype.toLocaleString = function () {
-                            return this.getFullYear() + "-" + (this.getMonth() + 1) + "-" +
-                                this.getDate() + "  " + this.getHours() + ":" + this.getMinutes() +
-                                ":" + this.getSeconds();
-                        };
-                        return new Date(d.addtime * 1000).toLocaleString();
+                        field: 'id',
+                        title: 'ID',
+                        width: '10%',
+                        align: 'center',
+                        sort: true,
+                    }, {
+                        field: 'name',
+                        title: '账户名',
+                        align: 'center',
+                        //width: '28%',
+                        //templet: "<div><a herf='JavaScript:;' title='{{d.name}}' stytle='text-decoration:none;'>{{d.name}}</a></div>"
+                    }, {
+                        field: 'addtime',
+                        title: '注册时间',
+                        //width: '10%',
+                        align: 'center',
+                        sort: true,
+                        templet: function (d) {
+                            Date.prototype.toLocaleString = function () {
+                                return this.getFullYear() + "-" + (this.getMonth() + 1) + "-" +
+                                    this.getDate() + "  " + this.getHours() + ":" + this.getMinutes() +
+                                    ":" + this.getSeconds();
+                            };
+                            return new Date(d.addtime * 1000).toLocaleString();
+                        }
+                    },
+                    {
+                        field: 'qx',
+                        title: '类型',
+                        //width: '10%',
+                        align: 'center',
+                        templet: function (d) {
+                            return (d.position == 4) ?
+                                '<span class="label label-secondary ">超级管理员</span>' :
+                                '<span class="label label-success ">普通管理员</span>';
+                        }
+                    },
+                    {
+                        field: 'cz',
+                        title: '操作',
+                        //width: '10%',
+                        align: 'center',
+                        toolbar: '#barDemo'
                     }
-                }, 
-                {
-                    field: 'qx',
-                    title: '类型',
-                    //width: '10%',
-                    align: 'center',
-                    templet:function(d){
-                        return (d.position == 4)? '<span class="label label-secondary ">超级管理员</span>' : '<span class="label label-success ">普通管理员</span>' ;
-                    }
-                },
-                {
-                    field: 'cz',
-                    title: '操作',
-                    //width: '10%',
-                    align: 'center',
-                    toolbar: '#barDemo'
-                }]
+                ]
             ],
             done: function (res, curr, count) {
                 //数据渲染完的回调 

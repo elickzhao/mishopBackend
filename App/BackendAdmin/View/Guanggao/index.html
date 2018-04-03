@@ -32,6 +32,10 @@
         .layui-table-cell a {
             text-decoration: none;
         }
+
+        ::-webkit-scrollbar {
+            display: none
+        }
     </style>
 
     <title>广告管理</title>
@@ -41,15 +45,17 @@
     <!-- 导航 -->
     <include File='Page/nav' />
     <!-- /导航 -->
-
     <div class="page-container">
         <div class="panel panel-default mt-40">
             <div class="panel-header">{$bc[1]}</div>
             <div class="panel-body">
-
-
-
                 <div class="row cl">
+                    <div class="col-sm-4">
+                        <a href="{:U('Guanggao/add')}">
+                            <button class="layui-btn layui-btn-normal">
+                                <i class="Hui-iconfont">&#xe603;</i> 添加广告</button>
+                        </a>
+                    </div>
                     <div class="col-sm-8 f-r">
                         <form class="layui-form f-r" action="">
                             <div class="layui-inline">
@@ -62,57 +68,10 @@
                         </form>
                     </div>
                 </div>
-
                 <div class="hr-line-dashed"></div>
 
                 <table id="demo" lay-filter="test" lay-data="{id: 'idTest'}"></table>
-                <!-- <div class="text-c">
-            <input type="text" class="input-text" style="width:250px" placeholder="标题" id="name" value="<?php echo $name;?>">
-            <button type="button" class="btn btn-success" id="" name="" onclick="product_option(0);">
-                <i class="Hui-iconfont">&#xe665;</i> 搜索</button>
-        </div>
-        <br> -->
-                <!-- <table class="table table-border table-bordered table-bg">
-                    <thead>
 
-                        <tr class="text-c">
-                            <th width="40">ID</th>
-                            <th width="150">广告图</th>
-                            <th width="130">广告标题</th>
-                            <th width="80">显示位置</th>
-                            <th width="100">操作</th>
-                        </tr>
-                    </thead>
-
-
-                    <tbody id="news_option">
-                        <volist name='adv_list' id="adv">
-                            <tr class="text-c">
-                                <td>{$adv.id}</td>
-                                <td>
-                                    <img src="__DATA__/{$adv.photo}" width="120px" height="60px">
-                                </td>
-                                <td>{$adv.name}</td>
-                                <td>
-                                    <if condition="$adv.position eq 1">
-                                        <span class="label succ">首页头部轮播</span>
-                                        <else />
-                                        <span class="label err">其他</span>
-                                    </if>
-                                </td>
-                                <td class="obj_1">
-                                    <a href="{:U('add')}?adv_id={$adv.id}">修改</a>&nbsp;|
-                                    <a onclick="del_id_url2({$adv.id})">删除</a>
-                                </td>
-                            </tr>
-                        </volist>
-                    </tbody>
-                    <tr class="text-c">
-                        <td colspan="10" class="td_2">
-                            {$page}
-                        </td>
-                    </tr>
-                </table> -->
             </div>
         </div>
     </div>
@@ -161,70 +120,79 @@
 
         var tableIns = table.render({
             elem: '#demo',
-            height: 'full-280',
+            height: 'full-290',
             url: "{:U('Guanggao/getGuanggaos')}",
             page: true,
+            limit: 20,
             cellMinWidth: 80,
             cols: [
                 [{
-                    field: 'id',
-                    title: 'ID',
-                    //width: '10%',
-                    align: 'center',
-                    sort: true,
-                }, {
-                    field: 'photo',
-                    title: '广告图',
-                    // width: '20%',
-                    align: 'center',
-                    templet: function (d) {
-                        //还有个问题是直接用 "" 字符串形式的话 使用{} 可能造成tp的冲突而报错
-                        return "<div><img src='/Data/" + d.photo + "' width='120px' height='60px'/></div>" //千万注意没有外层div是不可以的
+                        field: 'id',
+                        title: 'ID',
+                        width: '5%',
+                        align: 'center',
+                        sort: true,
+                    },
+                    {
+                        field: 'photo',
+                        title: '广告图',
+                        // width: '20%',
+                        align: 'center',
+                        templet: function (d) {
+                            //还有个问题是直接用 "" 字符串形式的话 使用{} 可能造成tp的冲突而报错
+                            return "<div><img src='/Data/" + d.photo +
+                                "' width='120px' height='60px'/></div>" //千万注意没有外层div是不可以的
+                        }
+                    },
+                    {
+                        field: 'name',
+                        title: '广告名',
+                        //width: '28%',
+                        align: 'center',
+                        templet: "<div><a herf='JavaScript:;' title='{{d.name}}' stytle='text-decoration:none;'>{{d.name}}</a></div>"
+                    },
+                    {
+                        field: 'addtime',
+                        title: '注册时间',
+                        //width: '10%',
+                        align: 'center',
+                        sort: true,
+                        templet: function (d) {
+                            Date.prototype.toLocaleString = function () {
+                                return this.getFullYear() + "-" + (this.getMonth() + 1) + "-" +
+                                    this.getDate() + "  " + this.getHours() + ":" + this.getMinutes() +
+                                    ":" + this.getSeconds();
+                            };
+                            return new Date(d.addtime * 1000).toLocaleString();
+                        }
+                    },
+                    {
+                        field: 'position',
+                        title: '显示位置',
+                        //width: '10%',
+                        align: 'center',
+                        sort: true,
+                        templet: function (d) {
+                            return (d.position == 1) ?
+                                '<span class="label label-secondary ">首页头部轮播</span>' :
+                                '<span class="label label-success ">其他</span>';
+                        }
+                    },
+                    // {
+                    //     field: 'action',
+                    //     title: '跳转页面',
+                    //     //width: '10%',
+                    //     align: 'center',
+                    //     sort: true,
+                    // }, 
+                    {
+                        field: 'cz',
+                        title: '操作',
+                        width: '15%',
+                        align: 'center',
+                        toolbar: '#barDemo'
                     }
-                }, {
-                    field: 'name',
-                    title: '广告名',
-                    //width: '28%',
-                    //templet: "<div><a herf='JavaScript:;' title='{{d.name}}' stytle='text-decoration:none;'>{{d.name}}</a></div>"
-                },  {
-                    field: 'addtime',
-                    title: '注册时间',
-                    //width: '10%',
-                    align: 'center',
-                    sort: true,
-                    templet: function (d) {
-                        Date.prototype.toLocaleString = function () {
-                            return this.getFullYear() + "-" + (this.getMonth() + 1) + "-" +
-                                this.getDate() + "  " + this.getHours() + ":" + this.getMinutes() +
-                                ":" + this.getSeconds();
-                        };
-                        return new Date(d.addtime * 1000).toLocaleString();
-                    }
-                }, 
-                {
-                    field: 'position',
-                    title: '显示位置',
-                    //width: '10%',
-                    align: 'center',
-                    sort: true,
-                    templet:function(d){
-                        return (d.position == 1)? '<span class="label label-secondary ">首页头部轮播</span>' : '<span class="label label-success ">其他</span>' ;
-                    }
-                },
-                // {
-                //     field: 'action',
-                //     title: '跳转页面',
-                //     //width: '10%',
-                //     align: 'center',
-                //     sort: true,
-                // }, 
-                {
-                    field: 'cz',
-                    title: '操作',
-                    width: '10%',
-                    align: 'center',
-                    toolbar: '#barDemo'
-                }]
+                ]
             ],
             done: function (res, curr, count) {
                 //数据渲染完的回调 
