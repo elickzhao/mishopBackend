@@ -146,7 +146,7 @@
                         type: field.type,
                         pay_status: field.pay_status,
                         tel: field.tel,
-                        order_sn:field.order_sn
+                        order_sn: field.order_sn
                     }
                 });
                 field = "";
@@ -167,6 +167,9 @@
             elem: '#demo',
             height: 'full-290',
             url: "{:U('Order/getOrders')}",
+            where: { //设定异步数据接口的额外参数，任意设
+                pay_status: '{$pay_status}',
+            },
             page: true,
             limit: 20,
             cellMinWidth: 80,
@@ -182,12 +185,12 @@
                     title: '买家',
                     //width: '20%',
                     align: 'center',
-                },  {
+                }, {
                     field: 'order_sn',
                     title: '订单号',
                     //width: '20%',
                     align: 'center',
-                },{
+                }, {
                     field: 'price',
                     title: '总金额',
                     //width: '20%',
@@ -237,7 +240,7 @@
                 order_status = res.data.order_status;
                 $(".layui-table-box .layui-table-body").mCustomScrollbar({
                     theme: "minimal-dark",
-                    autoHideScrollbar:true,
+                    autoHideScrollbar: true,
                 });
                 //订单状态字体颜色设置
                 $('.font_color').each(function (index, element) {
@@ -291,7 +294,7 @@
                         method: 'GET',
                         dataType: 'json',
                         success: function (e) {
-                            console.log(e);
+                            //console.log(e);
                             if (e.code) {
                                 layer.msg(e.msg, {
                                     icon: 2
@@ -314,8 +317,6 @@
                 layer.close(index);
                 //向服务端发送删除指令
                 location.href = "{:U('back')}?oid=" + did;
-                //location.href = "www.baidu.com";
-
             });
         }
 

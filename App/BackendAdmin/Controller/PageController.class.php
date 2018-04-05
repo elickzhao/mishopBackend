@@ -125,11 +125,11 @@ class PageController extends PublicController
         $order_status = C('ORDER_STATUS');  //订单状态数组
 
         foreach ($order_status as $k => $v) {
-            if ($k == 'back') {
-                $count = $this->order->where(['back'=>'1'])->cache(true, 60)->count();
+            if ($k === 'back') {
+                $count = $this->order->where(['back'=>'1','del'=>0])->cache(true, 60)->count();
                 $k = 1;
             } else {
-                $count =  $this->order->where(['status'=>$k])->cache(true, 60)->count();
+                $count =  $this->order->where(['status'=>$k,'back'=>'0','del'=>0])->cache(true, 60)->count();
             }
 
             $list[] = ['title'=>$v,'count'=>$count,'key'=>$k];

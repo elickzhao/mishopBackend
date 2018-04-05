@@ -226,7 +226,7 @@ class OrderController extends PublicController
                     if ($_GET['pay_status'] == 1 || $_GET['pay_status'] == 2) {
                         $where .= ' AND back = "'. $_GET[$value].'"';
                     } else {
-                        $where .= ' AND status = "'. $_GET[$value].'"';
+                        $where .= ' AND back="0" AND status = "'. $_GET[$value].'"';
                     }
                 } else {
                     $where .= ' AND '.$value.' = "'. $_GET[$value].'"';
