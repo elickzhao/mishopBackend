@@ -119,6 +119,9 @@ class ProductController extends PublicController
             $pro_id = $_POST['id'];
             $filed = $_POST['filed'];
             $val = $_POST['val'];
+            if ($_POST['filed'] =='renew') {
+                $filed = 'del';
+            }
 
             if (is_array($pro_id)) {
                 $where = 'id in ('. implode(',', $pro_id).')';
@@ -392,6 +395,119 @@ class ProductController extends PublicController
             echo json_encode(array('status'=>0,'err'=>'操作失败！'.__LINE__));
             exit();
         }
+    }
+
+    /**
+     * [delList 回收站列表页]
+     * @return [type] [回收站列表页]
+     */
+    public function delList()
+    {
+        $cate_list= M('category')->where('1=1')->select();
+        $this->assign('cate_list', $cate_list);
+        $bc = ['商品管理','商品回收站'];
+        $this->assign('bc', $bc);
+        $this->display();
+    }
+
+    /**
+     * [getDelList 回收站列表页]
+     * @return [type] [回收站列表页]
+     */
+    public function getDelList()
+    {
+        $where="1=1 AND pro_type = 1 AND del=1";
+
+        if ($_GET['cid'] == 0) {
+            unset($_GET['cid']);
+        }
+        
+        //搜索优先级查询
+        $arr = ['pro_number','name','cid'];
+        foreach ($arr as $key => $value) {
+            if ($_GET[$value] != '') {
+                if ($value == 'name') {
+                    $where .= ' AND '.$value.' like "%'. $_GET[$value].'%"';
+                } else {
+                    $where .= ' AND '.$value.' = '. $_GET[$value];
+                }
+                break;
+            }
+        }
+
+        $count=M('product')->where($where)->count();
+        $rows=ceil($count/rows);
+        $page = (int) -- $_GET['page'] ;
+        $rows = $_GET['limit'] ? $_GET['limit'] : 10;
+        $limit= $page*$rows;
+        $productlist=M('product')->where($where)->order('updatetime desc')->limit($limit, $rows)->select();
+        $sql = M('product')->getlastsql();
+
+        //$resuslt = [code=>0,msg=>'',count=>$count,data=>$productlist,sql=>$sql];
+        $resuslt = [code=>0,msg=>'',count=>$count,data=>$productlist];
+
+        $this->ajaxReturn($resuslt);
+    }
+
+    /**
+     * [setDelete 彻底删除商品]
+     */
+    public function setDelete($ids = "")
+    {
+        $id = $_GET['did']?$_GET['did']:$ids;
+        $r = M('product')->where(['id'=>$id])->find();
+        if ($r['del'] == 0) {
+            $resuslt = [code=>1,msg=>'数据出错,无法彻底删除'];
+        } else {
+            if ($r['photo_x'] != "") {
+                $this->unlinkImg($r['photo_x']);
+            }
+
+            if ($r['photo_d'] != "") {
+                $this->unlinkImg($r['photo_d']);
+            }
+
+            if ($r['photo_string'] != "") {
+                $arr = explode(',', trim($r['photo_string'], ','));
+                foreach ($arr as $k => $v) {
+                    $this->unlinkImg($v);
+                }
+            }
+
+            M('product')->where(['id'=>$id])->delete();
+            $resuslt = [code=>0,msg=>'已经彻底删除'];
+        }
+        if ($_GET['did']) {
+            $this->ajaxReturn($resuslt);
+        }
+    }
+
+    /**
+     * [batchDel 批量删除]
+     * @return [type] [批量删除]
+     */
+    public function batchDel()
+    {
+        if ($_GET['ids'] == "") {
+            $resuslt = [code=>1,msg=>'请选择商品'];
+        } else {
+            $arr = explode(',', $_GET['ids']);
+            foreach ($arr as $key => $value) {
+                $this->setDelete($value);
+            }
+            $resuslt = [code=>0,msg=>'批量删除成功!'];
+        }
+
+        $this->ajaxReturn($resuslt);
+    }
+
+    public function unlinkImg($img_url)
+    {
+        $url = "Data/".$img_url;
+        if (file_exists($url)) {
+            @unlink($url);
+        }
+        rmdir(dirname($url));
     }
 
     //***************************

@@ -172,12 +172,12 @@
                     <!-- 商品品牌 -->
                     <div class="row cl">
                         <div class="col-xs-4 col-sm-2 ml-30">
-                            <label class="layui-form-label">选择品牌: </label>
+                            <label class="layui-form-label">选择供货商: </label>
                         </div>
                         <div class="formControls col-xs-8 col-sm-4">
                             <select name="brand_id" id="brand_id">
                                 <!-- 遍历 -->
-                                <option value="">选择品牌</option>
+                                <option value="">选择供货商</option>
                                 <volist name="brand_list" id="v">
                                     <option value="{$v.id}" <if condition="$v.id eq $pro_allinfo['brand_id']">selected="selected"</if>>-- {$v.name}</option>
                                 </volist>

@@ -19,6 +19,8 @@
     <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/skin/default/skin.css" id="skin" />
     <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/css/style.css" />
     <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/css/welcome.css" />
+    <link href="https://cdn.bootcss.com/animate.css/3.5.2/animate.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="__PUBLIC__/admin/lib/layui/css/layui.css">
     <!--[if IE 6]>
     <script type="text/javascript" src="__PUBLIC__/admin/lib/DD_belatedPNG_0.0.8a-min.js" ></script>
     <script>DD_belatedPNG.fix('*');</script>
@@ -52,7 +54,7 @@
             <div class="col-lg-3 col-md-3 col-xs-6 mt-20">
                 <div class="panel panel-success">
                     <div class="panel-header">订单数量
-                        <span class="label label-default  radius" style="float: right;">今日</span>
+                        <span class="label label-default radius" style="float: right;">今日</span>
                     </div>
                     <div class="panel-body text-c">
                         <i class="Hui-iconfont Hui-iconfont-order" style="font-size:3rem"></i>
@@ -74,7 +76,7 @@
             <div class="col-lg-3 col-md-3 col-xs-6 mt-20">
                 <div class="panel panel-danger">
                     <div class="panel-header">商品数量
-                        <span class="label label-default  radius" style="float: right;">总</span>
+                        <span class="label label-default radius" style="float: right;">总</span>
                     </div>
                     <div class="panel-body text-c">
                         <i class="Hui-iconfont Hui-iconfont-goods" style="font-size:3rem"></i>
@@ -102,7 +104,7 @@
                                         <div class="row cl text-c">
                                             <a href="{:U('Order/index?pay_status='.$vo['key'])}" style="text-decoration: none;">
                                                 <div class="col-lg-12">
-                                                    <strong class="goods_sale_count">{$vo.count}</strong>
+                                                    <strong class="goods_sale_count animated tada layui-anim-loop">{$vo.count}</strong>
                                                 </div>
                                                 <div class="col-lg-12">{$vo.title}</div>
                                             </a>
