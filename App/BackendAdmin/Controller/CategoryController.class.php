@@ -16,12 +16,12 @@ class CategoryController extends PublicController
         // 获取所有分类，进行关系划分
         $list = $this->category->where('tid=0 AND bz_4<2')->order('sort desc,id asc')->field('id,tid,name,bz_2,bz_4')->select();
         foreach ($list as $k1 => $v1) {
-            $list[$k1]['list2'] = $this->category->where('tid='.intval($v1['id']))->field('id,tid,name,bz_2,bz_1,sort')->select();
+            $list[$k1]['list2'] = $this->category->where('tid='.intval($v1['id']))->field('id,tid,name,bz_2,bz_1,bz_4,sort')->select();
             foreach ($list[$k1]['list2'] as $k2 => $v2) {
-                $list[$k1]['list2'][$k2]['list3'] = $this->category->where('tid='.intval($v2['id']))->field('id,tid,name,bz_2,bz_1,sort')->select();
+                $list[$k1]['list2'][$k2]['list3'] = $this->category->where('tid='.intval($v2['id']))->field('id,tid,name,bz_2,bz_1,bz_4,sort')->select();
             }
         }
-
+        
         $this->assign('list', $list);// 赋值数据集
     }
 
@@ -166,10 +166,11 @@ class CategoryController extends PublicController
         if (IS_POST) {
             $cat_id = $_POST['id'];
             $val = $_POST['val'];
+            $filed = $_POST['filed'];
 
             $where = 'id='.intval($cat_id);
 
-            $data['sort'] = $val;
+            $data[$filed] = $val;
             $up = M('category')->where($where)->save($data);
 
             $resuslt = [code=>0,msg=>$up];

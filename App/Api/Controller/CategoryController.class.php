@@ -11,8 +11,8 @@ class CategoryController extends PublicController
     //***************************
     public function index()
     {
-        $list = M('category')->where('tid=1')->field('id,tid,name')->order('sort desc,id asc')->select();
-        $catList = M('category')->where('tid='.intval($list[0]['id']))->field('id,name,bz_1')->select();
+        $list = M('category')->where('tid=1 AND bz_4=0 ')->field('id,tid,name')->order('sort desc,id asc')->select();
+        $catList = M('category')->where('tid='.intval($list[0]['id'].' AND bz_4=0 '))->field('id,name,bz_1')->order('sort desc,id asc')->select();
         foreach ($catList as $k => $v) {
             $catList[$k]['bz_1'] = __DATAURL__.$v['bz_1'];
         }
@@ -34,7 +34,7 @@ class CategoryController extends PublicController
             exit();
         }
 
-        $catList = M('category')->where('tid='.intval($catid))->field('id,name,bz_1')->select();
+        $catList = M('category')->where('tid='.intval($catid).' AND bz_4=0 ')->field('id,name,bz_1')->select();
         foreach ($catList as $k => $v) {
             $catList[$k]['bz_1'] = __DATAURL__.$v['bz_1'];
         }

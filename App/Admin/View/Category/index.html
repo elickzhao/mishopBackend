@@ -54,14 +54,15 @@
 				<div class="hr-line-dashed"></div>
 
 
-				<table class="layui-table">
+				<table class="layui-table" lay-filter="test">
 					<thead>
 						<tr class="text-c">
 							<th width="20">ID</th>
-							<th width="100">分类名称</th>
+							<th width="60">分类名称</th>
 							<th width="60">缩略图</th>
 							<th width="20">排序</th>
 							<th width="60">推荐</th>
+							<th width="40">显示</th>
 							<th width="80">操作</th>
 						</tr>
 					</thead>
@@ -84,11 +85,15 @@
 								</if>
 							</td>
 							<td>
+								<font style="color:#090">显示</font>
+
+							</td>
+							<td>
 								<a href="{:U('set_tj')}?tj_id={$tr1.id}">推荐</a>
 								<if condition="$tr1.bz_4 eq 1">
 									|
 									<a href="{:U('add')}?cid={$tr1.id}">修改</a> |
-									<a onclick="del_id_url({$tr1.id})">删除</a>
+									<a onclick="del_id_url('{$tr1.id}')">删除</a>
 								</if>
 							</td>
 						</tr>
@@ -111,9 +116,16 @@
 									</if>
 								</td>
 								<td>
+									<if condition="$tr2.bz_4 eq 1">
+										<font data-bz="{$tr2.bz_4}" data-id="{$tr2.id}" onclick="setShow(this)" style="color:#999">隐藏</font>
+										<else />
+										<font data-bz="{$tr2.bz_4}" data-id="{$tr2.id}" onclick="setShow(this)" style="color:#090">显示</font>
+									</if>
+								</td>
+								<td>
 									<a href="{:U('set_tj')}?tj_id={$tr2.id}">推荐</a> |
 									<a href="{:U('add')}?cid={$tr2.id}">修改</a> |
-									<a onclick="del_id_url({$tr2.id})">删除</a>
+									<a onclick="del_id_url('{$tr2.id}')">删除</a>
 								</td>
 							</tr>
 							<volist name='tr2["list3"]' id='tr3'>
@@ -139,9 +151,16 @@
 										</if>
 									</td>
 									<td>
+										<if condition="$tr3.bz_4 eq 1">
+											<font data-bz="{$tr3.bz_4}" data-id="{$tr3.id}" onclick="setShow(this)" style="color:#999">隐藏</font>
+											<else />
+											<font data-bz="{$tr3.bz_4}" data-id="{$tr3.id}" onclick="setShow(this)" style="color:#090">显示</font>
+										</if>
+									</td>
+									<td>
 										<a href="{:U('set_tj')}?tj_id={$tr3.id}">推荐</a> |
 										<a href="{:U('add')}?cid={$tr3.id}">修改</a> |
-										<a onclick="del_id_url({$tr3.id})">删除</a>
+										<a onclick="del_id_url('{$tr3.id}')">删除</a>
 									</td>
 								</tr>
 							</volist>
@@ -176,6 +195,7 @@
 				method: 'POST',
 				data: {
 					id: id,
+					filed: 'sort',
 					val: value,
 				},
 				dataType: 'json',
@@ -183,12 +203,12 @@
 					if (e.code) {
 						layer.msg('更新数据失败!', {
 							icon: 2,
-							time:1200
+							time: 1200
 						});
 					} else {
 						layer.msg('更新数据成功!', {
 							icon: 1,
-							time:1200
+							time: 1200
 						});
 					}
 				},
@@ -200,9 +220,44 @@
 		}
 
 		function del_id_url(id) {
+			layer.confirm('确认删除吗？', function (index) {
+				layer.close(index);
+				location = '{:U("del")}?did=' + id;
+			});
+			/*
 			if (confirm("确认删除吗？")) {
 				location = '{:U("del")}?did=' + id;
 			}
+			*/
+		}
+
+
+		function setShow(obj) {
+			let id = $(obj).data('id');
+			let arr = ['显示', '隐藏'];
+			let value = ($(obj).data('bz')) ? 0 : 1;
+			let color = ['#090', '#999'];
+			$(obj).html(arr[value]);
+			$(obj).css('color', color[value]);
+			$(obj).data('bz', value);
+
+			$.ajax("{:U('Category/setAtrr')}", {
+				method: 'POST',
+				data: {
+					id: id,
+					filed: 'bz_4',
+					val: value,
+				},
+				dataType: 'json',
+				success: function (e) {
+					console.log(e.msg);
+				},
+				error: function (e) {
+					console.log(e);
+				}
+
+			});
+			//console.log(value);
 		}
 	</script>
 
