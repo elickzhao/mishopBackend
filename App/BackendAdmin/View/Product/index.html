@@ -131,6 +131,10 @@
                         <span class="btn btn-primary" title="推荐" id="isType">
                             <i class="Hui-iconfont">&#xe697;</i> 推荐</span>
                     </div>
+                    <div class="btn-group l ml-5">
+                        <span class="btn btn-primary" title="新品" id="isDel">
+                            <i class="layui-icon f-16">&#xe640;</i> 删除</span>
+                    </div>
                 </div>
                 <table id="demo" lay-filter="test" lay-data="{id: 'idTest'}"></table>
 
@@ -383,6 +387,15 @@
         $("#isType").click(function () {
             let list = getList();
             getData(list, 'type', 1, 1);
+
+        });
+        //批量删除
+        $("#isDel").click(function () {
+            let list = getList();
+            layer.confirm('确认批量删除?', function (index) {
+                layer.close(index);
+                getData(list, 'del', 1, 1);
+            });
 
         });
 

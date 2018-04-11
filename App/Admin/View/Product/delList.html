@@ -275,32 +275,37 @@
         =            批量操作                         =
         =============================================*/
 
-        //批量下架
+        //批量删除
         $("#isDown").click(function () {
-            let list = getList();
-            var url = "{:U('batchDel')}?ids=" + list;
-            $.ajax(url, {
-                method: 'GET',
-                dataType: 'json',
-                success: function (e) {
-                    if (e.code) {
-                        layer.msg(e.msg, {
-                            icon: 2
-                        });
-                    } else {
-                        layer.msg(e.msg, {
-                            icon: 1
-                        });
-                        tableIns.reload();
+
+            layer.confirm('确认批量删除?', function (index) {
+                layer.close(index);
+                let list = getList();
+                var url = "{:U('batchDel')}?ids=" + list;
+                $.ajax(url, {
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function (e) {
+                        if (e.code) {
+                            layer.msg(e.msg, {
+                                icon: 2
+                            });
+                        } else {
+                            layer.msg(e.msg, {
+                                icon: 1
+                            });
+                            tableIns.reload();
+                        }
+                    },
+                    error: function (e) {
+                        console.log(e);
                     }
-                },
-                error: function (e) {
-                    console.log(e);
-                }
+                });
             });
 
+
         });
-        //批量上架
+        //批量恢复
         $("#isRenew").click(function () {
             let list = getList();
             getData(list, 'renew', 0, 1);
