@@ -42,7 +42,11 @@ class IndexController extends PublicController
         //======================
         //首页推荐产品
         //======================
-        $pro_list = M('product')->where('del=0 AND pro_type=1 AND is_down=0 AND type=1')->order('sort desc,id desc')->field('id,name,intro,photo_x,price_yh,price,shiyong')->limit(16)->select();
+        //XXX 把隐藏分类的商品去除掉了
+        // $pro_list = M('product')->where('del=0 AND pro_type=1 AND is_down=0 AND type=1')->order('sort desc,id desc')->field('id,name,intro,photo_x,price_yh,price,shiyong')->limit(16)->select();
+        $arr = M('category')->where(['bz_4'=>0])->getField('id', true);
+        $str = implode(',', $arr);
+        $pro_list = M('product')->where('del=0 AND pro_type=1 AND is_down=0 AND type=1 AND cid in ('.$str.')')->order('sort desc,id desc')->field('id,name,photo_x,price_yh,shiyong')->limit(16)->select();
         foreach ($pro_list as $k => $v) {
             $pro_list[$k]['photo_x'] = __DATAURL__.$v['photo_x'];
         }
@@ -50,7 +54,9 @@ class IndexController extends PublicController
         //======================
         //首页热销产品
         //======================
-        $hot_list = M('product')->where('del=0 AND pro_type=1 AND is_down=0 AND is_hot=1')->order('sort desc,id desc')->field('id,name,intro,photo_x,price_yh,price,shiyong')->limit(4)->select();
+        //这里直接用上面做好的 分类列表
+        //$hot_list = M('product')->where('del=0 AND pro_type=1 AND is_down=0 AND is_hot=1')->order('sort desc,id desc')->field('id,name,intro,photo_x,price_yh,price,shiyong')->limit(4)->select();
+        $hot_list = M('product')->where('del=0 AND pro_type=1 AND is_down=0 AND is_hot=1 AND cid in ('.$str.')')->order('sort desc,id desc')->field('id,name,intro,photo_x,price_yh,price,shiyong')->limit(4)->select();
         foreach ($hot_list as $k => $v) {
             $hot_list[$k]['photo_x'] = __DATAURL__.$v['photo_x'];
         }
@@ -99,7 +105,10 @@ class IndexController extends PublicController
         $page = intval($_REQUEST['page']);
         $limit = intval($page * 16) - 16;
 
-        $pro_list = M('product')->where('del=0 AND pro_type=1 AND is_down=0 AND type=1')->order('sort desc,id desc')->field('id,name,photo_x,price_yh,shiyong')->limit($limit.',16')->select();
+        $arr = M('category')->where(['bz_4'=>0])->getField('id', true);
+        $str = implode(',', $arr);
+        // $pro_list = M('product')->where('del=0 AND pro_type=1 AND is_down=0 AND type=1')->order('sort desc,id desc')->field('id,name,photo_x,price_yh,shiyong')->limit($limit.',16')->select();
+        $pro_list = M('product')->where('del=0 AND pro_type=1 AND is_down=0 AND type=1 AND cid in ('.$str.')')->order('sort desc,id desc')->field('id,name,photo_x,price_yh,shiyong')->limit($limit.',16')->select();
         foreach ($pro_list as $k => $v) {
             $pro_list[$k]['photo_x'] = __DATAURL__.$v['photo_x'];
         }

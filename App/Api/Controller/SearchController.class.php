@@ -52,7 +52,12 @@ class SearchController extends PublicController
         $page = intval($_POST['page']) ? intval($_POST['page']) : 1;
         $limit = intval($page * 8) - 8;
 
-        $prolist = M('product')->where('del=0 AND pro_type=1 AND is_down=0 AND name LIKE "%'.$keyword.'%"')->order('addtime desc')->field('id,name,photo_x,shiyong,price,price_yh')->limit($limit.',8')->select();
+
+        $arr = M('category')->where(['bz_4'=>0])->getField('id', true);
+        $str = implode(',', $arr);
+
+
+        $prolist = M('product')->where('del=0 AND pro_type=1 AND is_down=0 AND cid in ('.$str.') AND name LIKE "%'.$keyword.'%"')->order('addtime desc')->field('id,name,photo_x,shiyong,price,price_yh')->limit($limit.',8')->select();
         foreach ($prolist as $k => $v) {
             $prolist[$k]['photo_x'] = __DATAURL__.$v['photo_x'];
         }
