@@ -17,6 +17,37 @@ use Think\Controller;
 
 class MoreController extends PublicController
 {
+    public function sysConfig()
+    {
+        if (IS_POST) {
+            $m = $_POST['orderMSG']?$_POST['orderMSG']:0;
+            $a = $_POST['autoClose']?$_POST['autoClose']:0;
+
+            if (intval($_POST['heartbeat']) < 0) {
+                $this->error('心跳时间不能小于一秒!');
+                exit();
+            }
+
+            F('ORDER_MSG', ['orderMSG'=>$m,'autoClose'=>$a,'heartbeat'=>$_POST['heartbeat']]);
+            
+            $this->success('设置成功！');
+        } else {
+            if (!F('ORDER_MSG')) {
+                F('ORDER_MSG', C('ORDER_MSG'));
+            }
+
+            $m = F('ORDER_MSG');
+            
+            $this->assign('orderMSG', $m['orderMSG']);
+            $this->assign('autoClose', $m['autoClose']);
+            $this->assign('heartbeat', $m['heartbeat']);
+
+            $bc = ['综合管理','系统配置'];
+            $this->assign('bc', $bc);
+            $this->display();
+        }
+    }
+    
     //*************************
     //单页设置
     //*************************

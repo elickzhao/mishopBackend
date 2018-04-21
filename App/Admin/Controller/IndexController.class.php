@@ -31,6 +31,14 @@ class IndexController extends PublicController
         $menu="<include File='Page/adminusermenu'/>";
         $index="<iframe src='".U('Page/adminindex')."' id='iframe' name='iframe'></iframe>";
         $bc = ['管理首页','欢迎页面'];
+
+
+        $m = F('ORDER_MSG');
+            
+        $this->assign('orderMSG', $m['orderMSG']);
+        $this->assign('autoClose', $m['autoClose']);
+        $this->assign('heartbeat', $m['heartbeat']);
+        
         //版权
         $copy=M('web')->where('id=5')->getField('concent');
         $this->assign('copy', $copy);

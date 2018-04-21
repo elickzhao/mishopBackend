@@ -82,8 +82,20 @@ class PageController extends PublicController
     public function todayCount()
     {
         $map['addtime']  = array('between',$this->mysqlDate->todadyPeriod());
-        $count = $this->order->where($map)->cache(true, 3600)->count();
+        $count = $this->order->where($map)->count();
         return $count;
+    }
+
+    /**
+     * [getTodayCount 实时获取今日订单]
+     * @return [type] [实时获取今日订单]
+     */
+    public function getTodayCount()
+    {
+        $count = $this->todayCount();
+        $resuslt = [code=>0,msg=>'获取订单成功!',count=>$count];
+
+        $this->ajaxReturn($resuslt);
     }
 
     /**

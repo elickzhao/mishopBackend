@@ -36,6 +36,34 @@
             transition: background 0.3s;
             -webkit-transition: background 0.3s;
         }
+
+
+        .breathe-btn {
+            border: 1px solid #FF4040;
+            color: #fff;
+            font-size: 20px;
+            text-align: center;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, .3);
+            overflow: hidden;
+            background-image: -webkit-gradient(linear, left top, left bottom, from(#FF4040), to(#FF0000));
+            -webkit-animation-timing-function: ease-in-out;
+            -webkit-animation-name: breathe;
+            -webkit-animation-duration: 2700ms;
+            -webkit-animation-iteration-count: infinite;
+            -webkit-animation-direction: alternate;
+        }
+
+        @-webkit-keyframes breathe {
+            0% {
+                opacity: .2;
+                box-shadow: 0 1px 2px rgba(255, 255, 255, 0.1);
+            }
+            100% {
+                opacity: 1;
+                border: 1px solid rgba(255, 99, 71, 1);
+                box-shadow: 0 1px 30px rgba(255, 48, 48, 1);
+            }
+        }
     </style>
 
 </head>
@@ -81,7 +109,9 @@
                         <li id="Hui-msg">
                             <a href="#" title="消息">
                                 <!-- 数字角标应该是有内容时才显示 -->
-                                <!-- <span class="badge badge-danger">1</span> -->
+                                <!-- 这个因为现在购物流程不清晰 而且消息数据库及显示也没有什么好的方向 暂时先放下吧 -->
+                                <!-- 先做一个 有订单就提示框的东西吧 -->
+                                <!-- <span class="badge badge-danger breathe-btn">1</span> -->
                                 <i class="Hui-iconfont" style="font-size:18px">&#xe68a;</i>
                             </a>
                         </li>
@@ -115,7 +145,7 @@
             </div>
         </div>
     </header>
-    
+
     <!-- 左侧菜单 -->
     <include File='Page/adminusermenu' />
     <!-- /左侧菜单 -->
@@ -135,30 +165,86 @@
 
 
     <!--_footer 作为公共模版分离出去-->
-    <script type="text/javascript" src="__PUBLIC__/admin/lib/jquery/1.9.1/jquery.min.js"></script>
+    <!-- <script type="text/javascript" src="__PUBLIC__/admin/lib/jquery/1.9.1/jquery.min.js"></script> -->
+    <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
     <script type="text/javascript" src="__PUBLIC__/admin/lib/layer/2.4/layer.js"></script>
     <script type="text/javascript" src="__PUBLIC__/admin/static/h-ui/js/H-ui.min.js"></script>
     <script type="text/javascript" src="__PUBLIC__/admin/static/h-ui.admin/js/H-ui.admin.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/jBox/jBox.min.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/jBox/plugins/Notice/jBox.Notice.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/lib/jBox/jBox.css" />
+    <link rel="stylesheet" href="__PUBLIC__/admin/lib/jBox/themes/NoticeFancy.css">
+    <link rel="stylesheet" href="__PUBLIC__/admin/lib/jBox/plugins/Notice/jBox.Notice.css">
     <!--/_footer 作为公共模版分离出去-->
-
+    <style>
+        .jBox-container {
+            font-size: 16px;
+            letter-spacing: 0.05em;
+        }
+    </style>
     <!--请在下方写此页面业务相关的脚本-->
     <!-- <script type="text/javascript" src="__PUBLIC__/admin/lib/jquery.contextmenu/jquery.contextmenu.r2.js"></script> -->
     <script type="text/javascript">
-        $(function () {
-            /*$("#min_title_list li").contextMenu('Huiadminmenu', {
-             bindings: {
-             'closethis': function(t) {
-             console.log(t);
-             if(t.find("i")){
-             t.find("i").trigger("click");
-             }
-             },
-             'closeall': function(t) {
-             alert('Trigger was '+t.id+'\nAction was Email');
-             },
-             }
-             });*/
-        });
+        window.onload = function () {
+            let CountObj = $("iframe").contents().find("#todayCount");
+            localStorage.setItem("currCount", CountObj.html());
+        }
+        <if condition="$orderMSG == 1 ">
+        setInterval(getTodayCount, {$heartbeat}000);
+        </if>
+
+
+        function getTodayCount() {
+            var res;
+            $.ajax({
+                url: '{:U("Page/getTodayCount")}',
+                dataType: 'json',
+                async: false,
+                type: "GET",
+                error: function (e) {
+                    res = e;
+                },
+                success: function (data) {
+                    res = data;
+                }
+            });
+            let CountObj = $("iframe").contents().find("#todayCount");
+            currCount = CountObj.html() ? CountObj.html() : localStorage.currCount;
+
+
+            //console.log("todayCount" + currCount);
+            if (res.count) {
+                if (currCount < res.count) {
+                    //设置新数据
+                    CountObj.html(res.count);
+                    localStorage.setItem("currCount", res.count);
+
+                    /*----------  弹出提示框  ----------*/
+                    new jBox('Notice', {
+                        theme: 'NoticeFancy',
+                        attributes: {
+                            x: 'right',
+                            y: 'bottom'
+                        },
+                        stack: false,
+                        animation: {
+                            open: 'tada',
+                            close: 'zoomIn'
+                        },
+                        autoClose: <if condition="$autoClose == 1 ">Math.random() * 8000 + 2000,<else />false,</if>
+                        audio: '__PUBLIC__/admin/lib/jBox/audio/bling2',
+                        volume: 100,
+                        color: 'blue',
+                        title: '订单消息',
+                        content: '<br/>您有新的订单啦! 请尽快安排发货和处理!',
+                        delayOnHover: true,
+                        showCountdown: true,
+                        closeButton: true,
+                    });
+                }
+            }
+
+        }
 
 
         // function myselfinfo() {

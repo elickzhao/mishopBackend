@@ -195,7 +195,7 @@
                             <label class="layui-form-label">进货价: </label>
                         </div>
                         <div class="formControls col-xs-8 col-sm-4">
-                            <input type="text" class="input-text" placeholder="进货价" name="company" id="company" value="{$pro_allinfo.company}">
+                            <input type="text" class="input-text" placeholder="进货价" name="company" id="company" value="{$pro_allinfo.company}" lay-verify="shiyong">
                             <!-- <span class="help-block ">
                                 <i class="Hui-iconfont c-danger">&#xe6e0;</i>
                                 <cite class="c-999">&nbsp;&nbsp;举例:个/只/件&nbsp;&nbsp;请根据产品来自行添加相应单位</cite>
@@ -229,8 +229,7 @@
                             <label class="layui-form-label">优惠价：</label>
                         </div>
                         <div class="formControls col-xs-8 col-sm-4">
-                            <input type="text" class="input-text number" placeholder="优惠价" name="price_yh" id="price_yh" value="{$pro_allinfo.price_yh}"
-                                required>
+                            <input type="text" class="input-text number" placeholder="优惠价" name="price_yh" id="price_yh" value="{$pro_allinfo.price_yh}" lay-verify="price_yh" required>
                         </div>
                         <label class="layui-form-label">
                             <span class="c-red text-l">*</span>
@@ -246,7 +245,7 @@
                             <label class="layui-form-label">销量：</label>
                         </div>
                         <div class="formControls col-xs-8 col-sm-4">
-                            <input type="text" class="input-text" placeholder="销量" name="shiyong" id="shiyong" value="{$pro_allinfo.shiyong}">
+                            <input type="text" class="input-text" placeholder="销量" name="shiyong" id="shiyong" value="{$pro_allinfo.shiyong}" lay-verify="shiyong">
                         </div>
                     </div>
                     <!-- /销量 -->
@@ -658,7 +657,17 @@
                 if (parseInt(value) < 0 || isNaN(value)) {
                     return "请填写正确数字!";
                 }
-            }
+            },
+            price_yh:function (value) {
+                if (parseInt(value) < 0 || isNaN(value)) {
+                    return "请填写正确价钱!";
+                }
+            },
+            shiyong:function (value) {
+                if (parseInt(value) < 0 ) {
+                    return "请填写正确数字!";
+                }
+            },
         });
 
         //提交监听事件    //没这个是不行的 否则自定义验证不生效

@@ -1,0 +1,194 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="renderer" content="webkit|ie-comp|ie-stand">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+	<link rel="Bookmark" href="/favicon.ico">
+	<link rel="Shortcut Icon" href="/favicon.ico" />
+	<!--[if lt IE 9]>
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/html5shiv.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/respond.min.js"></script>
+    <![endif]-->
+	<link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui/css/H-ui.min.css" />
+	<link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/css/H-ui.admin.css" />
+	<link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/lib/Hui-iconfont/1.0.8/iconfont.css" />
+	<link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/skin/default/skin.css" id="skin" />
+	<link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/css/style.css" />
+	<link rel="stylesheet" href="__PUBLIC__/admin/lib/webuploader/0.1.5/webuploader.css">
+	<link rel="stylesheet" href="__PUBLIC__/admin/css/common.css">
+	<link rel="stylesheet" href="__PUBLIC__/admin/lib/layui/css/layui.css">
+	<!--[if IE 6]>
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+    <script>DD_belatedPNG.fix('*');</script>
+    <![endif]-->
+	<script type="text/javascript" src="__PUBLIC__/admin/js/jquery.js"></script>
+	<script type="text/javascript" src="__PUBLIC__/admin/js/action.js"></script>
+	<script type="text/javascript" src="__PUBLIC__/plugins/xheditor/xheditor-1.2.1.min.js"></script>
+	<script type="text/javascript" src="__PUBLIC__/plugins/xheditor/xheditor_lang/zh-cn.js"></script>
+	<script type="text/javascript" src="__PUBLIC__/admin/js/jCalendar.js"></script>
+	<script src="https://unpkg.com/wangeditor@3.0.15/release/wangEditor.min.js"></script>
+
+	<!-- 开关按钮的样式和js  -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.4/css/bootstrap2/bootstrap-switch.min.css"
+	/>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.4/js/bootstrap-switch.min.js" integrity="sha256-AKUJYz2DyEoZYHh2/+zPHm1tTdYb4cmG8HC2ydmTzM4="
+	    crossorigin="anonymous"></script>
+
+	<style>
+		#content {
+			width: 770px;
+			height: 300px;
+		}
+
+		/* 隐藏layui开关按钮多余样式 */
+
+		.switch>.layui-form-checkbox {
+			display: none !important;
+			visibility: hidden !important;
+		}
+
+		#commentForm .layui-form-label {
+			text-align: left;
+		}
+
+		/* 已上传图片 删除信息显示效果 */
+
+		.box {
+			position: relative;
+			cursor: pointer;
+		}
+
+		.box .bmbox {
+			width: 125px;
+			height: 30px;
+			background: rgba( 0, 0, 0, 0.7);
+			position: absolute;
+			bottom: 0px;
+			left: 0px;
+			display: none;
+			color: white;
+			text-align: center;
+		}
+
+		.box:hover .bmbox {
+			display: block;
+
+		}
+
+		.tooltip.in {
+			filter: alpha(opacity=60);
+			opacity: .6
+		}
+	</style>
+
+	<title>添加产品</title>
+</head>
+
+<body>
+	<!-- 导航 -->
+	<include File='Page/nav' />
+	<!-- /导航 -->
+	<div class="page-container cl">
+		<div class="panel panel-default mt-40">
+			<div class="panel-header">{$bc[1]}</div>
+			<div class="panel-body">
+				<form id="commentForm" class="form form-horizontal layui-form" action="sysConfig" method="post">
+
+					<!-- 订单提醒 -->
+					<div class="row cl">
+						<div class="col-xs-4 col-sm-2 ml-30">
+							<label class="layui-form-label">订单提醒：</label>
+						</div>
+
+						<div class="formControls col-xs-8 col-sm-4">
+							<div class="switch switch-large" data-on-label="是" data-off-label="否">
+								<input name="orderMSG" id="orderMSG" type="checkbox" value="1" <?php echo $orderMSG==1 ? 'checked="checked"' : null?> />
+							</div>
+						</div>
+					</div>
+					<!-- /订单提醒 -->
+					<!-- 自动关闭 -->
+					<div class="row cl">
+						<div class="col-xs-4 col-sm-2 ml-30">
+							<label class="layui-form-label">自动关闭：</label>
+						</div>
+
+						<div class="formControls col-xs-8 col-sm-4">
+							<div class="switch switch-large" data-on-label="是" data-off-label="否">
+								<input name="autoClose" id="autoClose" type="checkbox" value="1" <?php echo $autoClose==1 ? 'checked="checked"' : null?> />
+							</div>
+						</div>
+					</div>
+					<!-- /自动关闭 -->
+
+					<div class="hr-line-dashed"></div>
+
+					<!-- 所需积分 -->
+					<div class="row cl">
+						<div class="col-xs-4 col-sm-2 ml-30">
+							<label class="layui-form-label">心跳时间：</label>
+						</div>
+						<div class="formControls col-xs-8 col-sm-4">
+							<input type="text" class="input-text" placeholder="心跳时间" lay-verify="shiyong" name="heartbeat" id="heartbeat" value="<?php echo intval($heartbeat); ?>"
+							    required>
+							<span class="help-block ">
+								<i class="Hui-iconfont c-danger">&#xe6e0;</i>
+								<cite class="c-999">&nbsp;定时查询新订的单时间间隔,单位为秒.不能小于1秒</cite>
+							</span>
+						</div>
+					</div>
+					<!-- /所需积分 -->
+
+					<div class="hr-line-dashed"></div>
+
+					<div class="row cl">
+						<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-2">
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							<input class="btn btn-primary radius" type="submit" name="submit" lay-submit lay-filter="*" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+
+
+	<!-- 底部 -->
+	<div style="position:fixed; bottom:0; width:100%">
+		<include File='Page/footer' />
+	</div>
+	<!-- /底部 -->
+	<script>
+		var form = layui.form;
+
+
+		/*=============================================
+		=            提交验证            			  =
+		=============================================*/
+
+		$("#commentForm").validate({
+			rules: {
+				heartbeat: {
+					number: true
+				},
+			}
+		});
+
+		form.verify({
+			shiyong: function (value) {
+				if (parseInt(value) <= 0 || isNaN(value)) {
+					return "请填写正确的秒数!";
+				}
+			},
+		});
+
+		/*=====  End of 提交验证  ======*/
+	</script>
+</body>
+
+</html>

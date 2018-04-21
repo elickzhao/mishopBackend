@@ -119,7 +119,7 @@
                         </div>
                         <div class="formControls col-xs-8 col-sm-4">
                             <input type="text" class="input-text" placeholder="满减金额. 必填字段!" name="full_money" id="full_money" value="{$voucher.full_money}"
-                                required>
+                            lay-verify="shiyong" required>
                             <span class="help-block ">
                                 <i class="Hui-iconfont c-danger">&#xe6e0;</i>
                                 <cite class="c-999">&nbsp;默认店铺内所有商品通用</cite>
@@ -139,7 +139,7 @@
                             <label class="layui-form-label">优惠金额：</label>
                         </div>
                         <div class="formControls col-xs-8 col-sm-4">
-                            <input type="text" class="input-text" placeholder="优惠金额. 必填字段!" name="amount" id="amount" value="{$voucher.amount}" required>
+                            <input type="text" class="input-text" placeholder="优惠金额. 必填字段!" name="amount" id="amount" value="{$voucher.amount}" lay-verify="shiyong" required>
                             <span class="help-block ">
                                 <i class="Hui-iconfont c-danger">&#xe6e0;</i>
                                 <cite class="c-999">&nbsp;使用时减免的金额</cite>
@@ -159,7 +159,7 @@
                             <label class="layui-form-label">所需积分：</label>
                         </div>
                         <div class="formControls col-xs-8 col-sm-4">
-                            <input type="text" class="input-text" placeholder="所需积分. 必填字段!" name="point" id="point" value="<?php echo intval($voucher['point'])==0?0:$voucher['point']; ?>"
+                            <input type="text" class="input-text" lay-verify="shiyong" placeholder="所需积分. 必填字段!" name="point" id="point" value="<?php echo intval($voucher['point'])==0?0:$voucher['point']; ?>"
                                 required>
                             <span class="help-block ">
                                 <i class="Hui-iconfont c-danger">&#xe6e0;</i>
@@ -179,7 +179,7 @@
                         </div>
                         <div class="formControls col-xs-8 col-sm-4">
                             <input type="text" class="input-text" placeholder="发行数量. 必填字段!" name="count" id="count" value="<?php echo intval($voucher['count'])==0?10:$voucher['count']; ?>"
-                                required>
+                            lay-verify="shiyong" required>
                         </div>
                         <label class="layui-form-label">
                             <span class="c-red text-l">*</span>
@@ -372,6 +372,14 @@
                     number: true
                 },
             }
+        });
+
+        form.verify({
+            shiyong: function (value) {
+                if (parseInt(value) < 0) {
+                    return "请填写正确数字!";
+                }
+            },
         });
 
         function oo() {
