@@ -58,9 +58,9 @@
                                 <!-- 支付类型 -->
                                 <div class="layui-input-inline" style="width: 260px;">
                                     <select class="lay-search" name="type" id="type" lay-filter="type" lay-search lay-verify="cateid">
-                                        <option value>支付类型</option>
-                                        <option value="weixin">微信支付</option>
-                                        <option value="cash">现金支付</option>
+                                        <option value>配送方式</option>
+                                        <option value="weixin">配送到家</option>
+                                        <option value="cash">店内自提</option>
                                     </select>
                                 </div>
                                 <!-- /支付类型 -->
@@ -123,6 +123,13 @@
         <font class='font_color'>
             {{d.status}}
         </font>
+        {{# } }}
+    </script>
+    <script type="text/html" id="delivery">
+        {{# if(d.type == "weixin"){ }}  
+        <font style="color:#009688">配送到家</font>
+        {{# }else{ }}
+        <font style="color:#1E9FFF">店内自提</font>
         {{# } }}
     </script>
 
@@ -198,13 +205,14 @@
                     align: 'center',
                 }, {
                     field: 'type',
-                    title: '支付类型',
+                    title: '配送方式',
                     //width: '20%',
                     align: 'center',
-                    templet: function (d) {
-                        var r = d.type == "weixin" ? "微信支付" : "线下支付";
-                        return r;
-                    }
+                    templet: "#delivery"
+                    // templet: function (d) {
+                    //     var r = d.type == "weixin" ? "配送到家" : "店内自提";
+                    //     return r;
+                    // }
                 }, {
                     field: 'back',
                     title: '订单状态',

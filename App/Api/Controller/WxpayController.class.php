@@ -97,7 +97,7 @@ class WxpayController extends Controller
 
         $data = array();
         $data['order_sn'] = $ret['out_trade_no'];
-        $data['pay_type'] = 'weixin';
+        //$data['pay_type'] = 'weixin';
         $data['trade_no'] = $ret['transaction_id'];
         $data['total_fee'] = $ret['total_fee'];
         $result = $this->orderhandle($data);
@@ -138,7 +138,14 @@ class WxpayController extends Controller
         $up = array();
         $up['type'] = $pay_type;
         $up['price_h'] = sprintf("%.2f", floatval($total_fee/100));
-        $up['status'] = 20;
+        if ($check_info['type'] == 'weixin') {
+            $up['type'] = 'weixin';
+            $up['status'] = 20;
+        } else {
+            $up['type'] = 'cash';
+            $up['status'] = 30;
+        }
+        //$up['status'] = 20;
         $up['trade_no'] = $trade_no;
         $res = M('order')->where('order_sn="'.$order_sn.'"')->save($up);
         if ($res) {
