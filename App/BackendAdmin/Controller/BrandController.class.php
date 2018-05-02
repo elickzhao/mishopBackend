@@ -136,7 +136,7 @@ class BrandController extends PublicController
             $brand_info = $this->Brand->where('id='.intval($id))->find();
             $this->assign('info', $brand_info);
         }
-        $bc = ['品牌管理','添加品牌'];
+        $bc = ['供货商管理','添加供货商'];
         $this->assign('bc', $bc);
         $this->display();
     }

@@ -121,7 +121,7 @@
 
     </script>
 
-    <script type="text/html" id="photo">
+    <!-- <script type="text/html" id="photo">
         {{# if(d.photo === ""){ }}
         <div>
             <img src='/Public/admin/images/nophoto.png' width='80px' height='80px' />
@@ -131,7 +131,7 @@
             <img src='/Data/{{d.photo}}' width='80px' height='80px' />
         </div>
         {{# } }}
-    </script>
+    </script> -->
 
     <script>
         var table = layui.table;
@@ -187,15 +187,17 @@
                     width: '7%',
                     align: 'center',
                     sort: true,
-                }, {
-                    field: 'photo',
-                    title: 'LOGO图片',
-                    width: '15%',
-                    align: 'center',
-                    templet: '#photo'
-                }, {
+                }, 
+                // {
+                //     field: 'photo',
+                //     title: 'LOGO图片',
+                //     width: '15%',
+                //     align: 'center',
+                //     templet: '#photo'
+                // }, 
+                {
                     field: 'name',
-                    title: '品牌名称',
+                    title: '账户信息',
                     //width: '12%',
                     //templet: "<div><a herf='JavaScript:;' title='{{d.name}}' stytle='text-decoration:none;'>{{d.name}}</a></div>"
                     templet: function (d) {
