@@ -15,9 +15,8 @@ class OrderController extends PublicController
 
         $this->order_product = M('Order_product');
 
-        // $order_status = array('10' => '待付款', '20' => '待发货', '30' => '待收货', '40' => '已收货', '50' => '交易完成');
-        //这个已取消其实是已删除
-        $order_status = array('0' => '已取消', '10' => '待付款', '20' => '待发货', '30' => '待收货', '40' => '待评价', '50' => '交易完成', '51' => '交易关闭');
+        $order_status = C('ORDER_STATUS');
+        unset($order_status['back']);
 
         $this->assign('order_status', $order_status);
     }
@@ -194,7 +193,8 @@ class OrderController extends PublicController
             $order_list[$k]['u_name'] = M('user')->where('id='.intval($v['uid']))->getField('name');
         }
 
-        //echo $where;
+        $bc = ['订单管理','全部订单'];
+        $this->assign('bc', $bc);
 
         $this->assign('order_list', $order_list); // 赋值数据集
 
@@ -205,12 +205,58 @@ class OrderController extends PublicController
         $this->display(); // 输出模板
     }
 
+
+    /**
+     * [getOrders ajax获取订单列表]
+     * @return [json] [订单数据]
+     */
+    public function getOrders()
+    {
+        $where="1=1 AND del<1 ";
+
+        // if ($_GET['cid'] == 0) {
+        //     unset($_GET['cid']);
+        // }
+        
+        //搜索优先级查询
+        $arr = ['order_sn','tel','pay_status','type'];
+        foreach ($arr as $key => $value) {
+            if ($_GET[$value] != '') {
+                if ($value == 'pay_status') {
+                    if ($_GET['pay_status'] == 1 || $_GET['pay_status'] == 2) {
+                        $where .= ' AND back = "'. $_GET[$value].'"';
+                    } else {
+                        $where .= ' AND back="0" AND status = "'. $_GET[$value].'"';
+                    }
+                } else {
+                    $where .= ' AND '.$value.' = "'. $_GET[$value].'"';
+                }
+                //break;
+            }
+        }
+
+
+
+        $count=M('order')->where($where)->count();
+        $rows=ceil($count/rows);
+        $page = (int) -- $_GET['page'] ;
+        $rows = $_GET['limit'] ? $_GET['limit'] : 20;
+        $limit= $page*$rows;
+        $orderlist=M('order')->where($where)->order('id desc')->limit($limit, $rows)->select();
+        foreach ($orderlist as $k => $v) {
+            $orderlist[$k]['u_name'] = M('user')->where('id='.intval($v['uid']))->getField('name');
+        }
+        //$sql = M('order')->getlastsql();
+        //$resuslt = [code=>0,msg=>'',count=>$count,data=>$orderlist,sql=>$sql];
+        $resuslt = [code=>0,msg=>'',count=>$count,data=>$orderlist];
+
+        $this->ajaxReturn($resuslt);
+    }
+
+
     /*
-
     *
-
     * 选择商家里面的省市联动
-
     */
 
     public function get_city()
@@ -253,8 +299,12 @@ class OrderController extends PublicController
         }
 
         //根据订单id获取订单数据还有商品信息
-
         $order_info = $this->order->where('id='.intval($order_id))->find();
+        //获取会员名字
+        $order_info['uname'] = M('user')->where('id='.intval($order_info['uid']))->getField('name');
+        //因暂时无阿里支付 所以暂时这么写
+        $order_info['type'] = ($order_info['type'] == 'weixin') ? '微信支付' : "线下支付" ;
+        
 
         $order_pro = $this->order_product->where('order_id='.intval($order_id))->select();
 
@@ -274,12 +324,17 @@ class OrderController extends PublicController
             }
         }
 
+
+
         $post_info = array();
 
         if (intval($order_info['post'])) {
             $post_info = M('post')->where('id='.intval($order_info['post']))->find();
         }
 
+
+        $bc = ['订单管理','订单详情'];
+        $this->assign('bc', $bc);
         $this->assign('post_info', $post_info);
 
         $this->assign('order_info', $order_info);
@@ -400,9 +455,9 @@ class OrderController extends PublicController
 
         \Think\Log::write('[Wechat Transaction] 订单:'.$back_info['order_sn'].' 申请退款. 金额:'.$back_info['price_h'], 'INFO ');
 
-        $out_trade_no = $back_info['order_sn'];					//订单号
-        $total_fee = $back_info['price_h'] * 100;		//订单总金额 单位分
-        $refund_fee = $back_info['price_h'] * 100;		//退款总金额 单位分
+        $out_trade_no = $back_info['order_sn'];                 //订单号
+        $total_fee = $back_info['price_h'] * 100;       //订单总金额 单位分
+        $refund_fee = $back_info['price_h'] * 100;      //退款总金额 单位分
 
         $input = new \WxPayRefund();
         $input->SetOut_trade_no($out_trade_no);
@@ -440,6 +495,33 @@ class OrderController extends PublicController
             $this->error('操作失败.');
         }
     }
+    
+
+    /**
+     * [cancelBack 取消退款]
+     * @return [type] [description]
+     */
+    public function cancelBack()
+    {
+        $id = (int) $_GET['oid'];
+
+        $back_info = $this->order->where('id='.intval($id))->find();
+
+        if (!$back_info || 1 != intval($back_info['back'])) {
+            $this->error('订单信息错误.');
+        }
+
+        
+        $up_back = $this->order->where('id='.$id)->save(['back'=>0]); // 根据条件更新记录
+
+
+        if ($up_back) {
+            $this->success('操作成功.');
+        } else {
+            $this->error('操作失败.');
+        }
+    }
+    
 
     /*
 
@@ -466,11 +548,12 @@ class OrderController extends PublicController
         $up['del'] = 1;
 
         $res = $this->order->where('id='.intval($id))->save($up);
-
         if ($res) {
-            $this->success('操作成功.');
+            $this->ajaxReturn([code=>0,msg=>"操作成功 - ".$up]);
+            //$this->success('操作成功.');
         } else {
-            $this->error('操作失败.');
+            $this->ajaxReturn([code=>1,msg=>'操作失败!']);
+            //$this->error('操作失败.');
         }
     }
 

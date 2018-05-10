@@ -1,0 +1,18 @@
+@charset "utf-8";
+body {
+    background-color: #ECF0F5;
+}
+
+.hr-line-dashed {
+    border-top: 1px dashed #e7eaec;
+    color: #fff;
+    background-color: #fff;
+    height: 1px;
+    margin: 20px 0;
+}
+
+.help-block {
+    display: block;
+    margin-top: 10px;
+    color: #737373;
+}

@@ -12,6 +12,7 @@ if(isset($_REQUEST["bill_date"]) && $_REQUEST["bill_date"] != ""){
 	$file = WxPayApi::downloadBill($input);
 	echo $file;
 	//TODO 对账单文件处理
+	//WxpayController.class 可以看看这里的 notify() 这个方法
     exit(0);
 }
 ?>

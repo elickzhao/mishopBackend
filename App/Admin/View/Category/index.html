@@ -1,12 +1,13 @@
 <!DOCTYPE HTML>
 <html>
+
 <head>
 	<meta charset="utf-8">
 	<meta name="renderer" content="webkit|ie-comp|ie-stand">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
 	<meta http-equiv="Cache-Control" content="no-siteapp" />
-	<link rel="Bookmark" href="/favicon.ico" >
+	<link rel="Bookmark" href="/favicon.ico">
 	<link rel="Shortcut Icon" href="/favicon.ico" />
 	<!--[if lt IE 9]>
 	<script type="text/javascript" src="__PUBLIC__/admin/lib/html5shiv.js"></script>
@@ -17,97 +18,250 @@
 	<link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/lib/Hui-iconfont/1.0.8/iconfont.css" />
 	<link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/skin/default/skin.css" id="skin" />
 	<link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/css/style.css" />
+	<link rel="stylesheet" href="__PUBLIC__/admin/css/common.css">
+	<link rel="stylesheet" href="__PUBLIC__/admin/lib/layui/css/layui.css">
 	<!--[if IE 6]>
 	<script type="text/javascript" src="__PUBLIC__/admin/lib/DD_belatedPNG_0.0.8a-min.js" ></script>
 	<script>DD_belatedPNG.fix('*');</script>
 	<![endif]-->
-	<script type="text/javascript" src="__PUBLIC__/admin/js/jquery.js"></script>
 	<script type="text/javascript" src="__PUBLIC__/admin/js/action.js"></script>
 	<script type="text/javascript">
-        function openDialog(type){
-            window.open('{:U("Inout/expAdminuser")}?name={$name}&tel={$tel}');
-        }
+		function openDialog(type) {
+			window.open('{:U("Inout/expAdminuser")}?name={$name}&tel={$tel}');
+		}
 	</script>
-	<title>管理员列表</title>
+	<title>分类管理</title>
 </head>
+
 <body>
-<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 分类管理 <span class="c-gray en">&gt;</span> 全部分类 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
-<div class="page-container">
-	<div class="text-c">
-		备注：产品分类建议5个字以内，否则不能显示完整
+	<!-- 导航 -->
+	<include File='Page/nav' />
+	<!-- /导航 -->
+	<div class="page-container">
+		<div class="panel panel-default mt-40">
+			<div class="panel-header">{$bc[1]}</div>
+			<div class="panel-body">
+
+				<div class="row cl">
+					<div class="col-sm-4">
+						<a href="{:U('add')}">
+							<button class="layui-btn layui-btn-normal">
+								<i class="Hui-iconfont">&#xe603;</i> 添加分类</button>
+						</a>
+					</div>
+
+				</div>
+				<div class="hr-line-dashed"></div>
+
+
+				<table class="layui-table" lay-filter="test">
+					<thead>
+						<tr class="text-c">
+							<th width="20">ID</th>
+							<th width="60">分类名称</th>
+							<th width="60">缩略图</th>
+							<th width="20">排序</th>
+							<th width="60">推荐</th>
+							<th width="40">显示</th>
+							<th width="80">操作</th>
+						</tr>
+					</thead>
+
+
+					<volist name='list' id='tr1'>
+						<tr data-id="tr_{$tr1.tid}" class="text-c">
+							<td>{$tr1.id}</td>
+							<td style="text-align:left; padding-left:15px;">
+								<i class="layui-icon">&#xe625;</i> {$tr1.name}</td>
+							<td>
+								<img src='/Public/admin/images/d05.png' width='30px' height='30px' />
+							</td>
+							<td>
+								0
+							</td>
+							<td>
+								<if condition="$tr1.bz_2 eq 1">
+									<font style="color:#090">推荐</font>
+								</if>
+							</td>
+							<td>
+								<font style="color:#090">显示</font>
+
+							</td>
+							<td>
+								<a href="{:U('set_tj')}?tj_id={$tr1.id}">推荐</a>
+								<if condition="$tr1.bz_4 eq 1">
+									|
+									<a href="{:U('add')}?cid={$tr1.id}">修改</a> |
+									<a onclick="del_id_url('{$tr1.id}')">删除</a>
+								</if>
+							</td>
+						</tr>
+						<volist name='tr1["list2"]' id='tr2'>
+							<tr data-id="tr_{$tr2.tid}" class="text-c">
+								<td>{$tr2.id}</td>
+								<td style="text-align:left; padding-left:15px;">
+									&nbsp;&nbsp;&nbsp;&nbsp;
+									<i onclick="rowClicked(this)" data-tid="{$tr2.id}" data-icon="0" class="layui-icon" style="font-size: 20px; color: #1E9FFF;">&#xe622;</i> {$tr2.name}
+								</td>
+								<td>
+									<img src='/Public/admin/images/d05.png' width='30px' height='30px' />
+								</td>
+								<td>
+									<input class="layui-input text-c" width="20px" data-id="{$tr2.id}" onchange="updateSort(this)" value="{$tr2.sort}">
+								</td>
+								<td>
+									<if condition="$tr2.bz_2 eq 1">
+										<font style="color:#090">推荐</font>
+									</if>
+								</td>
+								<td>
+									<if condition="$tr2.bz_4 eq 1">
+										<font data-bz="{$tr2.bz_4}" data-id="{$tr2.id}" onclick="setShow(this)" style="color:#999">隐藏</font>
+										<else />
+										<font data-bz="{$tr2.bz_4}" data-id="{$tr2.id}" onclick="setShow(this)" style="color:#090">显示</font>
+									</if>
+								</td>
+								<td>
+									<a href="{:U('set_tj')}?tj_id={$tr2.id}">推荐</a> |
+									<a href="{:U('add')}?cid={$tr2.id}">修改</a> |
+									<a onclick="del_id_url('{$tr2.id}')">删除</a>
+								</td>
+							</tr>
+							<volist name='tr2["list3"]' id='tr3'>
+								<tr data-id="tr_{$tr3.tid}" class="text-c" style="display:none">
+									<td>{$tr3.id}</td>
+									<td style="text-align:left; padding-left:15px;">&nbsp; &nbsp; &nbsp;&nbsp; &nbsp;
+										<i class="Hui-iconfont" style="font-size: 20px; color: #0099CC">&#xe63e;</i> {$tr3.name}
+									</td>
+									<td>
+										<if condition="$tr3['bz_1'] != '' ">
+											<img width='30px' height='30px' src="__DATA__/{$tr3.bz_1}">
+											<else />
+											<img src='/Public/admin/images/d05.png' width='30px' height='30px' />
+										</if>
+
+									</td>
+									<td>
+										<input class="layui-input text-c" width="20px" data-id="{$tr3.id}" onchange="updateSort(this)" value="{$tr3.sort}">
+									</td>
+									<td>
+										<if condition="$tr3.bz_2 eq 1">
+											<font style="color:#090">推荐</font>
+										</if>
+									</td>
+									<td>
+										<if condition="$tr3.bz_4 eq 1">
+											<font data-bz="{$tr3.bz_4}" data-id="{$tr3.id}" onclick="setShow(this)" style="color:#999">隐藏</font>
+											<else />
+											<font data-bz="{$tr3.bz_4}" data-id="{$tr3.id}" onclick="setShow(this)" style="color:#090">显示</font>
+										</if>
+									</td>
+									<td>
+										<a href="{:U('set_tj')}?tj_id={$tr3.id}">推荐</a> |
+										<a href="{:U('add')}?cid={$tr3.id}">修改</a> |
+										<a onclick="del_id_url('{$tr3.id}')">删除</a>
+									</td>
+								</tr>
+							</volist>
+						</volist>
+					</volist>
+				</table>
+			</div>
+		</div>
 	</div>
-	<br>
-	<table class="table table-border table-bordered table-bg">
-		<thead>
+	
 
-		<tr class="text-c">
-			<th width="20">ID</th>
-			<th width="100">分类名称</th>
-			<th width="60">属性</th>
-			<th width="80">操作</th>
-		</tr>
-		</thead>
+	<!-- 底部 -->
+	<include File='Page/footer' />
+	<!-- /底部 -->
+
+	<script>
+		function rowClicked(obj) {
+			var icon = ($(obj).data('icon') == 0) ? '&#xe7a0;' : "&#xe622;";
+			$(obj).html(icon);
+			$(obj).data('icon', ($(obj).data('icon')) ? 0 : 1);
+			// $(obj).html("&#xe7a0;");
+			var dis = (icon == "&#xe7a0;") ? "table-row" : "none";
+			var subtb = "[data-id='tr_" + $(obj).data('tid') + "']";
+			$(subtb).css('display', dis);
+		}
+
+		function updateSort(obj) {
+			let id = $(obj).data('id');
+			let value = $(obj).val();
+			//console.log('id:'+id+"--value:"+value);
+			$.ajax("{:U('Category/setAtrr')}", {
+				method: 'POST',
+				data: {
+					id: id,
+					filed: 'sort',
+					val: value,
+				},
+				dataType: 'json',
+				success: function (e) {
+					if (e.code) {
+						layer.msg('更新数据失败!', {
+							icon: 2,
+							time: 1200
+						});
+					} else {
+						layer.msg('更新数据成功!', {
+							icon: 1,
+							time: 1200
+						});
+					}
+				},
+				error: function (e) {
+					console.log(e);
+				}
+
+			});
+		}
+
+		function del_id_url(id) {
+			layer.confirm('确认删除吗？', function (index) {
+				layer.close(index);
+				location = '{:U("del")}?did=' + id;
+			});
+			/*
+			if (confirm("确认删除吗？")) {
+				location = '{:U("del")}?did=' + id;
+			}
+			*/
+		}
 
 
-		<volist name='list' id='tr1'>
-			<tr data-id="tr_{$tr1.tid}" class="text-c">
-				<td>{$tr1.id}</td>
-				<td style="text-align:left; padding-left:15px;">- {$tr1.name}</td>
-				<td><if condition="$tr1.bz_2 eq 1"><font style="color:#090">推荐</font></if></td>
-				<td>
-					<a href="{:U('set_tj')}?tj_id={$tr1.id}">推荐</a>
-					<if condition="$tr1.bz_4 eq 1">
-						| <a href="{:U('add')}?cid={$tr1.id}">修改</a> |
-						<a onclick="del_id_url({$tr1.id})">删除</a>
-					</if>
-				</td>
-			</tr>
-			<volist name='tr1["list2"]' id='tr2'>
-				<tr data-id="tr_{$tr2.tid}" class="text-c">
-					<td>{$tr2.id}</td>
-					<td style="text-align:left; padding-left:15px;">&nbsp; &nbsp; &nbsp;- {$tr2.name}</td>
-					<td><if condition="$tr2.bz_2 eq 1"><font style="color:#090">推荐</font></if></td>
-					<td>
-						<a href="{:U('set_tj')}?tj_id={$tr2.id}">推荐</a> |
-						<a href="{:U('add')}?cid={$tr2.id}">修改</a> |
-						<a onclick="del_id_url({$tr2.id})">删除</a>
-					</td>
-				</tr>
-				<volist name='tr2["list3"]' id='tr3'>
-					<tr data-id="tr_{$tr3.tid}" class="text-c">
-						<td>{$tr3.id}</td>
-						<td style="text-align:left; padding-left:15px;">&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;- {$tr3.name}</td>
-						<td><if condition="$tr3.bz_2 eq 1"><font style="color:#090">推荐</font></if></td>
-						<td>
-							<a href="{:U('set_tj')}?tj_id={$tr3.id}">推荐</a> |
-							<a href="{:U('add')}?cid={$tr3.id}">修改</a> |
-							<a onclick="del_id_url({$tr3.id})">删除</a>
-						</td>
-					</tr>
-				</volist>
-			</volist>
-		</volist>
-	</table>
-</div>
-<!--_footer 作为公共模版分离出去-->
-<script type="text/javascript" src="__PUBLIC__/admin/lib/jquery/1.9.1/jquery.min.js"></script>
-<script type="text/javascript" src="__PUBLIC__/admin/lib/layer/2.4/layer.js"></script>
-<script type="text/javascript" src="__PUBLIC__/admin/static/h-ui/js/H-ui.min.js"></script>
-<script type="text/javascript" src="__PUBLIC__/admin/static/h-ui.admin/js/H-ui.admin.js"></script> <!--/_footer 作为公共模版分离出去-->
+		function setShow(obj) {
+			let id = $(obj).data('id');
+			let arr = ['显示', '隐藏'];
+			let value = ($(obj).data('bz')) ? 0 : 1;
+			let color = ['#090', '#999'];
+			$(obj).html(arr[value]);
+			$(obj).css('color', color[value]);
+			$(obj).data('bz', value);
 
-<!--请在下方写此页面业务相关的脚本-->
-<script type="text/javascript" src="__PUBLIC__/admin/lib/My97DatePicker/4.8/WdatePicker.js"></script>
-<script type="text/javascript" src="__PUBLIC__/admin/lib/datatables/1.10.0/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="__PUBLIC__/admin/lib/laypage/1.2/laypage.js"></script>
-<script>
-    function del_id_url(id){
-        if(confirm("确认删除吗？"))
-        {
-            location='{:U("del")}?did='+id;
-        }
-    }
-</script>
+			$.ajax("{:U('Category/setAtrr')}", {
+				method: 'POST',
+				data: {
+					id: id,
+					filed: 'bz_4',
+					val: value,
+				},
+				dataType: 'json',
+				success: function (e) {
+					console.log(e.msg);
+				},
+				error: function (e) {
+					console.log(e);
+				}
+
+			});
+			//console.log(value);
+		}
+	</script>
 
 
 </body>
+
 </html>

@@ -243,17 +243,17 @@ class PaymentController extends PublicController
             //$pro['zprice']+=$pro[$k]['zprice'];
             //    $buff_text='';
             // if($pro[$k]['buff']){
-            // 	//验证属性
-            // 	$buff = explode(',',$pro[$k]['buff']);
-            // 	if(is_array($buff)){
-            // 		foreach($buff as $keys => $val){
-            // 			$ggid=M("guige")->where('id='.intval($val))->getField('name');
-            // 			//$buff_text .= select('name','aaa_cpy_category','id='.$val['id']).':'.select('name','aaa_cpy_category','id='.$val['val']).' ';
-            // 			$buff_text .=' '.$ggid.' ';
-            // 		}
-            // 	}
+            //  //验证属性
+            //  $buff = explode(',',$pro[$k]['buff']);
+            //  if(is_array($buff)){
+            //      foreach($buff as $keys => $val){
+            //          $ggid=M("guige")->where('id='.intval($val))->getField('name');
+            //          //$buff_text .= select('name','aaa_cpy_category','id='.$val['id']).':'.select('name','aaa_cpy_category','id='.$val['val']).' ';
+            //          $buff_text .=' '.$ggid.' ';
+            //      }
+            //  }
             // }
-            // 	$pro[$k]['buff']=$buff_text;
+            //  $pro[$k]['buff']=$buff_text;
             //获取可用优惠券
             $vou = $this->get_voucher($uid, intval($pro[$k]['pid']), $id);
         }
@@ -310,12 +310,32 @@ class PaymentController extends PublicController
             echo json_encode(array('status' => 0, 'err' => '数据异常.'));
             exit();
         }
+        /*=============================================
+        =            检查订单商品库存                 =
+        =============================================*/
+        
+        $cid = explode(',', $cart_id);  //这是购物车id
+        $arr = [];
+        //检测产品数量
+        foreach ($cid as $key => $var) {
+            $pid = $shopping->where('id='.intval($var))->getField('pid');
+            $num = $product->where('id='.$pid.' AND del=0 AND is_down=0')->getField('num');
+            if ($num == 0) {
+                $arr[$key] = $pid;
+            }
+        }
+        if (count($arr) > 0) {
+            $this->ajaxReturn(['status' => 3,'err'=>'该商品已抢光!.','data'=>$arr]);
+        }
+        
+        /*=====  End of 检查订单商品库存       ======*/
+        
 
         //生成订单
         try {
             $qz = C('DB_PREFIX'); //前缀
 
-            $cart_id = explode(',', $cart_id);
+            $cart_id = explode(',', $cart_id);  //产品id
             $shop = array();
             foreach ($cart_id as $ke => $vl) {
                 $shop[$ke] = $shopping->where(''.$qz.'shopping_char.uid='.intval($uid).' and '.$qz.'shopping_char.id='.$vl)->join('LEFT JOIN __PRODUCT__ ON __PRODUCT__.id=__SHOPPING_CHAR__.pid')->field(''.$qz.'shopping_char.pid,'.$qz.'shopping_char.num,'.$qz.'shopping_char.shop_id,'.$qz.'shopping_char.buff,'.$qz.'shopping_char.price,'.$qz.'product.price_yh')->find();
@@ -374,10 +394,11 @@ class PaymentController extends PublicController
             $data['status'] = 10;
 
             $adds_id = intval($_POST['aid']);
-            if (!$adds_id) {
+            if (!$adds_id && $_POST['address'] == '') {
                 throw new \Exception('请选择收货地址.'.__LINE__);
             }
-            $adds_info = M('address')->where('id='.intval($adds_id))->find();
+            //$adds_info =  M('address')->where('id='.intval($adds_id))->find();
+            $adds_info = ($_POST['address'] == '') ? M('address')->where('id='.intval($adds_id))->find() : json_decode($_POST['address'], true);
             $data['receiver'] = $adds_info['name'];
             $data['tel'] = $adds_info['tel'];
             $data['address_xq'] = $adds_info['address_xq'];

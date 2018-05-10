@@ -36,12 +36,40 @@ class AdminuserController extends PublicController
         //=============
         //将变量输出
         //=============
+        $bc = ['管理员管理','管理员列表'];
+        $this->assign('bc', $bc);
         $this->assign('name', $name);
         $this->assign('page_index', $page_index);
         $this->assign('page', $page);
         $this->assign('userlist', $userlist);
         $this->display();
     }
+
+        /**
+     * [getGoods ajax获取管理员列表]
+     * @return [json] [管理员数据]
+     */
+    public function getAdminusers()
+    {
+        $where="del<1";
+        // if ($_GET['name'] != "") {
+        //     $where .= ' AND name like "%'. $_GET['name'].'%"';
+        // }
+
+        $count=M('adminuser')->where($where)->count();
+        $rows=ceil($count/rows);
+        $page = (int) -- $_GET['page'] ;
+        $rows = $_GET['limit'] ? $_GET['limit'] : 10;
+        $limit= $page*$rows;
+        $adminuserlist=M('adminuser')->where($where)->order('addtime desc')->limit($limit, $rows)->select();
+        $sql = M('adminuser')->getlastsql();
+
+        //$resuslt = [code=>0,msg=>'',count=>$count,data=>$adminuserlist,sql=>$sql];
+        $resuslt = [code=>0,msg=>'',count=>$count,data=>$adminuserlist];
+
+        $this->ajaxReturn($resuslt);
+    }
+
 
     //*************************
     // 管理员&商家会员的添加
@@ -84,7 +112,7 @@ class AdminuserController extends PublicController
             }
             
             if ($sql) {
-                $this->success('保存成功！');
+                $this->success('保存成功！',U('Adminuser/adminuser'));
                 exit();
             } else {
                 $this->success('保存失败！');
@@ -96,6 +124,8 @@ class AdminuserController extends PublicController
         //=============
         //将变量输出
         //=============
+        $bc = ['管理员管理','添加管理员'];
+        $this->assign('bc', $bc);
         $this->assign('id', $id);
         $this->assign('adminuserinfo', $adminuserinfo);
         $this->display();
@@ -116,7 +146,8 @@ class AdminuserController extends PublicController
         }
 
         if ($info['del']==1) {
-            $this->redirect('Adminuser/adminuser', array('page'=>intval($_REQUEST['page'])));
+            $resuslt = [code=>0,msg=>'操作成功!'];
+            //$this->redirect('Adminuser/adminuser', array('page'=>intval($_REQUEST['page'])));
             exit();
         }
 
@@ -124,7 +155,9 @@ class AdminuserController extends PublicController
         $data['del'] = 1;
         $up = M('adminuser')->where('id='.intval($id))->save($data);
         if ($up) {
-            $this->redirect('Adminuser/adminuser', array('page'=>intval($_REQUEST['page'])));
+            $resuslt = [code=>0,msg=>'操作成功!'];
+            $this->ajaxReturn($resuslt);
+            //$this->redirect('Adminuser/adminuser', array('page'=>intval($_REQUEST['page'])));
             exit();
         } else {
             $this->error('操作失败.');

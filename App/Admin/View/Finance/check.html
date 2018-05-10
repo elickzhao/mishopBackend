@@ -1,0 +1,300 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <link rel="Bookmark" href="/favicon.ico">
+    <link rel="Shortcut Icon" href="/favicon.ico" />
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/html5shiv.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/respond.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui/css/H-ui.min.css" />
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/css/H-ui.admin.css" />
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/lib/Hui-iconfont/1.0.8/iconfont.css" />
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/skin/default/skin.css" id="skin" />
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/css/style.css" />
+    <link rel="stylesheet" href="__PUBLIC__/admin/css/common.css">
+    <link rel="stylesheet" href="__PUBLIC__/admin/lib/layui/css/layui.css">
+    <!--[if IE 6]>
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+    <script>DD_belatedPNG.fix('*');</script>
+    <![endif]-->
+    <style>
+        .layui-table-cell {
+            height: inherit;
+        }
+
+        .layui-table-cell a {
+            text-decoration: none;
+        }
+
+        #commentForm .layui-form-label {
+            text-align: left;
+        }
+    </style>
+    <title>查询订单</title>
+</head>
+
+<body>
+    <!-- 导航 -->
+    <include File='Page/nav' />
+    <!-- /导航 -->
+    <div class="page-container">
+        <div class="panel panel-default mt-40">
+            <div class="panel-header">{$bc[1]}</div>
+            <div class="panel-body">
+
+                <form class="form form-horizontal layui-form" action="#" method="post" id="commentForm" enctype="multipart/form-data">
+                    <div class="row cl">
+                        <div class="col-xs-4 col-sm-2 ml-30">
+                            <label class="layui-form-label">订单号：</label>
+                        </div>
+
+                        <div class="formControls col-xs-8 col-sm-4">
+                            <input type="text" class="input-text" placeholder="订单号. 必填字段!" name="transaction_id" id="transaction_id" value="{$adv_info.transaction_id}"
+                                minlength="2" required>
+                        </div>
+
+                        <label class="layui-form-label">
+                            <span class="c-red text-l">*</span>
+                        </label>
+                    </div>
+
+                    <div class="hr-line-dashed"></div>
+
+                    <div class="row cl">
+                        <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-2">
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <input class="btn btn-primary radius" lay-submit lay-filter="*" type="submit" name="submit" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
+        <div class="panel panel-default mt-20" id="result" style="display:none">
+            <div class="panel-header">支付查询结果</div>
+            <div class="panel-body">
+                <blockquote class="layui-elem-quote layui-quote-nm">
+                    <table class="table table-border table-hover  table-striped">
+                        <tr>
+                            <td>订单号 :</td>
+                            <td id="order_id"> 2018031153100545</td>
+                            <td>支付总额 :</td>
+                            <td id="order_price"> 20180 </td>
+                        </tr>
+                        <tr>
+                            <td>支付结果:</td>
+                            <td id="order_result">SUCCESS</td>
+                            <td>交易状态:</td>
+                            <td id="order_status">SUCCESS &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td>支付账户:</td>
+                            <td id="order_user">环球集市购买_2018030949511004 </td>
+                            <td>支付完成时间 :</td>
+                            <td id="order_time">20180311140459 </td>
+                        </tr>
+                    </table>
+                </blockquote>
+                <!-- <input class="btn btn-primary size-S radius" id="check-refund" style="display:none" onclick="oo()"  value="查询退款"> -->
+                <!-- <div class="hr-line-dashed"></div> style="display:none" -->
+                <div class="row cl" id="check-refund" style="display:none">
+                    <div class="hr-line-dashed"></div>
+                    <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-2">
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <input class="btn btn-primary radius" type="button" onclick="oo()" value="&nbsp;&nbsp;查询退款&nbsp;&nbsp;">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-default mt-20" id="refund" style="display:none">
+            <div class="panel-header">退款查询结果</div>
+            <div class="panel-body">
+                <blockquote class="layui-elem-quote layui-quote-nm">
+                    <table class="table table-border table-hover  table-striped">
+                        <tr>
+                            <td>订单号 :</td>
+                            <td id="refund_id"> 2018031153100545</td>
+                            <td>退款总额 :</td>
+                            <td id="refund_price"> 20180 </td>
+                        </tr>
+                        <tr>
+                            <td>退款结果:</td>
+                            <td id="refund_result">SUCCESS</td>
+                            <td>退款状态:</td>
+                            <td id="refund_status">SUCCESS </td>
+                        </tr>
+                        <tr>
+                            <td>退款账户:</td>
+                            <td id="refund_user">环球集市购买_2018030949511004 </td>
+                            <td>退款成功时间 :</td>
+                            <td id="refund_time">20180311140459 </td>
+                        </tr>
+                    </table>
+                </blockquote>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 底部 -->
+    <div style="position:fixed; bottom:0; width:100%">
+        <include File='Page/footer' />
+    </div>
+    <!-- /底部 -->
+
+    <script>
+        var form = layui.form;
+
+        $("#commentForm").validate({
+            rules: {
+                transaction_id: {
+                    number: true
+                }
+            }
+        });
+
+        /*=============================================
+        =            请求后台数据            =
+        =============================================*/
+        function getData(url, value) {
+            $.ajax(url, {
+                method: 'POST',
+                data: {
+                    'transaction_id': value,
+                },
+                dataType: 'json',
+                success: function (e) {
+                    switch (e.code) {
+                        case 0:
+                            layer.msg(e.msg, {
+                                icon: 2
+                            });
+                            console.log(e.data);
+                            break;
+                        case 1:
+                            orderStatus(e.data);
+                            break;
+                        case 2:
+                            $("#check-refund").show();
+                            orderStatus(e.data);
+                            break;
+                        case 3:
+                            console.log(e.msg + ": " + e.data);
+                            break;
+                    }
+                },
+                error: function (e) {
+                    console.log(e);
+                }
+            });
+        }
+        /*=====  End of 请求后台数据  ======*/
+
+        /*=============================================
+        =            头部检索表单提交                  =
+        =============================================*/
+
+        form.on('submit(*)', function (data) {
+            //console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
+            let value = data.field.transaction_id;
+            if (parseInt(value) < 0 || isNaN(value) || value == "") {
+                layer.alert("请填写正确数字!", {
+                    icon: 2
+                });
+            } else {
+                //console.log(value);
+                // //这里一般是发送修改的Ajax请求
+                getData("{:U('getData')}", value);
+            }
+
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+        /*=====  End of 头部检索表单提交  ======*/
+
+
+        /*=============================================
+        =            输出订单查询结果                  =
+        =============================================*/
+
+        function orderStatus(data) {
+            $("#order_id").html(data.did);
+            $("#order_price").html(data.total_fee);
+            $("#order_result").html(data.result_code);
+            $("#order_status").html(data.status);
+            $("#order_time").html(data.time_end);
+            $("#order_user").html(data.user);
+            $("#result").show(1000);
+        }
+
+        /*=====     End of 输出订单查询结果         ======*/
+
+
+
+        /*=============================================
+        =            退款申请查询                      =
+        =============================================*/
+
+        function oo() {
+            let value = $("#transaction_id").val();
+
+            $.ajax("{:U('getRefund')}", {
+                method: 'POST',
+                data: {
+                    'transaction_id': value,
+                },
+                dataType: 'json',
+                success: function (e) {
+                    switch (e.code) {
+                        case 0:
+                            layer.msg(e.msg, {
+                                icon: 2
+                            });
+                            console.log(e.data);
+                            break;
+                        case 1:
+                            refundStatus(e.data);
+                            break;
+                        case 2:
+                            console.log(e.msg + ": " + e.data);
+                            break;
+                    }
+                },
+                error: function (e) {
+                    console.log(e);
+                }
+            });
+        }
+
+        /*=====  End of 退款申请查询  ======*/
+
+
+        /*=============================================
+        =            输出订单查询结果                  =
+        =============================================*/
+
+        function refundStatus(data) {
+            $("#refund_id").html(data.did);
+            $("#refund_price").html(data.total_fee);
+            $("#refund_result").html(data.result_code);
+            $("#refund_status").html(data.status);
+            $("#refund_time").html(data.refund_success_time_0);
+            $("#refund_user").html(data.user);
+            $("#refund").show(1000);
+        }
+
+        /*=====     End of 输出订单查询结果         ======*/
+    </script>
+
+
+</body>
+
+</html>

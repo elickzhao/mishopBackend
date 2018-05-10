@@ -6,6 +6,8 @@
 
 4、ThinkPHP\Library\Vendor\WeiXinpay\lib\WxPay.Config.php  微信小程序的appid、appsecret、mchid、key、notify_url参数修改；
 
+(特别说明.............  上面这两个配置其实是一样的 目前好像是只用到了 WeiXinpay 不过为了安全起见 还是两个都配 留着以后测试确定.   还有个就是当需要微信支付的时候 还要配置 支付证书  证书就保存在父目录下的 cert 详情看配置 别忘记证书就行)  (怎么感觉用的是wxpay 这个lib 因为 这个里面配置的 商户id是正确的) (<- 前面那个括号错了 还是WeiXinpay这个lib是对的 而且看来 config.php那个配置也是没用的 因为mch_id   1374845202 是这个 但是config里是错的结果还是能用)
+
 5、App/Api/Controller/WxPayController.class.php 50行修改链接
 
 后台登录的用户名是admin，密码是123456
