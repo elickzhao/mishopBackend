@@ -453,11 +453,20 @@ class OrderController extends PublicController
             $this->error('订单信息错误.');
         }
 
-        \Think\Log::write('[Wechat Transaction] 订单:'.$back_info['order_sn'].' 申请退款. 金额:'.$back_info['price_h'], 'INFO ');
+
+        $m = F('ORDER_MSG');
+        $yunPrice = $m['freight'];
+        $refund = $back_info['price_h'] - $yunPrice;
+
+        \Think\Log::write('[Wechat Transaction] 订单:'.$back_info['order_sn'].' 申请退款. 金额:'.$refund, 'INFO ');
 
         $out_trade_no = $back_info['order_sn'];                 //订单号
         $total_fee = $back_info['price_h'] * 100;       //订单总金额 单位分
-        $refund_fee = $back_info['price_h'] * 100;      //退款总金额 单位分
+        $refund_fee = $refund * 100;      //退款总金额 单位分
+
+        // var_dump($total_fee);
+        // var_dump($refund_fee);
+        // exit();
 
         $input = new \WxPayRefund();
         $input->SetOut_trade_no($out_trade_no);

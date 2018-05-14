@@ -129,4 +129,11 @@ class IndexController extends PublicController
 
         echo $str;
     }
+
+    public function sysConfig()
+    {
+        $m = F('ORDER_MSG');
+        echo json_encode(['minimum'=> $m['minimum'],'freight'=> $m['freight']]);
+        exit();
+    }
 }

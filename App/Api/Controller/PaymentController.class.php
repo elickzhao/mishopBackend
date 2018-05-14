@@ -282,6 +282,10 @@ class PaymentController extends PublicController
         } else {
             $addemt = 0;
         }
+        
+        //后加的固定运费
+        $m = F('ORDER_MSG');
+        $yunfei = $m['freight'];
 
         echo json_encode(array('status' => 1, 'vou' => $vou, 'price' => floatval($price), 'pro' => $pro, 'adds' => $add, 'addemt' => $addemt, 'yun' => $yunfei));
         exit();
@@ -356,9 +360,12 @@ class PaymentController extends PublicController
             $data['shop_id'] = $shop[$ke]['shop_id'];
             $data['uid'] = intval($uid);
 
+            $m = F('ORDER_MSG');
+            $yunPrice = $m['freight'];
+
             if (!empty($yunPrice)) {
                 $data['post'] = $yunPrice['id'];
-                $data['price'] = floatval($ozprice) + $yunPrice['price'];
+                $data['price'] = floatval($ozprice) + floatval($yunPrice);
             } else {
                 $data['post'] = 0;
                 $data['price'] = floatval($ozprice);

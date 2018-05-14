@@ -23,12 +23,16 @@ class MoreController extends PublicController
             $m = $_POST['orderMSG']?$_POST['orderMSG']:0;
             $a = $_POST['autoClose']?$_POST['autoClose']:0;
 
+            // $minimum = $_POST['minimum']?$_POST['minimum']:20; //起送费
+            // $freight = $_POST['freight']?$_POST['freight']:3; //运费
+
+
             if (intval($_POST['heartbeat']) < 0) {
                 $this->error('心跳时间不能小于一秒!');
                 exit();
             }
 
-            F('ORDER_MSG', ['orderMSG'=>$m,'autoClose'=>$a,'heartbeat'=>$_POST['heartbeat']]);
+            F('ORDER_MSG', ['orderMSG'=>$m,'autoClose'=>$a,'heartbeat'=>$_POST['heartbeat'],minimum=>$_POST['minimum'],freight=>$_POST['freight']]);
             
             $this->success('设置成功！');
         } else {
@@ -41,6 +45,8 @@ class MoreController extends PublicController
             $this->assign('orderMSG', $m['orderMSG']);
             $this->assign('autoClose', $m['autoClose']);
             $this->assign('heartbeat', $m['heartbeat']);
+            $this->assign('minimum', $m['minimum']);
+            $this->assign('freight', $m['freight']);
 
             $bc = ['综合管理','系统配置'];
             $this->assign('bc', $bc);

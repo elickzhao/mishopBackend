@@ -127,7 +127,7 @@
 
 					<div class="hr-line-dashed"></div>
 
-					<!-- 所需积分 -->
+					<!-- 心跳时间 -->
 					<div class="row cl">
 						<div class="col-xs-4 col-sm-2 ml-30">
 							<label class="layui-form-label">心跳时间：</label>
@@ -141,7 +141,43 @@
 							</span>
 						</div>
 					</div>
-					<!-- /所需积分 -->
+					<!-- /心跳时间 -->
+
+					<div class="hr-line-dashed"></div>
+
+					<!-- 起送费用 -->
+					<div class="row cl">
+						<div class="col-xs-4 col-sm-2 ml-30">
+							<label class="layui-form-label">起送费用：</label>
+						</div>
+						<div class="formControls col-xs-8 col-sm-4">
+							<input type="text" class="input-text" placeholder="起送费用" lay-verify="feiyong" name="minimum" id="minimum" value="<?php echo intval($minimum); ?>"
+							    required>
+							<span class="help-block ">
+								<i class="Hui-iconfont c-danger">&#xe6e0;</i>
+								<cite class="c-999">&nbsp;最低起送费</cite>
+							</span>
+						</div>
+					</div>
+					<!-- /起送费用 -->
+
+					<div class="hr-line-dashed"></div>
+
+					<!-- 快递费 -->
+					<div class="row cl">
+						<div class="col-xs-4 col-sm-2 ml-30">
+							<label class="layui-form-label">快递费：</label>
+						</div>
+						<div class="formControls col-xs-8 col-sm-4">
+							<input type="text" class="input-text" placeholder="快递费" lay-verify="feiyong" name="freight" id="freight" value="<?php echo intval($freight); ?>"
+							    required>
+							<span class="help-block ">
+								<i class="Hui-iconfont c-danger">&#xe6e0;</i>
+								<cite class="c-999">&nbsp;全站统一定额快递费用.</cite>
+							</span>
+						</div>
+					</div>
+					<!-- /快递费 -->
 
 					<div class="hr-line-dashed"></div>
 
@@ -183,6 +219,11 @@
 			shiyong: function (value) {
 				if (parseInt(value) <= 0 || isNaN(value)) {
 					return "请填写正确的秒数!";
+				}
+			},
+			feiyong:function (value) {
+				if (parseInt(value) < 0 || isNaN(value)) {
+					return "请填写正确的费用!";
 				}
 			},
 		});
