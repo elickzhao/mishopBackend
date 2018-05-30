@@ -129,4 +129,27 @@ class IndexController extends PublicController
 
         echo $str;
     }
+
+    /**
+     * [ggtop 首页广告swiper]
+     * @return [json] [广告滚动图]
+     */
+    public function ggtop()
+    {
+        //如果缓存首页没有数据，那么就读取数据库
+        /***********获取首页顶部轮播图************/
+        $ggtop = M('guanggao')->where('position=1')->order('sort desc,id asc')->field('id,name,photo,action')->limit(10)->select();
+        foreach ($ggtop as $k => $v) {
+            if (!empty($v['action']) && M('product')->find($v['action'])) {
+                $ggtop[$k]['link'] = '../product/detail?productId='.$v['action'];
+            } else {
+                $ggtop[$k]['link'] = 'index';
+            }
+            $ggtop[$k]['photo'] = __DATAURL__.$v['photo'];
+            $ggtop[$k]['name'] = urlencode($v['name']);
+        }
+        /***********获取首页顶部轮播图 end************/
+
+        $this->ajaxReturn(['code' => 0,'msg'=>'','list'=>$ggtop]);
+    }
 }
