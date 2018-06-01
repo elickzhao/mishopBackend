@@ -14,6 +14,13 @@ use Carbon\Carbon;
 
 class NewsController extends PublicController
 {
+    public $cid;
+    public function __construct()
+    {
+        parent::__construct();
+        $arr = M('category')->where(['bz_4'=>0])->getField('id', true);
+        $this->cid = implode(',', $arr);
+    }
 
     //*****************************
 
@@ -207,16 +214,31 @@ class NewsController extends PublicController
             for ($i=0; $i < 7; $i++) {
                 $dd = Carbon::now()->subDays(6 - $i);
                 $r = M('user_course')->where("weixin = '".$_GET['openId']."' AND DATE(FROM_UNIXTIME(ADDTIME)) = '".$dd->format('Y-m-d')."'")->find();
-                //$r = M('user_course')->where("DATE(FROM_UNIXTIME(ADDTIME)) = '2017-05-24'")->find();
+
                 $flag = $r?1:0;
                 $list[$i] = ['signed'=>$flag,'signTime'=>$dd->day."日",'sql'=>M('user_course')->getlastsql()];
-                //$list[$i] = ['signed'=>$flag,'signTime'=>$dd->day."日"];
             }
-
-            // $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=> [['signed'=>1,'signTime'=>'23日'],['signed'=>0,'signTime'=>'24日','award'=>false],['signed'=>1,'signTime'=>'25日','award'=>false],['signed'=>1,'signTime'=>'26日','award'=>false]]]);
             $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=> $list]);
         } else {
             $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求','list'=> $list]);
+        }
+    }
+
+    public function discountGoodsList()
+    {
+        if (IS_GET) {
+            $arr = ['is_hot','is_show','is_sale'];
+            $where = 'del=0 AND pro_type=1 AND is_down=0 AND type=1 AND cid in ('.$this->cid.')';
+            if ($_GET['flag'] != "") {
+                $where .= ' AND '.$arr[$_GET['flag']].'=1' ;
+            } else {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!','list'=> $list]);
+            }
+            $list = M('product')->field("id,name,intro,pro_number,price,price_yh,photo_x,photo_d,shiyong,type,is_show,is_hot,is_sale")->where($where)->cache(true, 1800)->order('sort desc,id desc')->limit(7)->select();
+
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=> $list]);
+        } else {
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!','list'=> $list]);
         }
     }
 }
