@@ -28,7 +28,8 @@ class MoreController extends PublicController
                 exit();
             }
 
-            F('ORDER_MSG', ['orderMSG'=>$m,'autoClose'=>$a,'heartbeat'=>$_POST['heartbeat']]);
+            //F('ORDER_MSG', ['orderMSG'=>$m,'autoClose'=>$a,'heartbeat'=>$_POST['heartbeat']]);
+            F('ORDER_MSG', ['orderMSG'=>$m,'autoClose'=>$a,'heartbeat'=>$_POST['heartbeat'],minimum=>$_POST['minimum'],freight=>$_POST['freight']]);
             
             $this->success('设置成功！');
         } else {
@@ -41,6 +42,8 @@ class MoreController extends PublicController
             $this->assign('orderMSG', $m['orderMSG']);
             $this->assign('autoClose', $m['autoClose']);
             $this->assign('heartbeat', $m['heartbeat']);
+            $this->assign('minimum', $m['minimum']);
+            $this->assign('freight', $m['freight']);
 
             $bc = ['综合管理','系统配置'];
             $this->assign('bc', $bc);
