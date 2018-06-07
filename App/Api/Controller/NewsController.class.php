@@ -12,14 +12,20 @@ use MysqlDate\MysqlDate;
 vendor("Carbon.Carbon");
 use Carbon\Carbon;
 
+vendor("Underscore.Underscore");
+use Underscore\Types\Arrays;
+
 class NewsController extends PublicController
 {
     public $cid;
+    public $flag;
     public function __construct()
     {
         parent::__construct();
         $arr = M('category')->where(['bz_4'=>0])->getField('id', true);
         $this->cid = implode(',', $arr);
+
+        $this->flag = ['is_hot','type','is_show','is_sale'];
     }
 
     //*****************************
@@ -224,13 +230,17 @@ class NewsController extends PublicController
         }
     }
 
+    /**
+     * [discountGoodsList 首页热销7个]
+     * @return [type] [description]
+     */
     public function discountGoodsList()
     {
         if (IS_GET) {
-            $arr = ['is_hot','is_show','is_sale'];
-            $where = 'del=0 AND pro_type=1 AND is_down=0 AND type=1 AND cid in ('.$this->cid.')';
+            // $arr = ['is_hot','is_show','is_sale'];
+            $where = 'del=0 AND pro_type=1 AND is_down=0 AND type=1 AND cid in ('.$this->cid.')';   //目前是推荐+热销就会出现在首页7个
             if ($_GET['flag'] != "") {
-                $where .= ' AND '.$arr[$_GET['flag']].'=1' ;
+                $where .= ' AND '.$this->flag[$_GET['flag']].'=1' ;
             } else {
                 $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!','list'=> $list]);
             }
@@ -239,6 +249,88 @@ class NewsController extends PublicController
             $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=> $list]);
         } else {
             $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!','list'=> $list]);
+        }
+    }
+
+    public function searchGoodsList()
+    {
+        if (IS_GET) {
+            $page = intval($_REQUEST['page']);
+            // $arr = ['is_hot','type','is_show','is_sale'];
+            $where = 'del=0 AND pro_type=1 AND is_down=0 AND cid in ('.$this->cid.')';
+
+            $limit = intval($page * 16) - 16;
+
+            //促销类型
+            if ($_GET['locationFlag'] != "") {
+                $where .= ' AND '.$this->flag[$_GET['locationFlag']].'=1' ;
+            }
+
+            //分类检索
+            if ($_GET['cateCode'] != "") {
+                $where .= ' AND cid='.$_GET['cateCode'] ;
+            }
+
+            //排序
+            // if ($_GET['sort'] != "") {
+            //     if ($_GET['sort'] == "sale") {
+            //         $order = "shiyong desc";
+            //     }
+            // } else {
+            //     $order = 'sort desc,id desc';
+            // }
+
+            switch ($_GET['sort']) {
+                case '3':
+                    $order = "shiyong desc";
+                    break;
+                
+                default:
+                    $order = 'sort desc,id desc';
+                    break;
+            }
+
+
+            //现在这个当做搜索 所以有可能是所有产品
+            // else {
+            //     $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!','list'=> $list]);
+            // }
+            $list = M('product')->field("id,name,intro,pro_number,price,price_yh,photo_x,photo_d,shiyong,type,is_show,is_hot,is_sale")->where($where)->cache(true, 1800)->order($order)->limit($limit.',16')->select();
+
+            $total = M('product')->where($where)->count("id");
+            $pageTotal = ceil($total /16);
+
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=> $list,'page_total'=>$pageTotal]);
+        } else {
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
+        }
+    }
+
+    public function rootCtegoryList()
+    {
+        if (IS_GET) {
+            $list = M('category')->where('tid=1 AND bz_4=0 ')->field('id,tid,name')->order('sort desc,id asc')->select();
+            //$code = Arrays::pluck($list, 'id');
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=> $list]);
+        } else {
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
+        }
+    }
+
+    public function childGoodsCatetoryList()
+    {
+        if (IS_GET) {
+            $catid = intval($_REQUEST['cat_id']);
+            if (!$catid) {
+                echo json_encode(array('status'=>0,'err'=>'没有找到产品数据.'));
+                exit();
+            }
+
+            $catList = M('category')->where('tid='.intval($catid).' AND bz_4=0 ')->field('id,name,bz_1')->select();
+ 
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=> $catList]);
+        } else {
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
 }
