@@ -252,6 +252,10 @@ class NewsController extends PublicController
         }
     }
 
+    /**
+     * [searchGoodsList 搜索商品列表]
+     * @return [type] [description]
+     */
     public function searchGoodsList()
     {
         if (IS_GET) {
@@ -271,20 +275,44 @@ class NewsController extends PublicController
                 $where .= ' AND cid='.$_GET['cateCode'] ;
             }
 
-            //排序
-            // if ($_GET['sort'] != "") {
-            //     if ($_GET['sort'] == "sale") {
-            //         $order = "shiyong desc";
-            //     }
-            // } else {
-            //     $order = 'sort desc,id desc';
-            // }
+            //关键字查询
+            $keyword = trim($_REQUEST['searchKeyWords']);
+            if ($keyword != "") {
+                /*=============================================
+                =       这段是增加用户个人搜索个数的 block       =
+                =============================================*/
+                if ($uid) {
+                    $check = M('search_record')->where('uid='.intval($uid).' AND keyword="'.$keyword.'"')->find();
+                    if ($check) {
+                        $num = intval($check['num'])+1;
+                        M('search_record')->where('id='.intval($check['id']))->save(array('num'=>$num));
+                    } else {
+                        $add = array();
+                        $add['uid'] = $uid;
+                        $add['keyword'] = $keyword;
+                        $add['addtime'] = time();
+                        M('search_record')->add($add);
+                    }
+                }
+                /*=====  End of Section 这段是增加用户个人搜索个数的 block  ======*/
+                
+                $where .=  'AND name LIKE "%'.$keyword.'%"';
+            }
 
+            //排序
             switch ($_GET['sort']) {
+                case '4':
+                    $order = "renqi desc";
+                    break;
                 case '3':
                     $order = "shiyong desc";
                     break;
-                
+                case '2':
+                    $order = "price_yh asc";
+                    break;
+                case '1':
+                    $order = "price_yh desc";
+                    break;
                 default:
                     $order = 'sort desc,id desc';
                     break;
@@ -306,6 +334,10 @@ class NewsController extends PublicController
         }
     }
 
+    /**
+     * [rootCtegoryList 一级栏目列表]
+     * @return [type] [description]
+     */
     public function rootCtegoryList()
     {
         if (IS_GET) {
@@ -317,6 +349,10 @@ class NewsController extends PublicController
         }
     }
 
+    /**
+     * [childGoodsCatetoryList 二级栏目列表]
+     * @return [type] [description]
+     */
     public function childGoodsCatetoryList()
     {
         if (IS_GET) {
@@ -332,5 +368,129 @@ class NewsController extends PublicController
         } else {
             $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
+    }
+
+    /**
+     * [searchHotKey 热门搜索关键词列表]
+     * @return [type] [description]
+     */
+    public function searchHotKey()
+    {
+        if (IS_GET) {
+            $list =   M('search_record')->group('keyword')->field('keyword')->order('SUM(num) desc')->limit(10)->select();
+            //$code = Arrays::pluck($list, 'id');
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=> $list]);
+        } else {
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
+        }
+    }
+
+    public function goods()
+    {
+        if (IS_GET) {
+            $product = M('product');
+
+            $pro_id = intval($_REQUEST['pro_id']);
+            if (!$pro_id) {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'商品不存在或已下架！']);
+                echo json_encode(array('status' => 0, 'err' => '商品不存在或已下架！'));
+                exit();
+            }
+
+            $pro = $product->where('id='.intval($pro_id).' AND del=0 AND is_down=0')->find();
+            if (!$pro) {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'商品不存在或已下架！']);
+                echo json_encode(array('status' => 0, 'err' => '商品不存在或已下架！'.__LINE__));
+                exit();
+            }
+
+            $pro['photo_x'] = __DATAURL__.$pro['photo_x'];
+            $pro['photo_d'] = __DATAURL__.$pro['photo_d'];
+            $pro['brand'] = M('brand')->where('id='.intval($pro['brand_id']))->getField('name');
+            $pro['cat_name'] = M('category')->where('id='.intval($pro['cid']))->getField('name');
+
+            //图片轮播数组
+            $img = explode(',', trim($pro['photo_string'], ','));
+            $b = array();
+            if ($pro['photo_string']) {
+                foreach ($img as $k => $v) {
+                    $b[] = __DATAURL__.$v;
+                }
+            } else {
+                $b[] = $pro['photo_d'];
+            }
+            $pro['img_arr'] = $b; //图片轮播数组
+
+            //处理产品属性
+            $catlist = array();
+            if ($pro['pro_buff']) {//如果产品属性有值才进行数据组装
+                $pro_buff = explode(',', $pro['pro_buff']);
+                $commodityAttr = array(); //产品库还剩下的产品规格
+                $attrValueList = array(); //产品所有的产品规格
+                foreach ($pro_buff as $key => $val) {
+                    $attr_name = M('attribute')->where('id='.intval($val))->getField('attr_name');
+                    $guigelist = M('guige')->where('attr_id='.intval($val).' AND pid='.intval($pro['id']))->field('id,name')->select();
+                    $ggss = array();
+                    $gg = array();
+                    foreach ($guigelist as $k => $v) {
+                        $gg[$k]['attrKey'] = $attr_name;
+                        $gg[$k]['attrValue'] = $v['name'];
+                        $ggss[] = $v['name'];
+                    }
+                    $commodityAttr[$key]['attrValueList'] = $gg;
+                    $attrValueList[$key]['attrKey'] = $attr_name;
+                    $attrValueList[$key]['attrValueList'] = $ggss;
+                }
+            }
+
+            $content = str_replace('/minipetmrschool/Data/', __DATAURL__, $pro['content']);
+            $pro['content'] = html_entity_decode($content, ENT_QUOTES, 'utf-8');
+
+            //检测产品是否收藏
+            $col = M('product_sc')->where('uid='.intval($_REQUEST['uid']).' AND pid='.intval($pro_id))->getField('id');
+            if ($col) {
+                $pro['collect'] = 1;
+            } else {
+                $pro['collect'] = 0;
+            }
+
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','data' => $pro, 'commodityAttr' => $commodityAttr, 'attrValueList' => $attrValueList]);
+        } else {
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
+        }
+    }
+
+
+    //***************************
+    //  获取sessionkey 接口
+    //***************************
+    public function getsessionkey()
+    {
+        $wx_config = C('weixin');
+        $appid = $wx_config['appid'];
+        $secret = $wx_config['secret'];
+
+        $code = trim($_REQUEST['code']);
+        if (!$code) {
+            echo json_encode(array('status'=>0,'err'=>'非法操作！'));
+            exit();
+        }
+
+        if (!$appid || !$secret) {
+            echo json_encode(array('status'=>0,'err'=>'非法操作！'.__LINE__));
+            exit();
+        }
+
+        $get_token_url = 'https://api.weixin.qq.com/sns/jscode2session?appid='.$appid.'&secret='.$secret.'&js_code='.$code.'&grant_type=authorization_code';
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $get_token_url);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+        $res = curl_exec($ch);
+        curl_close($ch);
+        echo $res;
+        //echo json_encode(array('status'=>1,'result'=>$res));
+        exit();
     }
 }
