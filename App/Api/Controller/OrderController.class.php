@@ -53,37 +53,31 @@ class OrderController extends PublicController
         if ($order_type) {
             switch ($order_type) {
                 case 'pay':
-
                     $condition['status'] = 10;
 
                     break;
 
                 case 'deliver':
-
                     $condition['status'] = 20;
 
                     break;
 
                 case 'receive':
-
                     $condition['status'] = 30;
 
                     break;
 
                 case 'evaluate':
-
                     $condition['status'] = 40;
 
                     break;
 
                 case 'finish':
-
                     $condition['status'] = array('IN', array(40, 50));
 
                     break;
 
                 default:
-
                     $condition['status'] = 10;
 
                     break;
@@ -170,37 +164,31 @@ class OrderController extends PublicController
         if ($order_type) {
             switch ($order_type) {
                 case 'pay':
-
                     $condition['status'] = 10;
 
                     break;
 
                 case 'deliver':
-
                     $condition['status'] = 20;
 
                     break;
 
                 case 'receive':
-
                     $condition['status'] = 30;
 
                     break;
 
                 case 'evaluate':
-
                     $condition['status'] = 40;
 
                     break;
 
                 case 'finish':
-
                     $condition['status'] = array('IN', array(40, 50));
 
                     break;
 
                 default:
-
                     $condition['status'] = 10;
 
                     break;
@@ -471,9 +459,9 @@ class OrderController extends PublicController
 
         $id = intval($_REQUEST['id']);
 
-        $qz = C('DB_PREFIX');	//前缀
+        $qz = C('DB_PREFIX');   //前缀
 
-        $order_info = $orders->where('id='.intval($order_id.' AND del=0'))->field('id,order_sn,shop_id,status,addtime,price,type,post,tel,receiver,address_xq,remark')->find();
+        $order_info = $orders->where('id='.intval($order_id).' AND del=0')->field('id,order_sn,shop_id,status,addtime,price,type,post,tel,receiver,address_xq,remark')->find();
 
         if (!$order_info) {
             echo json_encode(array('status' => 0, 'err' => '订单信息错误.'));
@@ -589,9 +577,9 @@ class OrderController extends PublicController
 
         if($meresult){
 
-        	echo 2;
+            echo 2;
 
-        	exit();
+            exit();
 
         }*/
 
