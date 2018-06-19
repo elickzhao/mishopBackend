@@ -257,6 +257,7 @@ class NewsController extends PublicController
                 $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!','list'=> $list]);
             }
             $list = M('product')->field("id,name,intro,pro_number,price,price_yh,photo_x,photo_d,shiyong,type,is_show,is_hot,is_sale")->where($where)->cache(true, 1800)->order('sort desc,id desc')->limit(7)->select();
+            //$list = M('product')->field("id,name,intro,pro_number,price,price_yh,photo_x,photo_d,shiyong,type,is_show,is_hot,is_sale")->where($where)->order('sort desc,id desc')->limit(7)->select();
 
             $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=> $list]);
         } else {
@@ -960,52 +961,23 @@ class NewsController extends PublicController
 
             $condition['del'] = 0;
 
-            $condition['back'] = '0';
-
             $condition['uid'] = intval($_GET['uid']);
 
-            $condition['status'] = 10;
+            //$condition['status'] = 10;
 
             $order_type = $_REQUEST['order_type'];
 
             if (!$order_type) {
                 $order_type = 10;
             }
-            $condition['status'] =$order_type;
 
-            // if ($order_type) {
-            //     switch ($order_type) {
-            //         case 'pay':
-            //             $condition['status'] = 10;
-
-            //             break;
-
-            //         case 'deliver':
-            //             $condition['status'] = 20;
-
-            //             break;
-
-            //         case 'receive':
-            //             $condition['status'] = 30;
-
-            //             break;
-
-            //         case 'evaluate':
-            //             $condition['status'] = 40;
-
-            //             break;
-
-            //         case 'finish':
-            //             $condition['status'] = array('IN', array(40, 50));
-
-            //             break;
-
-            //         default:
-            //             $condition['status'] = 10;
-
-            //             break;
-            //     }
-            // }
+            if ($order_type == "refund") {
+                 $condition['back'] = array('gt', '0');
+            } else {
+                $condition['back'] = '0';
+                $condition['status'] =$order_type;
+            }
+            
 
 
             $eachpage = 7;
@@ -1014,10 +986,10 @@ class NewsController extends PublicController
 
             $order_status = array('0' => '已取消', '10' => '待付款', '20' => '待发货', '30' => '待收货', '40' => '待评价', '50' => '交易完成', '51' => '交易关闭');
 
-            $order = $orders->where($condition)->order('id desc')->field('id,order_sn,pay_sn,status,price,type,product_num,addtime')->limit($limit.','.$eachpage)->select();
+            $order = $orders->where($condition)->order('id desc')->field('id,order_sn,pay_sn,status,price,type,product_num,addtime,back')->limit($limit.','.$eachpage)->select();
             
-            $total = M('product')->where($condition)->count("id");
-            $pageTotal = ceil($total /$eachpage);
+            $total = $orders->where($condition)->count("id");
+            $pageTotal = ceil($total / $eachpage);
 
             $sql = $orders->getlastsql();
             foreach ($order as $n => $v) {
@@ -1041,7 +1013,7 @@ class NewsController extends PublicController
 
             // exit();
 
-            $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=>$order,'eachpage' => $eachpage,'page_total'=>$page_total,'sql'=>$sql]);
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=>$order,'eachpage' => $eachpage,'page_total'=>$pageTotal,'sql'=>$sql]);
         } else {
             $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
@@ -1195,25 +1167,33 @@ class NewsController extends PublicController
     public function favoriteInfo()
     {
         if (IS_GET) {
-                    $uid = intval($_REQUEST['uid']);
+            $uid = intval($_REQUEST['uid']);
+            $page = intval($_REQUEST['page']);
+
             if ($uid == "") {
                 $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
             }
 
+            $eachpage = 7;
+
+            $limit = intval($page * $eachpage) - $eachpage;
+
             $arr = M('product_sc')->where('uid='.intval($uid))->getField('pid', true);
+            $total = M('product_sc')->where('uid='.intval($uid))->count("id");
+            $pageTotal = ceil($total / $eachpage);
 
             if (!$arr) {
                 $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=>[]]);
             }
 
             $map['id'] = array('in', $arr);
-            $list = M('product')->field('id,name,price_yh,photo_x')->where($map)->select();
+            $list = M('product')->field('id,name,price_yh,photo_x')->where($map)->limit($limit.','.$eachpage)->select();
             foreach ($list as $key => $value) {
                 $list[$key]['photo_x'] = __DATAURL__.$value['photo_x'];
             }
 
             if ($list) {
-                $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=>$list]);
+                $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=>$list,'page_total'=>$pageTotal]);
             } else {
                 $this->ajaxReturn(['code' => 1, 'msg'=>'网络错误']);
             }
@@ -1313,11 +1293,12 @@ class NewsController extends PublicController
             //有ID是更新 所以
             if (intval($_REQUEST['id'])) {
                 $res = M('address')->where(['id'=>intval($_REQUEST['id'])])->save($data);
-                if ($res) {
-                    $this->ajaxReturn(['code' => 0, 'msg'=>'']);
-                } else {
-                    $this->ajaxReturn(['code' => 1, 'msg'=>'操作失败!']);
-                }
+                $this->ajaxReturn(['code' => 0, 'msg'=>'']);
+                // if ($res) {
+                //     $this->ajaxReturn(['code' => 0, 'msg'=>'']);
+                // } else {
+                //     $this->ajaxReturn(['code' => 1, 'msg'=>'操作失败!']);
+                // }
             }
 
             $res = M('address')->add($data);
