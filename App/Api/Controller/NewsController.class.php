@@ -561,7 +561,7 @@ class NewsController extends PublicController
             if (!$_GET['openId']) {
                 $this->ajaxReturn(['code' => 1, 'msg'=>'登录状态异常!']);
             }
-
+            $openid = trim($_GET['openId']);
             $con = array();
             $con['openid']=trim($_GET['openId']);
             $uid = M('user')->where($con)->getField('id');
@@ -587,7 +587,7 @@ class NewsController extends PublicController
                 $data['source'] = 'wx';
                 $data['addtime'] = time();
                 if (!$data['openid']) {
-                    $this->ajaxReturn(['code' => 1, 'msg'=>'授权失败！'.__LINE__]);
+                    $this->ajaxReturn(['code' => 1, 'msg'=>'授权失败！'.__LINE__, 'errData'=>$data]);
                 }
                 $res = M('user')->add($data);
                 if ($res) {
