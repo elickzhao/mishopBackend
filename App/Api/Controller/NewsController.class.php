@@ -1495,7 +1495,7 @@ class NewsController extends PublicController
     public function payment()
     {
         if (IS_GET) {
-            $cart_id = intval($_REQUEST['cart_id']);
+            $cart_id = trim($_REQUEST['cart_id'], ',');
             $uid = intval($_REQUEST['uid']);
             if (!$cart_id || !$uid) {
                 $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
