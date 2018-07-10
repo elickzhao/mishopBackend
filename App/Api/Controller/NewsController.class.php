@@ -208,7 +208,7 @@ class NewsController extends PublicController
             //如果签到间隔大于0就说明没有签到
             $hasSign = ($rr == 0)?1:0;
 
-            $list = M('user_course')->field("DATE(FROM_UNIXTIME(ADDTIME)) as signTime,10 as signPoint,0 as isdeleted")->where("uid = '".$_GET['uid']."'")->order('id desc')->limit(30)->select();
+            $list = M('user_course')->field("DATE(FROM_UNIXTIME(ADDTIME)) as signTime,10 as signPoint,0 as isdeleted,sex")->where("uid = '".$_GET['uid']."'")->order('id desc')->limit(30)->select();
 
             $this->ajaxReturn(['code' => 0, 'msg'=>'','conDays'=>$conDays,'hasSign'=>$hasSign,'score'=>$score,'list'=>$list,'sql'=>$rr."--".$date."--". $date->diffInDays(Carbon::now())."-->".$r."===>".$sql]);
         } else {
@@ -972,7 +972,7 @@ class NewsController extends PublicController
             }
 
             if ($order_type == "refund") {
-                 $condition['back'] = array('gt', '0');
+                $condition['back'] = array('gt', '0');
             } else {
                 $condition['back'] = '0';
                 $condition['status'] =$order_type;
@@ -986,7 +986,7 @@ class NewsController extends PublicController
 
             $order_status = array('0' => '已取消', '10' => '待付款', '20' => '待发货', '30' => '待收货', '40' => '待评价', '50' => '交易完成', '51' => '交易关闭');
 
-            $order = $orders->where($condition)->order('id desc')->field('id,order_sn,pay_sn,status,price,type,product_num,addtime,back')->limit($limit.','.$eachpage)->select();
+            $order = $orders->where($condition)->order('id desc')->field('id,order_sn,pay_sn,status,price,amount,type,product_num,addtime,back')->limit($limit.','.$eachpage)->select();
             
             $total = $orders->where($condition)->count("id");
             $pageTotal = ceil($total / $eachpage);
@@ -1043,7 +1043,7 @@ class NewsController extends PublicController
 
             $qz = C('DB_PREFIX');   //前缀
 
-            $order_info = $orders->where('id='.intval($order_id).' AND del=0')->field('id,order_sn,shop_id,status,addtime,price,type,post,tel,receiver,address_xq,remark,back')->find();
+            $order_info = $orders->where('id='.intval($order_id).' AND del=0')->field('id,order_sn,shop_id,status,addtime,price,amount,type,post,tel,receiver,address_xq,remark,back')->find();
 
             if (!$order_info) {
                 $this->ajaxReturn(['code' => 1, 'msg'=>'订单信息错误!']);
@@ -1214,7 +1214,7 @@ class NewsController extends PublicController
                 $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
             }
 
-        //所有地址
+            //所有地址
             $addressModel = M('address');
             $adds_list=$addressModel->where('uid='.$uid)->order('is_default desc,id desc')->select();
         
@@ -1331,7 +1331,7 @@ class NewsController extends PublicController
 
             $address = M('address')->where('id='.intval($addr_id))->find();
             if (!$address) {
-                $this->ajaxReturn(['code' => 1, 'msg'=>'查询失败!']);
+                $this->ajaxReturn(['code' => 2, 'msg'=>'查询失败!']);
             }
             $arr=array();
             $arr['id']=$address['id'];
@@ -1366,7 +1366,7 @@ class NewsController extends PublicController
 
             $res = M('address')->where('uid='.intval($uid).' AND id = '.$addr_id)->delete();
             if ($res) {
-                    $this->ajaxReturn(['code' => 0, 'msg'=>'']);
+                $this->ajaxReturn(['code' => 0, 'msg'=>'']);
             } else {
                 $this->ajaxReturn(['code' => 1, 'msg'=>'操作失败!']);
             }
@@ -1375,7 +1375,7 @@ class NewsController extends PublicController
         }
     }
 
-        /**
+    /**
      * [searchHotKey 购物车下单]
      * @return [type] [description]
      */
@@ -1422,7 +1422,7 @@ class NewsController extends PublicController
                 $vou = $this->get_voucher($uid, intval($pro[$k]['pid']), $id);
             }
 
-        //计算总价
+            //计算总价
             foreach ($id as $ks => $vs) {
                 $pro1[$ks] = $shopping->where(''.$qz.'shopping_char.uid='.intval($uid).' and '.$qz.'shopping_char.id='.$vs)->join('LEFT JOIN __PRODUCT__ ON __PRODUCT__.id=__SHOPPING_CHAR__.pid')->join('LEFT JOIN __SHANGCHANG__ ON __SHANGCHANG__.id=__SHOPPING_CHAR__.shop_id')->field(''.$qz.'product.num as pnum,'.$qz.'shopping_char.id,'.$qz.'shangchang.name as sname,'.$qz.'product.name,'.$qz.'product.photo_x,'.$qz.'product.price_yh,'.$qz.'shopping_char.num,'.$qz.'shopping_char.buff,'.$qz.'shopping_char.price')->find();
                 if ($pro1[$ks]['buff']) {
@@ -1440,8 +1440,12 @@ class NewsController extends PublicController
             } else {
                 $addemt = 1;
             }
+
+            //获取用户可用积分
+            $userScore = M('user')->where(['id'=>$uid])->getField('jifen');
+
             //vou 优惠券 price总价 adds收货地址 addemt 是否存在收货地址
-            $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=>$pro,'vou' => $vou, 'price' => floatval($price), 'adds' => $add, 'addemt' => $addemt]);
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=>$pro,'vou' => $vou, 'price' => floatval($price), 'adds' => $add, 'addemt' => $addemt,'userScore'=>intval($userScore)]);
             // echo json_encode(array('status' => 1, 'vou' => $vou, 'price' => floatval($price), 'pro' => $pro, 'adds' => $add, 'addemt' => $addemt));
             // exit();
         } else {
@@ -1660,7 +1664,7 @@ class NewsController extends PublicController
                 // exit();
             }
 
-                    //把需要的数据返回
+            //把需要的数据返回
             $arr = array();
             $arr['order_id'] = $result;
             $arr['order_sn'] = $data['order_sn'];
@@ -1672,6 +1676,210 @@ class NewsController extends PublicController
         }
     }
 
+
+    /**
+     * [searchHotKey  购物车结算 下订单]
+     * @return [type] [description]
+     */
+    public function payment1()
+    {
+        if (IS_GET) {
+            $cart_id = trim($_REQUEST['cart_id'], ',');
+            $uid = intval($_REQUEST['uid']);
+            if (!$cart_id || !$uid) {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
+            }
+
+            $product = M('product');
+            //运费
+            $post = M('post');
+            $order = M('order');
+            $order_pro = M('order_product');
+            $shopping = M('shopping_char');
+
+
+            /*=============================================
+            =            检查订单商品库存                 =
+            =============================================*/
+        
+            $cid = explode(',', $cart_id);  //这是购物车id
+            $arr = [];
+            //检测产品数量
+            foreach ($cid as $key => $var) {
+                $pid = $shopping->where('id='.intval($var))->getField('pid');
+                $num = $product->where('id='.$pid.' AND del=0 AND is_down=0')->getField('num');
+                if ($num == 0) {
+                    $arr[$key] = $pid;
+                }
+            }
+            if (count($arr) > 0) {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'该商品已抢光!','err'=>$arr]);
+            }
+        
+            /*=====  End of 检查订单商品库存       ======*/
+        
+
+            //生成订单
+            try {
+                $qz = C('DB_PREFIX'); //前缀
+
+                $cart_id = explode(',', $cart_id);  //产品id
+                $shop = array();
+                foreach ($cart_id as $ke => $vl) {
+                    $shop[$ke] = $shopping->where(''.$qz.'shopping_char.uid='.intval($uid).' and '.$qz.'shopping_char.id='.$vl)->join('LEFT JOIN __PRODUCT__ ON __PRODUCT__.id=__SHOPPING_CHAR__.pid')->field(''.$qz.'shopping_char.pid,'.$qz.'shopping_char.num,'.$qz.'shopping_char.shop_id,'.$qz.'shopping_char.buff,'.$qz.'shopping_char.price,'.$qz.'product.price_yh')->find();
+                    $num += $shop[$ke]['num'];
+                    if ($shop[$ke]['buff'] != '') {
+                        $ozprice += $shop[$ke]['price'] * $shop[$ke]['num'];
+                    } else {
+                        $shop[$ke]['price'] = $shop[$ke]['price_yh'];
+                        $ozprice += $shop[$ke]['price'] * $shop[$ke]['num'];
+                    }
+                }
+
+                $yunPrice = array();
+                if ($_REQUEST['yunfei']) {
+                    $yunPrice = $post->where('id='.intval($_REQUEST['yunfei']))->find();
+                }
+
+                $data['shop_id'] = $shop[$ke]['shop_id'];
+                $data['uid'] = intval($uid);
+
+                if (!empty($yunPrice)) {
+                    $data['post'] = $yunPrice['id'];
+                    $data['price'] = floatval($ozprice) + $yunPrice['price'];
+                } else {
+                    $data['post'] = 0;
+                    $data['price'] = floatval($ozprice);
+                }
+
+
+                //优惠券id
+                $vid = intval($_REQUEST['vid']);
+
+                //使用积分优惠券 -5元
+                if ($_REQUEST['deduScore'] && !$vid) {
+                    $data['amount'] = floatval($ozprice - 5);
+                    //XXX 检测一下然后 减去相应积分
+                    // actualPrice 这是前台传来的计算的结果
+                    // 一旦下单就必须减去积分 因为下单后支付金额是不会变的
+                    M('user')->where(['id'=>$uid])->setDec('jifen', 100);
+                    // 减是没错了 不过没有记录到积分使用里
+                    M('user_course')->add(['uid'=>$uid,'addtime'=>time(),'sex'=>2]);
+                } else {
+                    $data['amount'] = $data['price'];
+                }
+
+                //使用后台优惠券
+                if ($vid) {
+                    $vouinfo = M('user_voucher')->where('status=1 AND uid='.intval($uid).' AND vid='.intval($vid))->find();
+                    $chk = M('order')->where('uid='.intval($uid).' AND vid='.intval($vid).' AND status>0')->find();
+                    if (!$vouinfo || $chk) {
+                        //throw new \Exception("此优惠券不可用，请选择其他.".__LINE__);
+                        // echo json_encode(array('status' => 0, 'err' => '此优惠券不可用，请选择其他.'));
+                        // exit();
+                        $this->ajaxReturn(['code' => 1, 'msg'=>'此优惠券不可用，请选择其他.','err'=>__LINE__]);
+                    }
+                    if ($vouinfo['end_time'] < time()) {
+                        //throw new \Exception("优惠券已过期了.".__LINE__);
+                        // echo json_encode(array('status' => 0, 'err' => '优惠券已过期了.'.__LINE__));
+                        // exit();
+                        $this->ajaxReturn(['code' => 1, 'msg'=>'优惠券已过期了.','err'=>__LINE__]);
+                    }
+                    if ($vouinfo['start_time'] > time()) {
+                        //throw new \Exception("优惠券还未生效.".__LINE__);
+                        // echo json_encode(array('status' => 0, 'err' => '优惠券还未生效.'.__LINE__));
+                        // exit();
+                        $this->ajaxReturn(['code' => 1, 'msg'=>'优惠券还未生效.','err'=>__LINE__]);
+                    }
+                    $data['vid'] = intval($vid);
+                    $data['amount'] = floatval($data['price']) - floatval($vouinfo['amount']);
+                    M('user_voucher')->where('uid='.intval($uid).' AND vid='.intval($vid))->save(['status'=>2]);
+                }
+
+                $data['addtime'] = time();
+                $data['del'] = 0;
+                $data['type'] = $_REQUEST['type'];
+                $data['status'] = 10;
+
+                $adds_id = intval($_REQUEST['aid']);
+                if (!$adds_id && $_REQUEST['address'] == '') {
+                    throw new \Exception('请选择收货地址.'.__LINE__);
+                }
+                //$adds_info =  M('address')->where('id='.intval($adds_id))->find();
+                $adds_info = ($_REQUEST['address'] == '') ? M('address')->where('id='.intval($adds_id))->find() : json_decode($_REQUEST['address'], true);
+                $data['receiver'] = $adds_info['name'];
+                $data['tel'] = $adds_info['tel'];
+                $data['address_xq'] = $adds_info['address_xq'];
+                $data['code'] = $adds_info['code']?$adds_info['code']:100000;
+                $data['product_num'] = $num;
+                $data['remark'] = $_REQUEST['remark'];
+                $data['order_sn'] = $this->build_order_no(); //生成唯一订单号
+
+                $result = $order->add($data);
+                if ($result) {
+                    //$prid = explode(",", $_REQUEST['ids']);
+                    foreach ($cart_id as $key => $var) {
+                        $shops[$key] = $shopping->where(''.$qz.'shopping_char.uid='.intval($uid).' and '.$qz.'shopping_char.id='.intval($var))->join('LEFT JOIN __PRODUCT__ ON __PRODUCT__.id=__SHOPPING_CHAR__.pid')->field(''.$qz.'shopping_char.pid,'.$qz.'shopping_char.num,'.$qz.'shopping_char.shop_id,'.$qz.'shopping_char.buff,'.$qz.'shopping_char.price,'.$qz.'product.name,'.$qz.'product.photo_x,'.$qz.'product.price_yh,'.$qz.'product.num as pnum')->find();
+                        if ($shops[$key]['buff'] == '' || !$shops[$key]['buff']) {
+                            $shops[$key]['price'] = $shops[$key]['price_yh'];
+                        }
+
+                        $buff_text = '';
+                        if ($shops[$key]['buff']) {
+                            //验证属性
+                            $buff = explode(',', $shops[$key]['buff']);
+                            if (is_array($buff)) {
+                                foreach ($buff as $keys => $val) {
+                                    $ggid = M('guige')->where('id='.intval($val))->getField('name');
+                                    $buff_text .= $ggid.' ';
+                                }
+                            }
+                        }
+
+                        $date = array();
+                        $date['pid'] = $shops[$key]['pid'];
+                        $date['name'] = $shops[$key]['name'];
+                        $date['order_id'] = $result;
+                        $date['price'] = $shops[$key]['price'];
+                        $date['photo_x'] = $shops[$key]['photo_x'];
+                        $date['pro_buff'] = trim($buff_text, ' ');
+                        $date['addtime'] = time();
+                        $date['num'] = $shops[$key]['num'];
+                        $date['pro_guige'] = '';
+                        $res = $order_pro->add($date);
+                        if (!$res) {
+                            throw new \Exception('下单 失败！'.__LINE__);
+                        }
+                        //检查产品是否存在，并修改库存
+                        $check_pro = $product->where('id='.intval($date['pid']).' AND del=0 AND is_down=0')->field('num,shiyong')->find();
+                        $up = array();
+                        $up['num'] = intval($check_pro['num']) - intval($date['num']);
+                        $up['shiyong'] = intval($check_pro['shiyong']) + intval($date['num']);
+                        $product->where('id='.intval($date['pid']))->save($up);
+                        //echo  $product->getLastSql();
+                        //删除购物车数据
+                        $shopping->where('uid='.intval($uid).' AND id='.intval($var))->delete();
+                    }
+                } else {
+                    throw new \Exception('下单 失败！');
+                }
+            } catch (Exception $e) {
+                $this->ajaxReturn(['code' => 1, 'msg'=>$e->getMessage()]);
+                // echo json_encode(array('code' => 1, 'msg' => $e->getMessage()));
+                // exit();
+            }
+
+            //把需要的数据返回
+            $arr = array();
+            $arr['order_id'] = $result;
+            $arr['order_sn'] = $data['order_sn'];
+            $arr['pay_type'] = $_REQUEST['type'];
+
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','data' => $arr]);
+        } else {
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
+        }
+    }
     /**针对涂屠生成唯一订单号
     *@return int 返回16位的唯一订单号
     */
@@ -1697,13 +1905,160 @@ class NewsController extends PublicController
 
             //$res = $orders->where('id='.$oid)->field('price_h')->find();
 
-             $res = $orders->where('id='.$oid)->getField('price_h');
+            $res = $orders->where('id='.$oid)->getField('price_h');
 
             if ($res) {
-                    $this->ajaxReturn(['code' => 0, 'msg'=>'','order'=>$res]);
+                $this->ajaxReturn(['code' => 0, 'msg'=>'','order'=>$res]);
             } else {
                 $this->ajaxReturn(['code' => 1, 'msg'=>'操作失败!']);
             }
+        } else {
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
+        }
+    }
+
+    /**
+      * [searchHotKey 查询优惠券列表  这是优惠券领取页面]
+      * @return [type] [description]
+      */
+    public function getCouponList()
+    {
+        if (IS_GET) {
+            $uid = intval($_REQUEST['uid']);
+            if (!$uid) {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
+            }
+
+            $res = M('voucher')->where("end_time > UNIX_TIMESTAMP(NOW()) AND del = 0")->select();
+            if ($res === false) {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'查询失败!']);
+            }
+            //已经拥有的优惠券
+            $vids = M('user_voucher')->where(['uid'=>$uid])->getField('vid', true);
+
+            //状态说明 status = 0 未领取优惠券 1 已经领取的优惠券
+            foreach ($res as $k => $v) {
+                $res[$k]['start_time'] = date('Y.m.d h:i', $v['start_time']);
+                $res[$k]['end_time'] = date('Y.m.d h:i', $v['end_time']);
+                $date = new Carbon(date('Y-m-d h:i:s', $v['end_time']));
+                $res[$k]['littleTime'] = $date->diffInDays(Carbon::now())+1;
+                $res[$k]['status'] = (in_array($v['id'], $vids)) ? 1 : 0;
+                //$res[$k]['percent'] = (intval($v['receive_num']) / intval($v['count'])) * 100;
+            }
+
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=>$res]);
+        } else {
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
+        }
+    }
+
+    /**
+      * [searchHotKey 获得优惠券]
+      * @return [type] [description]
+      */
+    public function addVoucher()
+    {
+        if (IS_GET) {
+            $uid = intval($_REQUEST['uid']);
+            $vid = intval($_REQUEST['vid']);
+            if (!$uid || !$vid) {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
+            }
+
+            $voucher = M('voucher')->where(['id'=>$vid])->find();
+            if ($voucher['receive_num'] == $voucher['count']) {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'已领完!']);
+            }
+            M('voucher')->where(['id'=>$vid])->setInc("receive_num");
+
+            $data['uid']=$uid;
+            $data['vid']=$vid;
+            $data['shop_id']=$voucher['shop_id'];
+            $data['full_money']=$voucher['full_money'];
+            $data['amount']=$voucher['amount'];
+            $data['start_time']=$voucher['start_time'];
+            $data['end_time']=$voucher['end_time'];
+            $data['addtime']=time();
+            $data['status']=1;
+
+            $res = M('user_voucher')->data($data)->add();
+
+            if ($res === false) {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'查询失败!']);
+            }
+ 
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=>$res]);
+        } else {
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
+        }
+    }
+
+    /**
+      * [searchHotKey 查询优惠券列表 这是付款的时候的优惠券页面]
+      * @return [type] [description]
+      */
+    public function getCustCouponList()
+    {
+        if (IS_GET) {
+            $uid = intval($_REQUEST['uid']);
+            $flag = intval($_REQUEST['flag']);
+            $totalPrice = intval($_REQUEST['totalPrice']);
+            if (!$uid && !$flag && !$totalPrice) {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
+            }
+
+
+            //好像失效状态没什么意义 没有监控 只有这时再改变一下看过期的给与一个状态 但也好像没必要
+            // if($flag == 1){
+            //     $where['status'] = $flag;
+            // }
+            
+            $olds = M('user_voucher')->where('uid='.$uid.' and end_time < UNIX_TIMESTAMP(NOW())')->getField('id', true);
+            if (count($olds)) {
+                $strOlds = implode(",", $olds);
+                M('user_voucher')->where(" id in (".$strOlds.")")->save(['status'=>3]);
+            }
+            
+
+            if ($totalPrice) {
+                $where = 'uid='.$uid.' and status=1 and end_time > UNIX_TIMESTAMP(NOW()) AND  full_money <'.$totalPrice;
+            } else {
+                $where['uid'] = $uid;
+                $where['status'] = $flag;
+            }
+
+            //已经拥有的优惠券
+            $vids = M('user_voucher')->where($where)->getField('vid', true);
+            if (!count($vids)) {
+                $this->ajaxReturn(['code' => 0, 'msg'=>'未有可使用优惠券','list'=>'']);
+            } else {
+                $strVids = implode(",", $vids);
+                //把时间去掉 就是失效的也查询
+                $res = M('voucher')->where("del = 0 and id in (".$strVids.")")->select();
+                if ($res === false) {
+                    $this->ajaxReturn(['code' => 1, 'msg'=>'查询失败!']);
+                }
+            }
+
+
+
+            //状态说明 status = 0 未领取优惠券 1 已经领取的优惠券
+            foreach ($res as $k => $v) {
+                $res[$k]['start_time'] = date('Y.m.d h:i', $v['start_time']);
+                $res[$k]['end_time'] = date('Y.m.d h:i', $v['end_time']);
+                $date = new Carbon(date('Y-m-d h:i:s', $v['end_time']));
+                $res[$k]['littleTime'] = $date->diffInDays(Carbon::now())+1;
+                if ($flag == 3) {
+                    $res[$k]['status'] = 4;
+                } else {
+                    $res[$k]['status'] = ($flag == 1) ? 2 : 3;
+                }
+                
+
+                //$res[$k]['percent'] = (intval($v['receive_num']) / intval($v['count'])) * 100;
+            }
+
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=>$res,'sql'=>$strVids]);
         } else {
             $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
