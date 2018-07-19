@@ -149,7 +149,7 @@ class VoucherController extends PublicController
     }
 
     /**
-     * [getVouchers ajax获取优惠券列表]
+     * [getGoods ajax获取优惠券列表]
      * @return [json] [优惠券数据]
      */
     public function getVouchers()
@@ -184,24 +184,29 @@ class VoucherController extends PublicController
             exit();
         }
 
-        if (intval($check_info['receive_num'])>0) {
-            echo '<script>alert("优惠券已经生效，不能删除！");history.go(-1);</script>';
-            exit();
+        if (intval($check_info['receive_num'])>0 && $check_info['end_time'] > time()) {
+            // $this->success('操作失败！'.__LINE__, 'index');
+            // echo '<script>alert("优惠券已经生效，不能删除！");history.go(-1);</script>';
+            // exit();
+            $this->ajaxReturn([code=>1,msg=>'优惠券已经生效，不能删除！']);
         }
 
         //判断抢购产品是否已删除
         if (intval($check_info['del'])==1) {
-            $this->success('操作成功！'.__LINE__, 'index');
-            exit();
+            // $this->success('操作成功！'.__LINE__, 'index');
+            // exit();
+            $this->ajaxReturn([code=>0,msg=>'操作成功！']);
         }
 
         $up = M('voucher')->where('id='.intval($id))->save(array('del'=>1));
         if ($up) {
-            $this->success('操作成功！', 'index');
-            exit();
+            // $this->success('操作成功！', 'index');
+            // exit();
+            $this->ajaxReturn([code=>0,msg=>'操作成功！']);
         } else {
-            echo '<script>alert("操作失败.");history.go(-1);</script>';
-            exit;
+            $this->ajaxReturn([code=>1,msg=>'操作失败！']);
+            // echo '<script>alert("操作失败.");history.go(-1);</script>';
+            // exit;
         }
     }
 

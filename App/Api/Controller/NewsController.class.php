@@ -1929,7 +1929,12 @@ class NewsController extends PublicController
                 $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
             }
 
-            $res = M('voucher')->where("end_time > UNIX_TIMESTAMP(NOW()) AND del = 0")->select();
+            if ($_REQUEST['flag'] == "xianxia") {
+                $res = M('voucher')->where("end_time > UNIX_TIMESTAMP(NOW()) AND del = 0 AND type > 2")->select();
+            } else {
+                $res = M('voucher')->where("end_time > UNIX_TIMESTAMP(NOW()) AND del = 0 AND type = 1")->select();
+            }
+            
             if ($res === false) {
                 $this->ajaxReturn(['code' => 1, 'msg'=>'查询失败!']);
             }
@@ -1940,6 +1945,8 @@ class NewsController extends PublicController
             foreach ($res as $k => $v) {
                 $res[$k]['start_time'] = date('Y.m.d h:i', $v['start_time']);
                 $res[$k]['end_time'] = date('Y.m.d h:i', $v['end_time']);
+                $res[$k]['receive_num'] = intval($v['receive_num']);
+                $res[$k]['count'] = intval($v['count']);
                 $date = new Carbon(date('Y-m-d h:i:s', $v['end_time']));
                 $res[$k]['littleTime'] = $date->diffInDays(Carbon::now())+1;
                 $res[$k]['status'] = (in_array($v['id'], $vids)) ? 1 : 0;
@@ -1965,10 +1972,21 @@ class NewsController extends PublicController
                 $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
             }
 
-            $voucher = M('voucher')->where(['id'=>$vid])->find();
+            
+            $voucher = M('voucher')->where(['id'=>$vid,'del'=>0])->find();
+            //这里删除的验证
+            if (!$voucher) {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'活动已下线!']);
+            }
             if ($voucher['receive_num'] == $voucher['count']) {
                 $this->ajaxReturn(['code' => 1, 'msg'=>'已领完!']);
             }
+            //不能二次领取
+            $r = M('user_voucher')->where(['uid'=>$uid,'vid'=>$vid])->find();
+            if ($r) {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'不能重复领取!']);
+            }
+
             M('voucher')->where(['id'=>$vid])->setInc("receive_num");
 
             $data['uid']=$uid;
@@ -1987,7 +2005,7 @@ class NewsController extends PublicController
                 $this->ajaxReturn(['code' => 1, 'msg'=>'查询失败!']);
             }
  
-            $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=>$res]);
+            $this->ajaxReturn(['code' => 0, 'msg'=>'成功领取!','list'=>$res]);
         } else {
             $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
@@ -2002,7 +2020,7 @@ class NewsController extends PublicController
         if (IS_GET) {
             $uid = intval($_REQUEST['uid']);
             $flag = intval($_REQUEST['flag']);
-            $totalPrice = intval($_REQUEST['totalPrice']);
+            $totalPrice = floatval($_REQUEST['totalPrice']);    //浮点数比较
             if (!$uid && !$flag && !$totalPrice) {
                 $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
             }
