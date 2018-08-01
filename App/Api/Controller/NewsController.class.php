@@ -561,6 +561,10 @@ class NewsController extends PublicController
             if (!$_GET['openId']) {
                 $this->ajaxReturn(['code' => 1, 'msg'=>'登录状态异常!']);
             }
+
+            if ($_GET['NickName'] == "undefined") {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'用户昵称获取失败,请授权!']);
+            }
             $openid = trim($_GET['openId']);
             $con = array();
             $con['openid']=trim($_GET['openId']);

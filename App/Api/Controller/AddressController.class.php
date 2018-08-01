@@ -55,6 +55,12 @@ class AddressController extends PublicController
             exit();
         }
         if (!$data['sheng'] || !$data['city'] || !$data['quyu']) {
+            if ($_POST['sheng'] == "北京市") {
+                $_POST['sheng'] = $_POST['city']= "北京";
+            }
+            if ($_POST['sheng'] == "天津市") {
+                $_POST['sheng'] = $_POST['city']= "天津";
+            }
             $data['sheng'] = M('china_city')->where('name="'.$_POST['sheng'].'"')->getField('id');
             $data['city'] = M('china_city')->where('name="'.$_POST['city'].'"')->getField('id');
             $data['quyu'] = M('china_city')->where('name="'.$_POST['quyu'].'"')->getField('id');
