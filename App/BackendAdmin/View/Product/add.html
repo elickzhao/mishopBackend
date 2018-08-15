@@ -169,7 +169,7 @@
 
                     <div class="hr-line-dashed"></div>
 
-                    <!-- 商品品牌 -->
+                    <!-- 供货商 -->
                     <div class="row cl">
                         <div class="col-xs-4 col-sm-2 ml-30">
                             <label class="layui-form-label">选择供货商: </label>
@@ -185,7 +185,27 @@
                             </select>
                         </div>
                     </div>
-                    <!-- /商品品牌 -->
+                    <!-- /供货商 -->
+
+                    <div class="hr-line-dashed"></div>
+
+                    <!-- 商品类型 -->
+                    <div class="row cl">
+                        <div class="col-xs-4 col-sm-2 ml-30">
+                            <label class="layui-form-label">选择商品类型: </label>
+                        </div>
+                        <div class="formControls col-xs-8 col-sm-4">
+                            <select name="pro_type" lay-search id="pro_type">
+                                <!-- 遍历 -->
+                                <option value="">选择商品类型</option>
+                                <volist name="pro_type_list" id="v" key="k">
+                                    <option value="{$k}" <if condition="$k eq $pro_allinfo['pro_type']">selected="selected"</if>>-- {$v}</option>
+                                </volist>
+                                <!-- 遍历 -->
+                            </select>
+                        </div>
+                    </div>
+                    <!-- /商品类型 -->
 
                     <div class="hr-line-dashed"></div>
 
@@ -450,11 +470,11 @@
                     <!-- 人气 -->
                     <div class="row cl">
                         <div class="col-xs-4 col-sm-2 ml-30">
-                            <label class="layui-form-label">人气：</label>
+                            <label class="layui-form-label">排序：</label>
                         </div>
 
                         <div class="formControls col-xs-8 col-sm-4">
-                            <input type="text" class="input-text" placeholder="人气" name="renqi" id="renqi" value="<?php echo (int)$pro_allinfo['renqi']; ?>">
+                            <input type="text" class="input-text" placeholder="人气" name="sort" id="sort" value="<?php echo (int)$pro_allinfo['sort']; ?>">
                         </div>
                     </div>
                     <!-- /人气 -->

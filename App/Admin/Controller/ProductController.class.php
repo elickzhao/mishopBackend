@@ -26,7 +26,8 @@ class ProductController extends PublicController
         // 产品列表信息 搜索
         //===============================
         //搜索
-        $where="1=1 AND pro_type=1 AND del<1";
+        // $where="1=1 AND pro_type=1 AND del<1";   //这是原版 只列出普通商品 以后应该也分开促销商品到营销分区里去 不过现在为了求快暂时放在一起
+        $where="1=1 AND del<1";
         $tuijian!=='' ? $where.=" AND type=$tuijian" : null;
         $shop_id>0 ? $where.=" AND shop_id=$shop_id" : null;
         $name!='' ? $where.=" AND name like '%$name%'" : null;
@@ -74,7 +75,8 @@ class ProductController extends PublicController
      */
     public function getGoods()
     {
-        $where="1=1 AND pro_type = 1 AND del<1";
+        //$where="1=1 AND pro_type = 1 AND del<1";    //这是原版 只列出普通商品 以后应该也分开促销商品到营销分区里去 不过现在为了求快暂时放在一起
+        $where="1=1 AND del<1";
 
         if ($_GET['cid'] == 0) {
             unset($_GET['cid']);
@@ -198,7 +200,7 @@ class ProductController extends PublicController
                 'num'=>(int)$_POST['num'] ,         //库存
                 'content'=>$_POST['content'] ,
                 'company'=>$_POST['company'],  //产品单位
-                'pro_type'=>1,
+                'pro_type'=>(int)$_POST['pro_type'],  //商品属性
                 'renqi' => intval($_POST['renqi']),
                 'is_hot'=>intval($_POST['is_hot']),//是否热卖
                 'is_show'=>intval($_POST['is_show']),//是否新品
@@ -322,6 +324,12 @@ class ProductController extends PublicController
         //=========================
         $brand_list = M('brand')->where('1=1')->field('id,name')->select();
         $this->assign('brand_list', $brand_list);
+
+        //=========================
+        // 商品属性列表
+        //=========================
+        $pro_type_list = C('PRO_TYPE');
+        $this->assign('pro_type_list', $pro_type_list);
 
         //==========================
         // 将GET到的数据再输出

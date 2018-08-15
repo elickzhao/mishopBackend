@@ -131,6 +131,14 @@
                         <span class="btn btn-primary" title="推荐" id="isType">
                             <i class="Hui-iconfont">&#xe697;</i> 推荐</span>
                     </div>
+
+                    <div class="btn-group l ml-5">
+                        <span class="btn btn-primary" title="普通商品" id="isNormal">
+                            <i class="Hui-iconfont f-16">&#xe620;</i> 普通商品</span>
+                        <span class="btn btn-primary" title="特价商品" id="isSpecial">
+                            <i class="Hui-iconfont f-16">&#xe6bb;</i> 特价商品</span>
+                    </div>
+
                     <div class="btn-group l ml-5">
                         <span class="btn btn-primary" title="新品" id="isDel">
                             <i class="layui-icon f-16">&#xe640;</i> 删除</span>
@@ -158,6 +166,14 @@
         <a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del">删除</a>
     </script>
 
+    <script type="text/html" id="is_pro_type">
+        <!-- 这里同样支持 laytpl 语法，如： -->
+        {{# if(d.pro_type == 1){ }}
+        <span class="label label-danger radius" lay-event="is_pro_type">普通商品</span>
+        {{# }else{ }}
+        <span class="label label-success radius" lay-event="is_pro_type">特价商品</span>
+        {{# } }}
+    </script>
     <script type="text/html" id="is_down">
         <!-- 这里同样支持 laytpl 语法，如： -->
         {{# if(d.is_down == 1){ }}
@@ -232,7 +248,7 @@
                     title: 'ID',
                     width: '5%',
                     sort: true,
-                },{
+                }, {
                     field: 'photo_x',
                     title: '图片',
                     width: '10%',
@@ -256,17 +272,17 @@
                 }, {
                     field: 'pro_number',
                     title: '商品货号',
-                    width: '8%'
+                    width: '7%'
                 }, {
                     field: 'price_yh',
                     title: '价格/元',
-                    width: '7%',
+                    width: '6%',
                     align: 'center',
                     event: 'price_yh'
                 }, {
                     field: 'num',
                     title: '库存',
-                    width: '6%',
+                    width: '5%',
                     align: 'center',
                     sort: true,
                     event: 'num',
@@ -277,10 +293,27 @@
                         return r;
 
                     }
-                }, {
+                }, 
+                {
+                    field: 'sort',
+                    title: '排序',
+                    width: '4%',
+                    align: 'center',
+                    sort: true,
+                    event: 'sort'
+                },  
+                {
+                    field: 'pro_type',
+                    title: '商品类型',
+                    width: '6%',
+                    align: 'center',
+                    sort: true,
+                    templet: "#is_pro_type"
+                }, 
+                {
                     field: 'is_down',
                     title: '上下架',
-                    width: '7%',
+                    width: '5%',
                     align: 'center',
                     sort: true,
                     templet: "#is_down"
@@ -291,24 +324,26 @@
                     //         '<span class="label label-danger radius" lay-event="is_down">已下架</span>'; //'<span style="color: #FF5722;" lay-event="is_down"><strong><i class="Hui-iconfont">&#xe6a6;</i> 已下架</strong></span>';
                     //     return r;
                     // }
-                }, {
+                }, 
+                {
                     field: 'is_show',
                     title: '新品',
-                    width: '7%',
+                    width: '5%',
                     align: 'center',
                     sort: true,
                     templet: "#is_show"
-                }, {
+                }, 
+                {
                     field: 'is_hot',
                     title: '热卖',
-                    width: '7%',
+                    width: '6%',
                     align: 'center',
                     sort: true,
                     templet: "#is_hot"
                 }, {
                     field: 'type',
                     title: '推荐',
-                    width: '7%',
+                    width: '6%',
                     align: 'center',
                     sort: true,
                     templet: "#type"
@@ -394,6 +429,21 @@
             getData(list, 'type', 1, 1);
 
         });
+
+        //批量普通商品
+        $("#isNormal").click(function () {
+            let list = getList();
+            getData(list, 'pro_type', 1, 1);
+
+        });
+
+        //批量特价商品
+        $("#isSpecial").click(function () {
+            let list = getList();
+            getData(list, 'pro_type', 2, 1);
+
+        });
+
         //批量删除
         $("#isDel").click(function () {
             let list = getList();
@@ -527,6 +577,29 @@
                     }
                 })
             }
+
+            //修改排序
+            if (layEvent == "sort") {
+                layer.prompt({
+                    formType: 2,
+                    title: '修改 货号  [ ' + data.pro_number + ' ] 的排序',
+                    value: data.sort
+                }, function (value, index) {
+                    if (parseInt(value) < 0 || isNaN(value)) {
+                        layer.alert("请填写正确数字!", {
+                            icon: 2
+                        });
+                    } else {
+                        layer.close(index);
+                        //这里一般是发送修改的Ajax请求
+                        getData(data.id, layEvent, value);
+                        //同步更新表格和缓存对应的值
+                        obj.update({
+                            sort: value
+                        });
+                    }
+                })
+            }
             //修改标题
             if (layEvent == "name") {
                 layer.prompt({
@@ -548,6 +621,16 @@
                         });
                     }
                 })
+            }
+
+            //上架
+            if (layEvent === 'is_pro_type') {
+                var value = (data.pro_type == 1) ? 2 : 1;
+                //如果用这个更新就不能用 回调函数那么写 templet
+                obj.update({
+                    pro_type: value
+                });
+                getData(data.id, 'pro_type', value);
             }
 
             //上架

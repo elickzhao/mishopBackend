@@ -138,18 +138,14 @@ class ProductController extends PublicController
 
     public function getGoods()
     {
-        $where="1=1 AND pro_type = 1 AND del<1";
-
-
+        //$where="1=1 AND pro_type = 1 AND del<1";    //这是原版 只列出普通商品 以后应该也分开促销商品到营销分区里去 不过现在为了求快暂时放在一起
+        $where="1=1 AND del<1";
 
         if ($_GET['cid'] == 0) {
             unset($_GET['cid']);
         }
 
-        
-
         //搜索优先级查询
-
         $arr = ['pro_number','name','cid'];
 
         foreach ($arr as $key => $value) {
@@ -164,33 +160,16 @@ class ProductController extends PublicController
             }
         }
 
-
-
-
-
-
-
         $count=M('product')->where($where)->count();
-
         $rows=ceil($count/rows);
-
         $page = (int) -- $_GET['page'] ;
-
         $rows = $_GET['limit'] ? $_GET['limit'] : 10;
-
         $limit= $page*$rows;
-
         $productlist=M('product')->where($where)->order('updatetime desc')->limit($limit, $rows)->select();
-
         $sql = M('product')->getlastsql();
 
-
-
         //$resuslt = [code=>0,msg=>'',count=>$count,data=>$productlist,sql=>$sql];
-
         $resuslt = [code=>0,msg=>'',count=>$count,data=>$productlist];
-
-
 
         $this->ajaxReturn($resuslt);
     }
@@ -346,7 +325,7 @@ class ProductController extends PublicController
 
                 'company'=>$_POST['company'],  //产品单位
 
-                'pro_type'=>1,
+                'pro_type'=>(int)$_POST['pro_type'],  //商品属性
 
                 'renqi' => intval($_POST['renqi']),
 
@@ -552,6 +531,12 @@ class ProductController extends PublicController
 
         $this->assign('brand_list', $brand_list);
 
+
+        //=========================
+        // 商品属性列表
+        //=========================
+        $pro_type_list = C('PRO_TYPE');
+        $this->assign('pro_type_list', $pro_type_list);
 
 
         //==========================
