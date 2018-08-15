@@ -337,7 +337,7 @@ class NewsController extends PublicController
             // else {
             //     $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!','list'=> $list]);
             // }
-            $list = M('product')->field("id,name,intro,pro_number,price,price_yh,photo_x,photo_d,shiyong,type,is_show,is_hot,is_sale")->where($where)->cache(true, 1800)->order($order)->limit($limit.',16')->select();
+            $list = M('product')->field("id,name,intro,pro_number,price,price_yh,photo_x,photo_d,shiyong,type,is_show,is_hot,is_sale,num")->where($where)->cache(true, 1800)->order($order)->limit($limit.',16')->select();
 
             $total = M('product')->where($where)->count("id");
             $pageTotal = ceil($total /16);
@@ -1411,7 +1411,7 @@ class NewsController extends PublicController
                     $this->ajaxReturn(['code' => 1, 'msg'=>'非法操作!','err'=>__LINE__]);
                 }
 
-                $pro[$k] = $shopping->where(''.$qz.'shopping_char.uid='.intval($uid).' and '.$qz.'shopping_char.id='.$v)->join('LEFT JOIN __PRODUCT__ ON __PRODUCT__.id=__SHOPPING_CHAR__.pid')->join('LEFT JOIN __SHANGCHANG__ ON __SHANGCHANG__.id=__SHOPPING_CHAR__.shop_id')->field(''.$qz.'product.num as pnum,'.$qz.'shopping_char.id,'.$qz.'shopping_char.pid,'.$qz.'shangchang.name as sname,'.$qz.'product.name,'.$qz.'product.shop_id,'.$qz.'product.photo_x,'.$qz.'product.price_yh,'.$qz.'shopping_char.num,'.$qz.'shopping_char.buff,'.$qz.'shopping_char.price')->find();
+                $pro[$k] = $shopping->where(''.$qz.'shopping_char.uid='.intval($uid).' and '.$qz.'shopping_char.id='.$v)->join('LEFT JOIN __PRODUCT__ ON __PRODUCT__.id=__SHOPPING_CHAR__.pid')->join('LEFT JOIN __SHANGCHANG__ ON __SHANGCHANG__.id=__SHOPPING_CHAR__.shop_id')->field(''.$qz.'product.num as pnum,'.$qz.'shopping_char.id,'.$qz.'shopping_char.pid,'.$qz.'product.name,'.$qz.'product.shop_id,'.$qz.'product.photo_x,'.$qz.'product.price_yh,'.$qz.'product.pro_type,'.$qz.'shopping_char.num,'.$qz.'shopping_char.buff,'.$qz.'shopping_char.price')->find();
 
 
                 if ($pro[$k]['buff'] != '') {
@@ -1427,16 +1427,35 @@ class NewsController extends PublicController
             }
 
             //计算总价
+            // foreach ($id as $ks => $vs) {
+            //     $pro1[$ks] = $shopping->where(''.$qz.'shopping_char.uid='.intval($uid).' and '.$qz.'shopping_char.id='.$vs)->join('LEFT JOIN __PRODUCT__ ON __PRODUCT__.id=__SHOPPING_CHAR__.pid')->join('LEFT JOIN __SHANGCHANG__ ON __SHANGCHANG__.id=__SHOPPING_CHAR__.shop_id')->field(''.$qz.'product.num as pnum,'.$qz.'shopping_char.id,'.$qz.'shangchang.name as sname,'.$qz.'product.name,'.$qz.'product.photo_x,'.$qz.'product.price_yh,'.$qz.'shopping_char.num,'.$qz.'shopping_char.buff,'.$qz.'shopping_char.price')->find();
+            //     if ($pro1[$ks]['buff']) {
+            //         $pro1[$ks]['zprice'] = $pro1[$ks]['price'] * $pro1[$ks]['num'];
+            //     } else {
+            //         $pro1[$ks]['price'] = $pro1[$ks]['price_yh'];
+            //         $pro1[$ks]['zprice'] = $pro1[$ks]['price'] * $pro1[$ks]['num'];
+            //     }
+            //     $price += $pro1[$ks]['zprice'];
+            // }
+            
+            //去掉特惠商品的总价
+            $limitPrice = 0;
+            //计算总价
             foreach ($id as $ks => $vs) {
-                $pro1[$ks] = $shopping->where(''.$qz.'shopping_char.uid='.intval($uid).' and '.$qz.'shopping_char.id='.$vs)->join('LEFT JOIN __PRODUCT__ ON __PRODUCT__.id=__SHOPPING_CHAR__.pid')->join('LEFT JOIN __SHANGCHANG__ ON __SHANGCHANG__.id=__SHOPPING_CHAR__.shop_id')->field(''.$qz.'product.num as pnum,'.$qz.'shopping_char.id,'.$qz.'shangchang.name as sname,'.$qz.'product.name,'.$qz.'product.photo_x,'.$qz.'product.price_yh,'.$qz.'shopping_char.num,'.$qz.'shopping_char.buff,'.$qz.'shopping_char.price')->find();
+                $pro1[$ks] = $shopping->where(''.$qz.'shopping_char.uid='.intval($uid).' and '.$qz.'shopping_char.id='.$vs)->join('LEFT JOIN __PRODUCT__ ON __PRODUCT__.id=__SHOPPING_CHAR__.pid')->join('LEFT JOIN __SHANGCHANG__ ON __SHANGCHANG__.id=__SHOPPING_CHAR__.shop_id')->field(''.$qz.'product.num as pnum,'.$qz.'shopping_char.id,'.$qz.'shangchang.name as sname,'.$qz.'product.name,'.$qz.'product.photo_x,'.$qz.'product.price_yh,'.$qz.'shopping_char.num,'.$qz.'shopping_char.buff,'.$qz.'shopping_char.price,'.$qz.'product.pro_type')->find();
                 if ($pro1[$ks]['buff']) {
                     $pro1[$ks]['zprice'] = $pro1[$ks]['price'] * $pro1[$ks]['num'];
                 } else {
                     $pro1[$ks]['price'] = $pro1[$ks]['price_yh'];
                     $pro1[$ks]['zprice'] = $pro1[$ks]['price'] * $pro1[$ks]['num'];
                 }
+                if ($pro1[$ks]['pro_type'] == 2) {
+                    $limitPrice += $pro1[$ks]['zprice'];
+                }
                 $price += $pro1[$ks]['zprice'];
             }
+
+            $limitPrice = $price - $limitPrice;
 
 
             if (!$add) {
@@ -1449,7 +1468,8 @@ class NewsController extends PublicController
             $userScore = M('user')->where(['id'=>$uid])->getField('jifen');
 
             //vou 优惠券 price总价 adds收货地址 addemt 是否存在收货地址
-            $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=>$pro,'vou' => $vou, 'price' => floatval($price), 'adds' => $add, 'addemt' => $addemt,'userScore'=>intval($userScore)]);
+            //$this->ajaxReturn(['code' => 0, 'msg'=>'','list'=>$pro,'vou' => $vou, 'price' => floatval($price), 'adds' => $add, 'addemt' => $addemt,'userScore'=>intval($userScore)]);
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=>$pro,'vou' => $vou, 'price' => floatval($price), 'adds' => $add, 'addemt' => $addemt,'userScore'=>intval($userScore), 'limitPrice'=>floatval(number_format($limitPrice, 2))]);
             // echo json_encode(array('status' => 1, 'vou' => $vou, 'price' => floatval($price), 'pro' => $pro, 'adds' => $add, 'addemt' => $addemt));
             // exit();
         } else {

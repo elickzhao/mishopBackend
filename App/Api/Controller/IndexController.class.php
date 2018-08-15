@@ -141,7 +141,7 @@ class IndexController extends PublicController
         $ggtop = M('guanggao')->where('position=1')->order('sort desc,id asc')->field('id,name,photo,action')->limit(10)->select();
         foreach ($ggtop as $k => $v) {
             if (!empty($v['action']) && M('product')->find($v['action'])) {
-                $ggtop[$k]['link'] = '../product/detail?productId='.$v['action'];
+                $ggtop[$k]['link'] = '/pages/goods_detail?id='.$v['action'];
             } else {
                 $ggtop[$k]['link'] = 'index';
             }
