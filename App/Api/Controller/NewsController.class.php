@@ -15,6 +15,10 @@ use Carbon\Carbon;
 vendor("Underscore.Underscore");
 use Underscore\Types\Arrays;
 
+vendor("Guzzle.autoloader");
+vendor("Guzzle.GuzzleHttp.Client");
+use GuzzleHttp\Client;
+
 class NewsController extends PublicController
 {
     public $cid;
@@ -250,7 +254,7 @@ class NewsController extends PublicController
     {
         if (IS_GET) {
             // $arr = ['is_hot','is_show','is_sale'];
-            $where = 'del=0 AND pro_type=1 AND is_down=0 AND type=1 AND cid in ('.$this->cid.')';   //目前是推荐+热销就会出现在首页7个
+            $where = 'del=0  AND is_down=0 AND type=1 AND cid in ('.$this->cid.')';   //目前是推荐+热销就会出现在首页7个
             if ($_GET['flag'] != "") {
                 $where .= ' AND '.$this->flag[$_GET['flag']].'=1' ;
             } else {
@@ -274,7 +278,7 @@ class NewsController extends PublicController
         if (IS_GET) {
             $page = intval($_REQUEST['page']);
             // $arr = ['is_hot','type','is_show','is_sale'];
-            $where = 'del=0 AND pro_type=1 AND is_down=0 AND cid in ('.$this->cid.')';
+            $where = 'del=0  AND is_down=0 AND cid in ('.$this->cid.')';
 
             $limit = intval($page * 16) - 16;
 
@@ -934,6 +938,32 @@ class NewsController extends PublicController
             $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
+
+    /**
+     * [searchHotKey 购物车商品列表]
+     * @return [type] [description]
+     */
+    public function getOrderCount()
+    {
+        if (IS_GET) {
+            if ($_GET['uid'] == "") {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
+            }
+            $orders = M('order');
+            $count = [];
+            $order_status = array('10' => '待付款', '20' => '待发货', '30' => '待收货');
+            foreach ($order_status as $k => $v) {
+                $count[] = $orders->where(['status'=>$k,'uid'=>$_GET['uid'],'del'=>0,'back'=>'0'])->count();
+            }
+
+            //$sql = $orders->getlastsql();
+            //$this->ajaxReturn(['code' => 0, 'msg'=>'','count'=>$count,'sql'=>$sql]);
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','count'=>$count]);
+        } else {
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
+        }
+    }
+
     /**
      * [searchHotKey 获取订单列表]
      * @return [type] [description]
@@ -995,7 +1025,8 @@ class NewsController extends PublicController
             $total = $orders->where($condition)->count("id");
             $pageTotal = ceil($total / $eachpage);
 
-            $sql = $orders->getlastsql();
+            //$sql = $orders->getlastsql();
+            
             foreach ($order as $n => $v) {
                 $order[$n]['desc'] = $order_status[$v['status']];
 
@@ -1014,10 +1045,9 @@ class NewsController extends PublicController
             }
 
             // echo json_encode(array('status' => 1, 'ord' => $order, 'eachpage' => $eachpage));
-
             // exit();
-
-            $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=>$order,'eachpage' => $eachpage,'page_total'=>$pageTotal,'sql'=>$sql]);
+            //$this->ajaxReturn(['code' => 0, 'msg'=>'','list'=>$order,'eachpage' => $eachpage,'page_total'=>$pageTotal,'sql'=>$sql]);
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=>$order,'eachpage' => $eachpage,'page_total'=>$pageTotal]);
         } else {
             $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
@@ -1047,7 +1077,7 @@ class NewsController extends PublicController
 
             $qz = C('DB_PREFIX');   //前缀
 
-            $order_info = $orders->where('id='.intval($order_id).' AND del=0')->field('id,order_sn,shop_id,status,addtime,price,amount,type,post,tel,receiver,address_xq,remark,back')->find();
+            $order_info = $orders->where('id='.intval($order_id).' AND del=0')->field('id,order_sn,shop_id,status,addtime,price,amount,type,post,tel,receiver,address_xq,remark,back,kuaidi_num')->find();
 
             if (!$order_info) {
                 $this->ajaxReturn(['code' => 1, 'msg'=>'订单信息错误!']);
@@ -1056,6 +1086,33 @@ class NewsController extends PublicController
             //订单状态
 
             $order_status = array('0' => '已取消', '10' => '待付款', '20' => '待发货', '30' => '待收货', '40' => '已收货', '50' => '交易完成');
+
+            //XXX 快递信息
+            if ($order_info['kuaidi_num'] != "" && strlen($order_info['kuaidi_num']) > 5) {
+                $post_info = array();
+                //快递公司简称 暂时没用
+                // if (intval($order_info['post'])) {
+                //     $post_info = M('post')->where('id='.intval($order_info['post']))->find();
+                // }
+
+                //这里也调整了 暂时不在这个页面显示了 以后再说
+                // $client = new Client();
+                // //$response = $client->request('GET', 'http://sp0.baidu.com/9_Q4sjW91Qh3otqbppnN2DJv/pae/channel/data/asyncqury?appid=4001&com=&nu=3369785056558');
+                // $url = "http://www.kuaidi100.com/query?type=shentong&postid=".$order_info['kuaidi_num'];
+                // $response = $client->request('GET', $url);
+                // $a = $response->getBody()->getContents();
+                // $b = json_decode($a);
+                // //dump($b->data);
+
+                // $steps = [];
+                // foreach ($b->data as $key => $value) {
+                //     $steps[$key]['title'] =  $value->context;
+                //     $steps[$key]['desc'] =$value->time;
+                // }
+                //dump($steps);
+                $expressNo = $order_info['kuaidi_num'];
+            }
+
 
             //支付类型
 
@@ -1083,12 +1140,44 @@ class NewsController extends PublicController
                 $pro[$k]['photo_x'] = __DATAURL__.$v['photo_x'];
             }
 
-            $this->ajaxReturn(['code' => 0, 'msg'=>'', 'pro' => $pro, 'ord' => $order_info]);
+            $this->ajaxReturn(['code' => 0, 'msg'=>'', 'pro' => $pro, 'ord' => $order_info,'expressNo'=>$expressNo]);
         } else {
             $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
 
+    /**
+     * [orderExpressInfo 查询订单快递信息]
+     * @return [type] [查询订单快递信息]
+     */
+    public function orderExpressInfo()
+    {
+        if (IS_GET) {
+            $expressNo = intval($_REQUEST['expressNo']);
+            if ($expressNo  == "") {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
+            }
+
+            $client = new Client();
+            //$response = $client->request('GET', 'http://sp0.baidu.com/9_Q4sjW91Qh3otqbppnN2DJv/pae/channel/data/asyncqury?appid=4001&com=&nu=3369785056558');
+            $url = "http://www.kuaidi100.com/query?type=shentong&postid=".$expressNo;
+            $response = $client->request('GET', $url);
+            $a = $response->getBody()->getContents();
+            $b = json_decode($a);
+            //dump($b->data);
+
+            $list = [];
+            foreach ($b->data as $key => $value) {
+                $list[$key]['title'] =  $value->context;
+                $list[$key]['desc'] =$value->time;
+            }
+
+ 
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=>$list]);
+        } else {
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
+        }
+    }
 
     /**
      * [searchHotKey 购物车商品列表]

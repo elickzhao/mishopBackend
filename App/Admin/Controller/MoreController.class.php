@@ -329,8 +329,48 @@ class MoreController extends PublicController
             $this->display();
         }
     }
-    // public function test()
-    // {
+    /**
+     * [upload 其他配置上传]
+     * @return [type] [description]
+     */
+    public function upload()
+    {
+        $tabnum = $_REQUEST['tabnum']?$_REQUEST['tabnum']:0;
+        $imgname = $_REQUEST['imgname'];
 
-    // }
+        if ($imgname == "hongbao") {
+            $tabnum = 1;
+        }
+
+        if ($imgname == "jifen") {
+            $tabnum = 2;
+        }
+        //dump($_REQUEST['imgurl']);
+        $img_url = ".".$_REQUEST['imgurl'];
+        //dump(file_exists($img_url));
+        //删除老的文件 这里有个问题 一旦传错就不能有备份了
+        if (file_exists($img_url)) {
+            @unlink($img_url);
+        }
+        
+
+        //上传产品小图
+        if (!empty($_FILES["photo_x"]["tmp_name"])) {
+            //文件上传
+            $info = $this->upload_images($_FILES["photo_x"], array('jpg','png','jpeg','gif'), "logo/", 1, $imgname);
+            if (!is_array($info)) {// 上传错误提示错误信息
+                $this->error($info);
+                exit();
+            } else {
+                $this->success('保存成功！', 'upload?tabnum='.$tabnum);
+            }
+        }
+        $rand = rand(5, 10);
+           
+        $bc = ['综合管理','其他上传'];
+        $this->assign('bc', $bc);
+        $this->assign('rand', $rand);
+        $this->assign('tabnum', $tabnum);
+        $this->display();
+    }
 }

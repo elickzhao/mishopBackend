@@ -174,14 +174,15 @@ class PublicController extends Controller
         }
         if (IS_POST) {
             //如果上传的是logo则清除目录老图
-            if ($_REQUEST['flag'] == 'logo') {
-                $dirArray = scandir('Data/UploadFiles/logo');
-                foreach ($dirArray as $k => $v) {
-                    if (is_file('Data/UploadFiles/logo/'.$v)) {
-                        unlink('Data/UploadFiles/logo/'.$v);
-                    }
-                }
-            }
+            //XXX 这个有可能造成一个问题是 图片已经存在无法上传 这个留着以后解决吧
+            // if ($_REQUEST['flag'] == 'logo') {
+            //     $dirArray = scandir('Data/UploadFiles/logo');
+            //     foreach ($dirArray as $k => $v) {
+            //         if (is_file('Data/UploadFiles/logo/'.$v)) {
+            //             unlink('Data/UploadFiles/logo/'.$v);
+            //         }
+            //     }
+            // }
             
             //$info = $this->upload_images($_FILES["file"], array('gif','jpg','png','jpeg'), $_REQUEST['flag']);
             $info = $this->upload_images($_FILES, array('gif','jpg','png','jpeg'), $_REQUEST['flag']);
@@ -191,7 +192,6 @@ class PublicController extends Controller
                 if ($_REQUEST['flag'] == 'logo') {
                     $this->ajaxReturn($info['file']);
                 } else {
-                    // $str = '/Data/UploadFiles/'.$info['file']['savepath'].$info['file']['savename']; //为了和老数据同步 所以还是改成原来的地址写法吧
                     $str = 'UploadFiles/'.$info['file']['savepath'].$info['file']['savename'];
                     $this->ajaxReturn([errno=>0,data=>$str]);
                 }
@@ -206,7 +206,7 @@ class PublicController extends Controller
     * 图片上传的公共方法
     *  $file 文件数据流 $exts 文件类型 $path 子目录名称
     */
-    public function upload_images($file, $exts, $path, $type = 2)
+    public function upload_images($file, $exts, $path, $type=2, $savename='')
     {
         $upload = new \Think\Upload();// 实例化上传类
         $upload->maxSize   =  2097152 ;// 设置附件上传大小2M
@@ -216,6 +216,10 @@ class PublicController extends Controller
         //$upload->saveName = time().mt_rand(100000, 999999); //文件名称创建时间戳+随机数 //这个随机多文件上传容易重名
         $upload->autoSub  = true; //自动使用子目录保存上传文件 默认为true
         $upload->subName  = $path; //子目录创建方式，采用数组或者字符串方式定义
+        
+        if ($savename != "") {
+            $upload->saveName = $savename;
+        }
         
         if ($type==1) {
             // 上传单个文件

@@ -2,6 +2,10 @@
 
 namespace Admin\Controller;
 
+vendor("Guzzle.autoloader");
+vendor("Guzzle.GuzzleHttp.Client");
+use GuzzleHttp\Client;
+
 class OrderController extends PublicController
 {
     /*
@@ -34,7 +38,6 @@ class OrderController extends PublicController
     public function index()
     {
         //搜索
-
         //获取商家id
 
         if (4 != intval($_SESSION['admininfo']['qx'])) {
@@ -291,7 +294,6 @@ class OrderController extends PublicController
     public function show()
     {
         //获取传递过来的id
-
         $order_id = intval($_GET['oid']);
 
         if (!$order_id) {
@@ -304,8 +306,6 @@ class OrderController extends PublicController
         $order_info['uname'] = M('user')->where('id='.intval($order_info['uid']))->getField('name');
         //因暂时无阿里支付 所以暂时这么写
         $order_info['type'] = ($order_info['type'] == 'weixin') ? '微信支付' : "线下支付" ;
-        
-
         $order_pro = $this->order_product->where('order_id='.intval($order_id))->select();
 
         if (!$order_info || !$order_pro) {
@@ -323,24 +323,86 @@ class OrderController extends PublicController
                 $order_pro[$k]['g_name'] = '无';
             }
         }
+        
+        //dump($order_info['kuaidi_num']);
+        if ($order_info['kuaidi_num'] != "" && strlen($order_info['kuaidi_num']) > 5) {
+            $post_info = array();
+            if (intval($order_info['post'])) {
+                $post_info = M('post')->where('id='.intval($order_info['post']))->find();
+            }
+
+            
+            
+            // $py = 'python '.VENDOR_PATH.'1.py '.$order_info['kuaidi_num'];
+            // //echo $py;
+            // $output = exec($py);
+            // //exec('C:\Python27\python.exe F:\phpStudy\WWW\wechat_shop\ThinkPHP\Library\Vendor\1.py 2>&1',$output,$return_val);
+            // //dump($output);
+            // //echo $return_val;
+
+            // // $json = json_encode($output);
+            // $json = json_decode($output);
+            // // var_dump($json->data->info->context);
+            
 
 
+            $client = new Client();
 
-        $post_info = array();
+            //快递100接口
+            $url = "http://www.kuaidi100.com/query?type=shentong&postid=".$order_info['kuaidi_num'];
+            $response = $client->request('GET', $url);
+            $a = $response->getBody()->getContents();
+            $b = json_decode($a);
+            if ($b->status == "200") {
+                $express = $b->data;
+                goto end;
+            }
 
-        if (intval($order_info['post'])) {
-            $post_info = M('post')->where('id='.intval($order_info['post']))->find();
+            //快递api接口   这个接口已经到期
+            // $response = $client->request('GET', 'http://www.kuaidiapi.cn/rest/?uid=104580&key=21980b725d774e44b247072f89d516cb&id=shentong&order='.$order_info['kuaidi_num']);
+            // //dump($response->getBody()->getContents());
+
+            // if ($response) {
+            //     $a = $response->getBody()->getContents();
+            //     $b = json_decode($a);
+            //     dump($b->data);
+            //     $steps = [];
+            //     foreach ($b->data as $key => $value) {
+            //         $b->data[$key]->context=$value->content;
+            //         // $steps[$key]['time'] = $value->time;
+            //         // $steps[$key]['context'] = $value->content;
+            //     }
+            //     $express = $b->data;
+            //     goto end;
+            // }
+
+            $py = 'python '.VENDOR_PATH.'1.py '.$order_info['kuaidi_num'];
+            //echo $py;
+            $output = exec($py);
+            //exec('C:\Python27\python.exe F:\phpStudy\WWW\wechat_shop\ThinkPHP\Library\Vendor\1.py 2>&1',$output,$return_val);
+            //dump($output);
+            //echo $return_val;
+
+            // $json = json_encode($output);
+            $json = json_decode($output);
+            $arr = $json->data->info->context;
+            foreach ($arr as $key => $value) {
+                $arr[$key]->time= date('Y-m-d H:i:s', $value->time);
+                $arr[$key]->context=$value->desc;
+            }
+            $express = $arr;
+
+            end:
+            //dump($express);
+            $this->assign('express', $express);
         }
 
 
         $bc = ['订单管理','订单详情'];
         $this->assign('bc', $bc);
         $this->assign('post_info', $post_info);
-
         $this->assign('order_info', $order_info);
-
         $this->assign('order_pro', $order_pro);
-
         $this->display();
     }
 

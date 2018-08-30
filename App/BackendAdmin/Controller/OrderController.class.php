@@ -2,6 +2,10 @@
 
 namespace BackendAdmin\Controller;
 
+vendor("Guzzle.autoloader");
+vendor("Guzzle.GuzzleHttp.Client");
+use GuzzleHttp\Client;
+
 class OrderController extends PublicController
 {
     /*
@@ -325,13 +329,36 @@ class OrderController extends PublicController
         }
 
 
-
         $post_info = array();
 
         if (intval($order_info['post'])) {
             $post_info = M('post')->where('id='.intval($order_info['post']))->find();
         }
 
+
+        if ($order_info['kuaidi_num'] != "" && strlen($order_info['kuaidi_num']) > 5) {
+            $post_info = array();
+            if (intval($order_info['post'])) {
+                $post_info = M('post')->where('id='.intval($order_info['post']))->find();
+            }
+
+            $client = new Client();
+            //$response = $client->request('GET', 'http://sp0.baidu.com/9_Q4sjW91Qh3otqbppnN2DJv/pae/channel/data/asyncqury?appid=4001&com=&nu=3369785056558');
+            $url = "http://www.kuaidi100.com/query?type=shentong&postid=".$order_info['kuaidi_num'];
+            $response = $client->request('GET', $url);
+            $a = $response->getBody()->getContents();
+            $b = json_decode($a);
+            //dump($b->data);
+            $steps = [];
+            foreach ($b->data as $key => $value) {
+                $steps[$key]['title'] = $value->time;
+                $steps[$key]['desc'] = $value->context;
+            }
+            //dump($steps);
+
+            $express = $b->data;
+            $this->assign('express', $express);
+        }
 
         $bc = ['订单管理','订单详情'];
         $this->assign('bc', $bc);

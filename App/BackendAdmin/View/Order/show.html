@@ -19,6 +19,7 @@
     <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/skin/default/skin.css" id="skin" />
     <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/css/style.css" />
     <link rel="stylesheet" href="__PUBLIC__/admin/css/common.css">
+    <link rel="stylesheet" href="__PUBLIC__/admin/lib/layui/css/layui.css">
     <!--[if IE 6]>
     <script type="text/javascript" src="__PUBLIC__/admin/lib/DD_belatedPNG_0.0.8a-min.js" ></script>
     <script>DD_belatedPNG.fix('*');</script>
@@ -26,6 +27,221 @@
     <script type="text/javascript" src="__PUBLIC__/admin/js/action.js"></script>
 
     <title>订单详情</title>
+    <style>
+        .fade {
+            opacity: 0;
+            -webkit-transition: opacity .15s linear;
+            -o-transition: opacity .15s linear;
+            transition: opacity .15s linear
+        }
+
+        .fade.in {
+            opacity: 1
+        }
+
+        .modal-open {
+            overflow: hidden
+        }
+
+        .modal {
+            position: fixed;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1040;
+            display: none;
+            overflow: hidden;
+            -webkit-overflow-scrolling: touch;
+            outline: 0
+        }
+
+        .modal.fade .modal-dialog {
+            -webkit-transition: -webkit-transform .3s ease-out;
+            -o-transition: -o-transform .3s ease-out;
+            transition: transform .3s ease-out;
+            -webkit-transform: translate(0, -50%);
+            -ms-transform: translate(0, -50%);
+            -o-transform: translate(0, -50%);
+            transform: translate(0, -50%)
+        }
+
+        .modal.in .modal-dialog {
+            -webkit-transform: translate(0, 0);
+            -ms-transform: translate(0, 0);
+            -o-transform: translate(0, 0);
+            transform: translate(0, 0)
+        }
+
+        .modal-open .modal {
+            overflow-x: hidden;
+            overflow-y: auto
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background-color: #000
+        }
+
+        .modal-backdrop.fade {
+            filter: alpha(opacity=0);
+            opacity: 0
+        }
+
+        .modal-backdrop.in {
+            filter: alpha(opacity=50);
+            opacity: .5
+        }
+
+        .modal-dialog {
+            position: relative;
+            width: auto;
+            margin: 10px
+        }
+
+        .modal-content {
+            position: relative;
+            background-color: #fff;
+            border: 1px solid #999;
+            border: 1px solid rgba(0, 0, 0, .2);
+            outline: 0;
+            -webkit-background-clip: padding-box;
+            background-clip: padding-box;
+            -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
+            box-shadow: 0 3px 9px rgba(0, 0, 0, .5)
+        }
+
+        .modal-header {
+            min-height: 16.42857143px;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            position: relative
+        }
+
+        .modal-header .close {
+            position: absolute;
+            right: 10px;
+            top: 10px
+        }
+
+        .modal-header h3,
+        .modal-header .modal-title {
+            margin: 0;
+            padding: 10px 0;
+            font-size: 16px
+        }
+
+        .modal-body {
+            position: relative;
+            padding: 15px;
+            overflow-y: visible;
+            word-break: break-all
+        }
+
+        .modal-form {
+            margin-bottom: 0
+        }
+
+        .modal-footer {
+            padding: 15px;
+            margin-bottom: 0;
+            text-align: right;
+            background-color: #f5f5f5;
+            border-top: 1px solid #eee;
+            *zoom: 1
+        }
+
+        .modal-footer:before,
+        .modal-footer:after {
+            display: table;
+            content: ""
+        }
+
+        .modal-footer:after {
+            clear: both
+        }
+
+        .modal-footer .btn+.btn {
+            margin-left: 5px;
+            margin-bottom: 0
+        }
+
+        .modal-footer .btn-group .btn+.btn {
+            margin-left: -1px
+        }
+
+        .modal-footer .btn-block+.btn-block {
+            margin-left: 0
+        }
+
+        .modal-scrollbar-measure {
+            position: absolute;
+            top: -9999px;
+            width: 50px;
+            height: 50px;
+            overflow: scroll
+        }
+
+        .radius .modal-content {
+            border-radius: 6px
+        }
+
+        .radius .modal-footer {
+            border-bottom-left-radius: 6px;
+            border-bottom-right-radius: 6px
+        }
+
+        @media (min-width: 768px) {
+            .modal-dialog {
+                width: 600px;
+                margin: 30px auto
+            }
+            .modal-content {
+                -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, .5);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, .5)
+            }
+            .modal-sm {
+                width: 300px
+            }
+        }
+
+        @media (min-width: 992px) {
+            .modal-lg {
+                width: 900px
+            }
+        }
+
+        .modal-alert {
+            position: fixed;
+            right: auto;
+            bottom: auto;
+            width: 300px;
+            left: 50%;
+            margin-left: -150px;
+            top: 50%;
+            margin-top: -30px;
+            z-index: 9999;
+            background-color: #fff;
+            border: 1px solid #999;
+            border: 1px solid rgba(0, 0, 0, .2);
+            outline: 0;
+            -webkit-background-clip: padding-box;
+            background-clip: padding-box;
+            -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
+            box-shadow: 0 3px 9px rgba(0, 0, 0, .5)
+        }
+
+        .modal-alert-info {
+            padding: 30px;
+            text-align: center;
+            font-size: 14px;
+            background-color: #fff
+        }
+    </style>
 </head>
 
 <body>
@@ -112,7 +328,7 @@
                         <td>{$order_info['code']}</td>
                         <td>{$order_info['address_xq']}</td>
                         <td>
-                            <!-- XXX 以后改成 快递公司和门店选择 -->
+                            <!-- 以后改成 快递公司和门店选择 -->
                             <if condition="$order_info.type == '微信支付'">
                                 快递
                                 <else /> 门店取货
@@ -208,7 +424,8 @@
                         </td>
                         <?php if($order_info['status'] > 20){ ?>
                         <td>
-                            <a href="http://www.kuaidi100.com/" target="_blank" class="c-success f-14" style="text-decoration:none">
+                            <!-- <a href="http://www.kuaidi100.com/" target="_blank"  class="c-success f-14" style="text-decoration:none"> -->
+                            <a href="#" onClick="modaldemo()" class="c-success f-14" style="text-decoration:none">
                                 <strong>查看物流</strong>
                             </a>
                         </td>
@@ -223,7 +440,7 @@
                             <a class="btn btn-warning radius" onclick="oo()">确认退款</a>
                         </td>
 
-                        <td >
+                        <td>
                             <font class="f-14" style="color:#c00;">
                                 <strong>退款原因：</strong>
                             </font>
@@ -241,6 +458,35 @@
                     <?php } ?>
                 </table>
 
+                <div id="modal-demo" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content radius">
+                            <div class="modal-header">
+                                <h3 class="modal-title">快递信息</h3>
+                                <a class="close" data-dismiss="modal" aria-hidden="true" href="javascript:void();">×</a>
+                            </div>
+                            <div class="modal-body">
+                                <ul class="layui-timeline">
+                                    <volist name="express" id="vo" empty="暂时没有数据">
+                                        <li class="layui-timeline-item">
+                                            <i class="Hui-iconfont">&#xe677;</i>
+                                            <div class="layui-timeline-content layui-text">
+                                                <h3 class="layui-timeline-title" style="color:#3399FF">{$vo->time}</h3>
+                                                <p>
+                                                        <b>{$vo->context}</b>
+                                                </p>
+                                            </div>
+                                        </li>
+                                    </volist>
+                                </ul>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="hr-line-dashed"></div>
                 <input type="button" value="提交" onclick="sms_message()" class="btn btn-primary radius" />
                 <br>
@@ -255,6 +501,9 @@
     <!-- /底部 -->
     <script type="text/javascript" src="__PUBLIC__/admin/lib/layui/layui.all.js"></script>
     <script>
+        function modaldemo() {
+            $("#modal-demo").modal("show")
+        }
         $(function () {
             //订单状态字体颜色设置
             $('.font_color').each(function (index, element) {
@@ -289,19 +538,20 @@
 
         function oo() {
             layer.confirm('确认退款吗？', function (index) {
-                    layer.close(index);
-                    //向服务端发送删除指令
-                    location.href="{:U('back')}?oid={$order_info.id}";
+                layer.close(index);
+                //向服务端发送删除指令
+                location.href = "{:U('back')}?oid={$order_info.id}";
 
-                });
+            });
         }
+
         function ro() {
             layer.confirm('是否经过客户同意,取消退款吗？', function (index) {
-                    layer.close(index);
-                    //向服务端发送删除指令
-                    location.href="{:U('cancelBack')}?oid={$order_info.id}";
+                layer.close(index);
+                //向服务端发送删除指令
+                location.href = "{:U('cancelBack')}?oid={$order_info.id}";
 
-                });
+            });
         }
 
         //删除订单
