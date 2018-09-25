@@ -1,0 +1,193 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="renderer" content="webkit|ie-comp|ie-stand">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <link rel="Bookmark" href="/favicon.ico">
+  <link rel="Shortcut Icon" href="/favicon.ico" />
+  <!--[if lt IE 9]>
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/html5shiv.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/respond.min.js"></script>
+    <![endif]-->
+  <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui/css/H-ui.min.css" />
+  <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/css/H-ui.admin.css" />
+  <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/lib/Hui-iconfont/1.0.8/iconfont.css" />
+  <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/skin/default/skin.css" id="skin" />
+  <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/css/style.css" />
+  <link rel="stylesheet" href="__PUBLIC__/admin/css/common.css">
+  <link rel="stylesheet" href="__PUBLIC__/admin/lib/layui/css/layui.css">
+  <!--[if IE 6]>
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+    <script>DD_belatedPNG.fix('*');</script>
+    <![endif]-->
+  <script type="text/javascript" src="__PUBLIC__/admin/lib/jquery/1.9.1/jquery.min.js"></script>
+  <script type="text/javascript" src="__PUBLIC__/admin/js/action.js"></script>
+  <script type="text/javascript" src="__PUBLIC__/admin/lib/layui/layui.all.js"></script>
+  <style>
+    .layui-table-cell {
+      height: inherit;
+    }
+
+    .layui-table-cell a {
+      text-decoration: none;
+    }
+
+    ::-webkit-scrollbar {
+      display: none
+    }
+  </style>
+  <title>选择区域</title>
+</head>
+
+<body style="background-color: #fff;">
+  <div class="panel panel-default" style="border:0px;">
+    <div class="panel-body">
+      <div class="row cl">
+        <div class="col-sm-4">
+          <button class="layui-btn layui-btn-normal" id="transmit">
+            <i class="Hui-iconfont">&#xe603;</i> 选择区域</button>
+        </div>
+
+      </div>
+      <div class="hr-line-dashed"></div>
+      <table id="demo" lay-filter="test" lay-data="{id: 'idTest'}"></table>
+    </div>
+
+    <script src="https://cdn.bootcss.com/lodash.js/4.17.5/lodash.core.min.js"></script>
+
+    <script type="text/html" id="shop">
+      {{# if(d.shop == null){ }}
+          暂无 - 由仓库配送
+      {{#  } else { }}
+          {{ d.shop }}    
+      {{# } }}
+    </script>
+    <script type="text/html" id="mycheckbox">
+      {{# if(d.disable != 0){ if(d.LAY_CHECKED) { var checked = 'checked=""';} }}
+          <input type="checkbox" lay-skin="primary" name="layTableCheckbox" {{checked||''}} >
+      {{#  } else { layui.table.cache.demo[d.LAY_TABLE_INDEX].checkDisabled=true; } }}
+
+    </script>
+
+    <script>
+      var table = layui.table;
+      var form = layui.form;
+      form.render('select'); //必须先渲染下 否则下拉框不显示
+      var shopId;
+      shopId = parent.$('#adv_id').val()
+      /*=============================================
+      =            渲染实例            =
+      =============================================*/
+
+      var tableIns = table.render({
+        elem: '#demo',
+        height: 'full-150',
+        url: "{:U('Shop/getScope')}",
+        //even: true,
+        page: false,
+        limit: shopId,
+        cellMinWidth: 80,
+        cols: [
+          [{
+              field: 'id',
+              title: 'ID',
+              sort: true,
+              checkbox: true,
+            },
+            // {
+            //   field: 'id',
+            //   title: 'ID',
+            //   sort: true,
+            //   // checkbox: true,
+            // },
+            {
+              field: 'name',
+              title: '配送区域',
+              align: 'center',
+            }, {
+              field: 'shop',
+              title: '配送门店',
+              templet: "#shop"
+            }
+          ]
+        ],
+        done: function (res, curr, count) {
+          //数据渲染完的回调 
+          //把返回数据赋值给全局函数
+          // console.log(parent.$('#adv_id').val())
+
+          var tableElem = this.elem.next('.layui-table-view');
+          count || tableElem.find('.layui-table-header').css('overflow', 'auto');
+          layui.each(tableElem.find('select'), function (index, item) {
+            var elem = $(item);
+            elem.val(elem.data('value')).parents('div.layui-table-cell').css('overflow', 'visible');
+          });
+
+          //需要排除的选项
+          var disArr = res.exc;
+          //当前门店已经存在的选项
+          var shopScope = res.shopScope;
+          // console.log(disArr);
+          layui.each(table.cache.demo, function (index, data) {
+            // console.log('index-->' + index);
+            // console.log(data);
+            //其他店铺全部设置不可选
+            if (disArr && disArr.indexOf(data.id) !== -1) {
+              tableElem.find('tr[data-index="' + index + '"]').find('input[name="layTableCheckbox"]')
+                .attr({
+                  name: 'layTableCheckbox_disabled',
+                  disabled: 'disabled'
+                })
+              //修改了底色  
+              tableElem.find('tr[data-index="' + index + '"]').css({
+                'background-color': '#f2f2f2'
+              });
+            data.checkDisabled = true;
+            }
+            //当前门店已经选择的
+            if (shopScope && shopScope.indexOf(data.id) !== -1) {
+              let aa = $('.layui-table-fixed-l tr[data-index=' + index + '] input[type="checkbox"]');
+              $('tr[data-index="' + index + '"]').find('input[name="layTableCheckbox"]').attr('checked',
+                'checked');
+              $('tr[data-index="' + index + '"]').find('.layui-form-checkbox').addClass('layui-form-checked');
+              data.LAY_CHECKED = true;
+            }
+          });
+          form.render();
+        },
+      });
+
+      /*=====  End of 渲染实例  ======*/
+
+
+      //注意：parent 是 JS 自带的全局对象，可用于操作父页面
+      var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+
+      /*----------  处理选中数据 返回 id 数组  ----------*/
+      function getList() {
+        var checkStatus = table.checkStatus('demo'); //test即为基础参数id对应的值
+        var ids = _.map(checkStatus.data, 'id');
+        var names = _.map(checkStatus.data, 'name');
+        return {
+          cid: ids.toString(),
+          name: names.toString()
+        };
+      }
+
+
+      //给父页面传值
+      $('#transmit').on('click', function () {
+        let r= getList();
+        //console.log(ids)
+        parent.$('#scope').val(r.cid);
+        parent.$('#scopeName').val(r.name);
+        parent.layer.close(index);
+      });
+    </script>
+</body>
+
+</html>

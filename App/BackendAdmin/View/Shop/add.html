@@ -49,15 +49,16 @@
             <div class="panel-header">{$bc[1]}</div>
             <div class="panel-body">
 
-                <form class="form form-horizontal layui-form" action="{:U('save')}" method="post" id="commentForm" enctype="multipart/form-data">
+                <form class="form form-horizontal layui-form" action="{:U('save')}" method="post" id="commentForm"
+                    enctype="multipart/form-data">
                     <!-- 店名 -->
                     <div class="row cl">
                         <div class="col-xs-4 col-sm-2 ml-30">
                             <label class="layui-form-label">店名：</label>
                         </div>
                         <div class="formControls col-xs-8 col-sm-4">
-                            <input type="text" class="input-text" placeholder="店名. 必填字段!" name="name" id="name" value="{$adv_info.name}" minlength="2"
-                                required>
+                            <input type="text" class="input-text" placeholder="店名. 必填字段!" name="name" id="name" value="{$adv_info.name}"
+                                minlength="2" required>
                         </div>
                         <label class="layui-form-label">
                             <span class="c-red text-l">*</span>
@@ -73,46 +74,47 @@
                             <label class="layui-form-label">地址：</label>
                         </div>
                         <div class="formControls col-xs-8 col-sm-4">
-                            <input type="text" class="input-text" placeholder="地址.必填字段!" name="address" id="address" value="{$adv_info.address}" minlength="5" required>
+                            <input type="text" class="input-text" placeholder="地址.必填字段!" name="address" id="address"
+                                value="{$adv_info.address}" minlength="5" required>
                         </div>
                         <label class="layui-form-label">
-                                <span class="c-red text-l">*</span>
-                            </label>
+                            <span class="c-red text-l">*</span>
+                        </label>
                     </div>
                     <!-- /地址 -->
                     <div class="hr-line-dashed"></div>
-                    
+
                     <!-- 联系人 -->
                     <div class="row cl">
-                            <div class="col-xs-4 col-sm-2 ml-30">
-                                <label class="layui-form-label">联系人：</label>
-                            </div>
-                            <div class="formControls col-xs-8 col-sm-4">
-                                <input type="text" class="input-text" placeholder="联系人. 必填字段!" name="contact" id="contact" value="{$adv_info.contact}" minlength="2"
-                                    required>
-                            </div>
-                            <label class="layui-form-label">
-                                <span class="c-red text-l">*</span>
-                            </label>
+                        <div class="col-xs-4 col-sm-2 ml-30">
+                            <label class="layui-form-label">联系人：</label>
                         </div>
-                        <!-- /联系人 -->
+                        <div class="formControls col-xs-8 col-sm-4">
+                            <input type="text" class="input-text" placeholder="联系人. 必填字段!" name="contact" id="contact"
+                                value="{$adv_info.contact}" minlength="2" required>
+                        </div>
+                        <label class="layui-form-label">
+                            <span class="c-red text-l">*</span>
+                        </label>
+                    </div>
+                    <!-- /联系人 -->
 
                     <div class="hr-line-dashed"></div>
 
                     <!-- 联系电话 -->
                     <div class="row cl">
-                            <div class="col-xs-4 col-sm-2 ml-30">
-                                <label class="layui-form-label">联系电话：</label>
-                            </div>
-                            <div class="formControls col-xs-8 col-sm-4">
-                                <input type="text" class="input-text" placeholder="联系电话. 必填字段!" name="phone" id="phone" value="{$adv_info.phone}" 
-                                minlength="5" maxlength="20" required>
-                            </div>
-                            <label class="layui-form-label">
-                                <span class="c-red text-l">*</span>
-                            </label>
+                        <div class="col-xs-4 col-sm-2 ml-30">
+                            <label class="layui-form-label">联系电话：</label>
                         </div>
-                        <!-- /联系电话 -->
+                        <div class="formControls col-xs-8 col-sm-4">
+                            <input type="text" class="input-text" placeholder="联系电话. 必填字段!" name="phone" id="phone"
+                                value="{$adv_info.phone}" minlength="5" maxlength="20" required>
+                        </div>
+                        <label class="layui-form-label">
+                            <span class="c-red text-l">*</span>
+                        </label>
+                    </div>
+                    <!-- /联系电话 -->
 
                     <div class="hr-line-dashed"></div>
 
@@ -128,10 +130,31 @@
                     <!-- /排序-->
                     <div class="hr-line-dashed"></div>
 
+                    <!-- 配送范围-->
+                    <div class="row cl">
+                        <div class="col-xs-4 col-sm-2 ml-30">
+                            <label class="layui-form-label">配送范围：</label>
+                        </div>
+                        <div class="formControls col-xs-8 col-sm-4">
+                            <input type="text" class="input-text" placeholder="配送范围" name="scopeName" id="scopeName"
+                                value="<?php echo $adv_info['scopeName'] ?>" disabled>
+                            <input type="hidden" name="scope" id="scope" value="<?php echo $adv_info['scope']; ?>">    
+                            <span class="help-block ">
+                                <i class="Hui-iconfont c-danger">&#xe6e0;</i>
+                                <cite class="c-999">&nbsp;默认仓库发货</cite>
+                                <!-- onclick="win_open('{:U('get_pro')}',1280,800)" -->
+                                <input type="button" value="选择配送区域" class="btn btn-link" onclick="oo()">
+                            </span>
+                        </div>
+                    </div>
+                    <!-- /配送范围-->
+                    <div class="hr-line-dashed"></div>
+
                     <div class="row cl">
                         <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-2">
                             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            <input class="btn btn-primary radius" lay-submit lay-filter="*" type="submit" name="submit" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+                            <input class="btn btn-primary radius" lay-submit lay-filter="*" type="submit" name="submit"
+                                value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
                             <input type="hidden" name="adv_id" id="adv_id" value="<?php echo $adv_info['id']; ?>">
                         </div>
                     </div>
@@ -160,6 +183,22 @@
             }
         });
 
+        data = {
+            data: "abc",
+            a: this.itemActive
+        };
+
+        function oo() {
+            layer.open({
+                type: 2,
+                title: '选择区域',
+                area: ['1280px', '800px'],
+                fixed: false, //不固定
+                maxmin: true,
+                shadeClose: true,
+                content: "{:U('get_goods')}"
+            });
+        }
     </script>
 
 

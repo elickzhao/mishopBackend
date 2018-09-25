@@ -1087,9 +1087,10 @@ class NewsController extends PublicController
 
             $order_status = array('0' => '已取消', '10' => '待付款', '20' => '待发货', '30' => '待收货', '40' => '已收货', '50' => '交易完成');
 
+            $expressNo = "";
             //XXX 快递信息
             if ($order_info['kuaidi_num'] != "" && strlen($order_info['kuaidi_num']) > 5) {
-                $post_info = array();
+                //$post_info = array();
                 //快递公司简称 暂时没用
                 // if (intval($order_info['post'])) {
                 //     $post_info = M('post')->where('id='.intval($order_info['post']))->find();
@@ -1112,7 +1113,6 @@ class NewsController extends PublicController
                 //dump($steps);
                 $expressNo = $order_info['kuaidi_num'];
             }
-
 
             //支付类型
 
@@ -1146,6 +1146,7 @@ class NewsController extends PublicController
         }
     }
 
+
     /**
      * [orderExpressInfo 查询订单快递信息]
      * @return [type] [查询订单快递信息]
@@ -1168,8 +1169,8 @@ class NewsController extends PublicController
 
             $list = [];
             foreach ($b->data as $key => $value) {
-                $list[$key]['title'] =  $value->context;
-                $list[$key]['desc'] =$value->time;
+                $list[$key]['title'] =  $value->time;
+                $list[$key]['desc'] =$value->context;
             }
 
  
@@ -1178,6 +1179,7 @@ class NewsController extends PublicController
             $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
+
 
     /**
      * [searchHotKey 购物车商品列表]
@@ -1918,7 +1920,13 @@ class NewsController extends PublicController
                 if (!$adds_id && $_REQUEST['address'] == '') {
                     throw new \Exception('请选择收货地址.'.__LINE__);
                 }
-                //$adds_info =  M('address')->where('id='.intval($adds_id))->find();
+                $adds =  M('address')->field('city,quyu')->where('id='.intval($adds_id))->find();
+                //如果是南京本地发货 自动选择当地区域门店为配送起点
+                if ($adds['city'] == 891) {
+                    $rr = F('shopScope');
+                    $data['kuaidi_name'] = (!$rr[$adds['quyu']]) ? "仓库配送" : $rr[$adds['quyu']];
+                }
+
                 $adds_info = ($_REQUEST['address'] == '') ? M('address')->where('id='.intval($adds_id))->find() : json_decode($_REQUEST['address'], true);
                 $data['receiver'] = $adds_info['name'];
                 $data['tel'] = $adds_info['tel'];
@@ -2193,5 +2201,125 @@ class NewsController extends PublicController
         } else {
             $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
+    }
+
+    /**
+     * [messageInfo 发送模版消息]
+     * @return [type] [发送模版消息]
+     */
+    public function messageInfo()
+    {
+        if (IS_GET) {
+            $openid = $_REQUEST['openid'];
+            $fid = $_REQUEST['fid'];
+            $oid = intval($_REQUEST['oid']);
+            $flag = intval($_REQUEST['flag']);
+            $msg = $_REQUEST['msg']?$_REQUEST['msg']:'null';
+            if (!$openid || !$fid || !$oid || $flag<0) {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
+            }
+
+
+
+            $client = new Client();
+            // S('name',$value,300);
+            $token = S('access_token');
+            if (!$token) {
+                $r = $client->request('GET', 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx026f26d858d16098&secret=4ec65ec9c4d07568e78b0954608125ad', ['verify' => false]);
+                $b = json_decode($r->getBody());
+                $token = $b->access_token;
+                S('access_token', $token, 7000);
+            }
+            // $token = $client->request('GET', 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx026f26d858d16098&secret=4ec65ec9c4d07568e78b0954608125ad', ['verify' => false]);
+            // $b = json_decode($token->getBody());
+            //echo $b->access_token;  //== 13_Uf2nfA8eQ17qTYcwhdVcsQuT2CFwx2AwW9FCqBvq5SMUII2wRqWebzBc5xOwoI5WBOWwm2MJgUgOqQDZpbb3d_-7AVbUCElUYIIbdRB3-UX5keqVdqhb3UB257oxR4kPwHUXB2ZGOD6iQkX5KLNgAJAEFH
+            //dump($token);
+            $url = 'https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token='.$token;
+
+            $d = $this->messageData($oid, $flag, $msg);
+            
+            //模版id flag 0 购买成功通知 1 订单支付失败通知 2 待付款提醒     //这里还是放在配置文件里吧
+            $template_id = ['WLBNaOxKetJ86Sw8B8H8Fd2YpShGAHAEr8ierqcmOkE','62mYgCdy3XKPL6bd7c1eGpOzf0AgoLaZhetJIyvfvmk'];
+
+            $r = $client->request('POST', $url, [
+                'json'=>[
+                    'touser'=>$openid,
+                    'template_id'=>$template_id[$flag],
+                    'page'=> '/pages/home',
+                    'form_id'=> $fid,
+                    'page'=> '/pages/info',
+                    'data'=>$d
+                ],
+                'verify' => false]);
+            
+            //dump($r->getBody()->getContents());
+
+        
+            $this->ajaxReturn(['code' => 0, 'msg'=>'成功领取!','data'=>$r->getBody()->getContents()]);
+        } else {
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
+        }
+    }
+
+    /**
+     * 组合发送信息的格式 比如模版
+     */
+    public function messageData($oid, $flag, $msg)
+    {
+        //$oid = "2018082055504999";
+        //读取
+        $order_info = M('order')->field('id,amount,addtime,order_sn')->where(['id'=>$oid])->find();
+        $goods = M('order_product')->field('name')->where(['order_id'=>$order_info['id']])->find();
+        //dump($order_info);
+        switch ($flag) {
+            case 0:
+                $data = [
+                          "keyword1"=> [
+                            "value"=>  $goods['name'],
+                            "color"=> "#4a4a4a"
+                          ],
+                          "keyword2"=> [
+                            "value"=> $order_info['amount']."元",
+                            "color"=> "#9b9b9b"
+                          ],
+                          "keyword3"=> [
+                            "value"=> $order_info['order_sn'],
+                            "color"=> "#9b9b9b"
+                          ],
+                          "keyword4"=> [
+                            "value"=> date('Y-m-d H:i:s', $order_info['addtime']),
+                            "color"=> "#9b9b9b"
+                          ]
+                        ];
+                break;
+            case 1:
+                $data = [
+                          "keyword1"=> [
+                            "value"=> $goods['name'],
+                            "color"=> "#9b9b9b"
+                          ],
+                          "keyword2"=> [
+                            "value"=> $order_info['amount']."元",
+                            "color"=> "#9b9b9b"
+                          ],
+                           "keyword3"=> [
+                            "value"=> date('Y-m-d H:i:s', $order_info['addtime']),
+                            "color"=> "#4a4a4a"
+                           ],
+                          "keyword4"=> [
+                            "value"=> $order_info['order_sn'],
+                            "color"=> "#9b9b9b"
+                          ],
+                          "keyword5"=> [
+                            "value"=> $msg,
+                            "color"=> "#9b9b9b"
+                          ]
+                        ];
+                break;
+                // 代付款 已经发货 等等....
+        }
+        // dump($data);
+        //$this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!','data'=>$data]);
+        return $data;
     }
 }

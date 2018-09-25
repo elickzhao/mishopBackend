@@ -63,12 +63,24 @@ class ShopController extends PublicController
         //如果是修改，则查询对应广告信息
         if (intval($_GET['adv_id'])) {
             $adv_id = intval($_GET['adv_id']);
-        
             $adv_info = $this->shop->where('id='.intval($adv_id))->find();
+
             if (!$adv_info) {
                 $this->error('没有找到相关信息.');
                 exit();
             }
+
+            //配送范围
+            if ($adv_info['scope']) {
+                $scope = explode(',', $adv_info['scope']);
+                $scopeName="";
+                foreach ($scope as $v) {
+                    $r = M('china_city')->where(['id'=>$v])->getField('name');
+                    $scopeName .= $r.',';
+                }
+                $adv_info['scopeName'] = trim($scopeName, ',');
+            }
+
             $this->assign('adv_info', $adv_info);
         }
 
@@ -96,6 +108,24 @@ class ShopController extends PublicController
         } else {
             $result = $this->shop->add();
         }
+
+
+        //缓存配送区域
+        $r = M('shop')->field('id,name,scope')->select();
+        $arr = [];
+        foreach ($r as $k => $v) {
+            if ($v['scope']) {
+                $scope = explode(',', $v['scope']);
+                if (is_array($scope)) {
+                    foreach ($scope as $vv) {
+                        $arr[$vv] = $v['name'];
+                    }
+                }
+            }
+        }
+
+        F('shopScope', $arr);
+
         //判断数据是否更新成功
         if ($result) {
             $this->success('操作成功.', 'index');
@@ -131,32 +161,45 @@ class ShopController extends PublicController
         }
     }
 
-    /**
-     * [setGoodsAtrr 设置门店属性]
-     */
-    public function setAtrr()
+
+    public function getScope()
     {
-        if (IS_POST) {
-            $pro_id = $_POST['id'];
-            $filed = $_POST['filed'];
-            $val = $_POST['val'];
+        //XXX 这里差个门店id
+        //SELECT * FROM lr_china_city WHERE tid="891" AND id NOT IN(904,905);
 
-            if (is_array($pro_id)) {
-                $where = 'id in ('. implode(',', $pro_id).')';
-            } else {
-                $where = 'id='.intval($pro_id);
+        $r = M('china_city')->field('ID,name')->where('tid="891" AND id NOT IN(904,905)')->select();
+        $shop = M('shop')->field('name,scope')->select();
+        
+        $arr = [];
+        $all = [];
+        foreach ($shop as $k => $v) {
+            if ($v['scope']) {
+                $scope = explode(',', $v['scope']);
+                if (is_array($scope)) {
+                    foreach ($scope as $vv) {
+                        $arr[$vv] = $v['name'];
+                        $all[] = $vv;
+                    }
+                }
             }
-
-            $data[$filed] = $val;
-            $up = $this->shop->where($where)->save($data);
-            //$rr = $this->shop->getlastsql();
-
-            $resuslt = [code=>$up,msg=>$up];
-            $this->ajaxReturn($resuslt);
-        } else {
-            $this->ajaxReturn([code=>1,msg=>'非法请求']);
         }
+        
+        $limit=intval($_REQUEST['limit']);
+        if ($limit) {
+            $shopScope = M('shop')->where('id='.$limit)->getField('scope');
+            $shopScope = explode(',', $shopScope);
+            $exclude=array_values(array_diff($all, $shopScope));
+        } else {
+            // sort($all);
+            $exclude =$all;
+        }
+
+        foreach ($r as $k => $v) {
+            $r[$k]['shop'] = $arr[$v['id']];
+        }
+
+        $resuslt = [code=>0,msg=>'',count=>1,data=>$r,exc=>$exclude,shopScope=>$shopScope];
+
+        $this->ajaxReturn($resuslt);
     }
-
-
 }

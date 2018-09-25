@@ -60,15 +60,60 @@ class ShopController extends PublicController
     */
     public function add()
     {
+        // $rr = F('shopScope');
+        // dump($rr['899']);
+        // dump($rr['800']);
+        // if (!$rr['800']) {
+        //     echo "空";
+        // } else {
+        //     echo "null";
+        // }
+        // $r = M('china_city')->where('tid="891" AND id NOT IN(904,905)')->getField('ID,name', true);
+        // dump($r);
+        // $r = M('shop')->field('id,name,scope')->select();
+        // //dump($r);
+        // $arr = [];
+        // $all = [];
+        // foreach ($r as $k => $v) {
+        //     if ($v['scope']) {
+        //         $scope = explode(',', $v['scope']);
+        //         if (is_array($scope)) {
+        //             foreach ($scope as $vv) {
+        //                 $arr[$vv] = $v['name'];
+        //                 $all[] = $vv;
+        //             }
+        //         }
+        //     }
+        // }
+        // dump($arr);
+        // dump($all);
+        // $shopScope = M('shop')->where('id=5')->getField('scope');
+        // $shopScope = explode(',', $shopScope);
+        // dump($shopScope);
+        // $result=array_diff($all, $shopScope);
+        // dump(array_values($result));
+
         //如果是修改，则查询对应广告信息
         if (intval($_GET['adv_id'])) {
             $adv_id = intval($_GET['adv_id']);
-        
             $adv_info = $this->shop->where('id='.intval($adv_id))->find();
+
             if (!$adv_info) {
                 $this->error('没有找到相关信息.');
                 exit();
             }
+
+            //配送范围
+            if ($adv_info['scope']) {
+                $scope = explode(',', $adv_info['scope']);
+                $scopeName="";
+                foreach ($scope as $v) {
+                    $r = M('china_city')->where(['id'=>$v])->getField('name');
+                    $scopeName .= $r.',';
+                }
+                $adv_info['scopeName'] = trim($scopeName, ',');
+            }
+
             $this->assign('adv_info', $adv_info);
         }
 
@@ -96,6 +141,24 @@ class ShopController extends PublicController
         } else {
             $result = $this->shop->add();
         }
+
+        //缓存配送区域
+        $r = M('shop')->field('id,name,scope')->select();
+        $arr = [];
+        foreach ($r as $k => $v) {
+            if ($v['scope']) {
+                $scope = explode(',', $v['scope']);
+                if (is_array($scope)) {
+                    foreach ($scope as $vv) {
+                        $arr[$vv] = $v['name'];
+                    }
+                }
+            }
+        }
+
+        F('shopScope', $arr);
+
+
         //判断数据是否更新成功
         if ($result) {
             $this->success('操作成功.', 'index');
@@ -158,5 +221,44 @@ class ShopController extends PublicController
         }
     }
 
+    public function getScope()
+    {
+        //XXX 这里差个门店id
+        //SELECT * FROM lr_china_city WHERE tid="891" AND id NOT IN(904,905);
 
+        $r = M('china_city')->field('ID,name')->where('tid="891"')->select();
+        $shop = M('shop')->field('name,scope')->select();
+        
+        $arr = [];
+        $all = [];
+        foreach ($shop as $k => $v) {
+            if ($v['scope']) {
+                $scope = explode(',', $v['scope']);
+                if (is_array($scope)) {
+                    foreach ($scope as $vv) {
+                        $arr[$vv] = $v['name'];
+                        $all[] = $vv;
+                    }
+                }
+            }
+        }
+        
+        $limit=intval($_REQUEST['limit']);
+        if ($limit) {
+            $shopScope = M('shop')->where('id='.$limit)->getField('scope');
+            $shopScope = explode(',', $shopScope);
+            $exclude=array_values(array_diff($all, $shopScope));
+        } else {
+            // sort($all);
+            $exclude =$all;
+        }
+
+        foreach ($r as $k => $v) {
+            $r[$k]['shop'] = $arr[$v['id']];
+        }
+
+        $resuslt = [code=>0,msg=>'',count=>1,data=>$r,exc=>$exclude,shopScope=>$shopScope];
+
+        $this->ajaxReturn($resuslt);
+    }
 }
