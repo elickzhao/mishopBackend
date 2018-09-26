@@ -60,39 +60,6 @@ class ShopController extends PublicController
     */
     public function add()
     {
-        // $rr = F('shopScope');
-        // dump($rr['899']);
-        // dump($rr['800']);
-        // if (!$rr['800']) {
-        //     echo "空";
-        // } else {
-        //     echo "null";
-        // }
-        // $r = M('china_city')->where('tid="891" AND id NOT IN(904,905)')->getField('ID,name', true);
-        // dump($r);
-        // $r = M('shop')->field('id,name,scope')->select();
-        // //dump($r);
-        // $arr = [];
-        // $all = [];
-        // foreach ($r as $k => $v) {
-        //     if ($v['scope']) {
-        //         $scope = explode(',', $v['scope']);
-        //         if (is_array($scope)) {
-        //             foreach ($scope as $vv) {
-        //                 $arr[$vv] = $v['name'];
-        //                 $all[] = $vv;
-        //             }
-        //         }
-        //     }
-        // }
-        // dump($arr);
-        // dump($all);
-        // $shopScope = M('shop')->where('id=5')->getField('scope');
-        // $shopScope = explode(',', $shopScope);
-        // dump($shopScope);
-        // $result=array_diff($all, $shopScope);
-        // dump(array_values($result));
-
         //如果是修改，则查询对应广告信息
         if (intval($_GET['adv_id'])) {
             $adv_id = intval($_GET['adv_id']);
@@ -223,7 +190,7 @@ class ShopController extends PublicController
 
     public function getScope()
     {
-        //XXX 这里差个门店id
+        //原本去除郊区县 现在打开了
         //SELECT * FROM lr_china_city WHERE tid="891" AND id NOT IN(904,905);
 
         $r = M('china_city')->field('ID,name')->where('tid="891"')->select();

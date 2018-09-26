@@ -164,10 +164,10 @@ class ShopController extends PublicController
 
     public function getScope()
     {
-        //XXX 这里差个门店id
+        //原本去除郊区县 现在打开了
         //SELECT * FROM lr_china_city WHERE tid="891" AND id NOT IN(904,905);
 
-        $r = M('china_city')->field('ID,name')->where('tid="891" AND id NOT IN(904,905)')->select();
+        $r = M('china_city')->field('ID,name')->where('tid="891"')->select();
         $shop = M('shop')->field('name,scope')->select();
         
         $arr = [];
