@@ -226,4 +226,146 @@ class FinanceController extends PublicController
         $input = new \WxApiTest();
         $refund_status = \WxPayApi::apiTest($input);
     }
+
+    public function downloadExp()
+    {
+        
+        $r = M('order')->field('id,receiver,tel,address_xq')->where(['status'=>20,'back'=>'0','type'=>'weixin'])->select();
+      
+        
+        $bc = ['财务管理','下载快递单'];
+        $this->assign('bc', $bc);
+        $this->display();
+    }
+
+    /**
+     * [getExpDat 打印简易快递页面获取信息]
+     * @return [type] [打印简易快递页面获取信息]
+     */
+    public function getExpDat()
+    {
+        $r = M('order')->field('id,receiver,tel,address_xq')->where(['status'=>20,'back'=>'0','type'=>'weixin'])->select();
+
+        $resuslt = [code=>0,msg=>'',count=>$count,data=>$r];
+        $this->ajaxReturn($resuslt);
+    }
+
+    /**
+     * [getOrderInfo 获取快递订单详细信息]
+     * @return [type] [获取快递订单详细信息]
+     */
+    public function getOrderInfo()
+    {
+        $r = M('order')->table('lr_order a,lr_order_product b')->field('a.id,a.receiver,a.tel,a.address_xq,b.name, b.price,b.num')->where("a.status = 20 AND a.back = '0' AND a.type = 'weixin' AND a.id = b.order_id")->select();
+
+        $resuslt = [code=>0,msg=>'',count=>$count,data=>$r];
+        $this->ajaxReturn($resuslt);
+    }
+
+    /**
+     * [getDownFile 下载excel文件 详细订单信息]
+     * @return [type] [下载excel文件 详细订单信息]
+     */
+    public function getDownFile()
+    {
+        
+        $r = M('order')->table('lr_order a,lr_order_product b')->field('a.id,a.receiver,a.tel,a.address_xq,b.name, b.price,b.num')->where("a.status = 20 AND a.back = '0' AND a.type = 'weixin' AND a.id = b.order_id")->select();
+
+        //echo M('order')->getlastsql();
+        //dump($r);
+         
+        //引入核心文件
+        vendor("Xlsxwriter.xlsxwriter");
+        $writer = new \XLSXWriter();
+
+        $filename = 'order-info ('.date('Y-m-d').').xlsx';
+
+        //设置 header，用于浏览器下载
+        header('Content-disposition: attachment; filename="'.\XLSXWriter::sanitize_filename($filename).'"');
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Transfer-Encoding: binary');
+        header('Cache-Control: must-revalidate');
+        header('Pragma: public');
+
+        // $header = array(
+        //   '编号' => 'string', //text
+        //   '寄件人姓名' => '@', //text
+        //   '寄件人手机' => '@',
+        //   '寄件人座机' => '@',
+        //   '收件人姓名' => '@',
+        //   '收件人手机' => '@', //custom
+        //   '收件人座机' => '@',
+        //   '收件地址' => '@',
+        //   '物品信息' => '@',
+        // );
+
+        $header = array(
+          '编号' => 'string', //text
+          '收件人姓名' => '@',
+          '收件人手机' => '@', //custom
+          '收件地址' => '@',
+          '物品信息' => '@',
+          '价格' => 'price',
+          '数量' => '0'
+        );
+
+        //单纯的设置底色
+        $styles5 = array(['fill' => '#FFF'], ['fill' => '#FAC090'], ['fill' => '#FAC090'], ['fill' => '#FAC090'], ['fill' => '#FFFF00'], ['fill' => '#FFFF00'], ['fill' => '#FFFF00'], ['fill' => '#FFFF00'], ['fill' => '#CCFFCC']);
+
+
+        //组合到一起
+        // $styles7 = array(
+        //   'widths'=>[20,20,20,20,20,20,20,50,20],
+        //   ['fill' => '#FFF','halign'=>'center'],
+        //   ['fill' => '#FAC090','halign'=>'center'],
+        //   ['fill' => '#FAC090','halign'=>'center'],
+        //   ['fill' => '#FAC090','halign'=>'center'],
+        //   ['fill' => '#FFFF00','halign'=>'center'],
+        //   ['fill' => '#FFFF00','halign'=>'center'],
+        //   ['fill' => '#FFFF00','halign'=>'center'],
+        //   ['fill' => '#FFFF00','halign'=>'center'],
+        //   ['fill' => '#CCFFCC','halign'=>'center']);
+
+        $styles7 = array(
+          'widths'=>[10,20,20,50,80,10,10],
+          ['fill' => '#CCFFCC','halign'=>'center'],
+          ['fill' => '#FFFF00','halign'=>'center'],
+          ['fill' => '#FFFF00','halign'=>'center'],
+          ['fill' => '#FFFF00','halign'=>'center'],
+          ['fill' => '#CCFFCC','halign'=>'center'],
+          ['fill' => '#CCFFCC','halign'=>'center'],
+          ['fill' => '#CCFFCC','halign'=>'center']);
+
+
+        $rows = array(
+          array('10010', '李先生', '15718875588', '', '张先生', '18012344321', '0533-8765165', '浙江省杭州市余杭区良睦路xxx号', 'xxxxxx'),
+        );
+
+        //XXX 明天组合数据
+
+        $writer->writeSheetHeader('Sheet1', $header, $styles7);
+
+        $index = 1;
+        foreach ($r as $k => $row) {
+            $writer->writeSheetRow('Sheet1', $row, ['halign'=>'center','valign'=>'center']);
+            if ($r[$k]['id'] == $r[$k-1]['id'] ) {
+               $writer->markMergedCell('Sheet1', $start_row=$k, $start_col=0, $end_row=($k+1), $end_col=0);
+               $writer->markMergedCell('Sheet1', $start_row=$k, $start_col=1, $end_row=($k+1), $end_col=1);
+               $writer->markMergedCell('Sheet1', $start_row=$k, $start_col=2, $end_row=($k+1), $end_col=2);
+               $writer->markMergedCell('Sheet1', $start_row=$k, $start_col=3, $end_row=($k+1), $end_col=3);
+            } 
+            
+        }
+
+
+        //$writer->markMergedCell('Sheet1', $start_row=1, $start_col=0, $end_row=5, $end_col=0);
+
+        $writer->writeSheetRow('Sheet2', ['xxx财务报表'], ['height'=>32,'font-size'=>20,'font-style'=>'bold','halign'=>'center','valign'=>'center']);
+        $writer->markMergedCell('Sheet2', $start_row=0, $start_col=0, $end_row=0, $end_col=7);
+
+        $writer->writeToStdOut();   //如果是浏览器打印 必须用这个输出到浏览器才行
+
+        //$writer->writeToFile('my-simple2.xlsx');  //如果是命令行的话 就用这个 生成一个文件  
+
+    }
 }

@@ -1,0 +1,322 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <link rel="Bookmark" href="/favicon.ico">
+    <link rel="Shortcut Icon" href="/favicon.ico" />
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/html5shiv.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/respond.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui/css/H-ui.min.css" />
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/css/H-ui.admin.css" />
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/lib/Hui-iconfont/1.0.8/iconfont.css" />
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/skin/default/skin.css" id="skin" />
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/css/style.css" />
+    <link rel="stylesheet" href="__PUBLIC__/admin/css/common.css">
+    <link rel="stylesheet" href="__PUBLIC__/admin/lib/layui/css/layui.css">
+    <!--[if IE 6]>
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+    <script>DD_belatedPNG.fix('*');</script>
+    <![endif]-->
+    <style>
+        .layui-table-cell {
+            height: inherit;
+        }
+
+        .layui-table-cell a {
+            text-decoration: none;
+        }
+
+        .clearfix:after {
+            content: "\20";
+            display: block;
+            height: 0;
+            clear: both;
+            visibility: hidden
+        }
+
+        .clearfix {
+            zoom: 1
+        }
+
+        .tabBar {
+            border-bottom: 2px solid #ddd
+        }
+
+        .tabBar span {
+            background-color: #e8e8e8;
+            cursor: pointer;
+            display: inline-block;
+            float: left;
+            font-weight: bold;
+            height: 30px;
+            line-height: 30px;
+            padding: 0 15px
+        }
+
+        .tabBar span.current {
+            background-color: #009688;
+            color: #fff
+        }
+
+        .tabCon {
+            display: none
+        }
+
+        .zoomImage {
+            width: 50%;
+            height: 0;
+            padding-bottom: 85%;
+            overflow: hidden;
+            background-position: center center;
+            background-repeat: no-repeat;
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            background-size: cover;
+        }
+
+        .zoomImage1 {
+            width: 100%;
+            height: 0;
+            padding-bottom: 10%;
+            overflow: hidden;
+            background-position: center center;
+            background-repeat: no-repeat;
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            background-size: cover;
+        }
+    </style>
+
+    <title>门店管理</title>
+</head>
+
+<body>
+    <!-- 导航 -->
+    <include File='Page/nav' />
+    <!-- /导航 -->
+
+    <div class="page-container">
+        <div class="panel panel-default mt-40">
+            <div class="panel-header">{$bc[1]}</div>
+            <div class="panel-body">
+
+                <div id="tab_demo" class="HuiTab">
+                    <div class="tabBar clearfix">
+                        <span>下载快递单</span>
+                        <span>下载发货清单</span>
+                    </div>
+                    <div class="tabCon">
+                        <table id="demo" lay-filter="test" lay-data="{id: 'idTest'}"></table>
+                    </div>
+                    <div class="tabCon">
+                        <table id="order-info" lay-filter="test" lay-data="{id: 'order'}"></table>
+                        <div class="hr-line-dashed"></div>
+
+                        <div class="row cl">
+                            <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-2">
+                                <input class="btn btn-primary radius" type="button" id="getDown"  value="&nbsp;&nbsp;下载Excel文件&nbsp;&nbsp;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部 -->
+    <div style="position:fixed; bottom:0; width:100%">
+        <include File='Page/footer' />
+    </div>
+    <!-- /底部 -->
+    <script src="https://cdn.bootcss.com/moment.js/2.21.0/moment.min.js"></script>
+    <script>
+        jQuery.Huitab = function (tabBar, tabCon, class_name, tabEvent, i) {
+            var $tab_menu = $(tabBar);
+            // 初始化操作
+            $tab_menu.removeClass(class_name);
+            $(tabBar).eq(i).addClass(class_name);
+            $(tabCon).hide();
+            $(tabCon).eq(i).show();
+
+            $tab_menu.bind(tabEvent, function () {
+                $tab_menu.removeClass(class_name);
+                $(this).addClass(class_name);
+                var index = $tab_menu.index(this);
+                $(tabCon).hide();
+                $(tabCon).eq(index).show()
+            })
+        }
+        // #tab_demo 父级id
+        // #tab_demo .tabBar span 控制条
+        // #tab_demo .tabCon 内容区
+        // click 事件 点击切换，可以换成mousemove 移动鼠标切换
+        // 1	默认第2个tab为当前状态（从0开始）
+        $(function () {
+            $.Huitab("#tab_demo .tabBar span", "#tab_demo .tabCon", "current", "click", "{$tabnum}")
+            $("#getDown").click(function(){
+                location.href="{:U('Finance/getDownFile')}"
+            })
+        });
+
+        $("#commentForm").validate();
+        var form = layui.form;
+        var table = layui.table;
+
+        var tableIns = table.render({
+            elem: '#demo',
+            height: 'full-290',
+            url: "{:U('Finance/getExpDat')}",
+            cellMinWidth: 80,
+            toolbar: true,
+            cols: [
+                [{
+                        field: 'id',
+                        title: 'ID',
+                        width: '7%',
+                        align: 'center',
+                        sort: true,
+                    },
+                    {
+                        field: 'u_name',
+                        title: '寄件人',
+                        width: '10%',
+                        align: 'center',
+                    }, {
+                        field: 'order_phone',
+                        title: '寄件人手机',
+                        width: '10%',
+                        align: 'center',
+                    }, {
+                        field: 'price',
+                        title: '寄件人座机',
+                        width: '10%',
+                        sort: true,
+                        align: 'center',
+                    },
+                    {
+                        field: 'receiver',
+                        title: '收件人姓名',
+                        //width: '20%',
+                        align: 'center',
+                    }, {
+                        field: 'tel',
+                        title: '收件人电话',
+                        //width: '15%',
+                        align: 'center',
+                    }, {
+                        field: 'address_xq',
+                        title: '详细地址',
+                        width: '25%',
+                        align: 'center',
+                    },
+                    {
+                        field: 'wup',
+                        title: '物品信息',
+                        //width: '15%',
+                        align: 'center',
+                    }
+                ]
+            ],
+            done: function (res, curr, count) {
+                // $("#demo").rowspan(4)
+                // $("#demo").rowspan(5)
+                // tableIns.reload();
+                // from.render()
+            }
+        });
+
+        var tableOrdre = table.render({
+            elem: '#order-info',
+            height: 'full-290',
+            url: "{:U('Finance/getOrderInfo')}",
+            cellMinWidth: 80,
+            toolbar: true,
+            cols: [
+                [{
+                        field: 'id',
+                        title: 'ID',
+                        width: '7%',
+                        align: 'center',
+                        sort: true,
+                    },
+                    {
+                        field: 'receiver',
+                        title: '收件人姓名',
+                        width: '10%',
+                        align: 'center',
+                    }, {
+                        field: 'tel',
+                        title: '收件人电话',
+                        width: '10%',
+                        align: 'center',
+                    }, {
+                        field: 'address_xq',
+                        title: '详细地址',
+                        width: '25%',
+                        align: 'center',
+                    },
+                    {
+                        field: 'name',
+                        title: '物品信息',
+                        //width: '20%',
+                        align: 'center',
+                    },
+                    {
+                        field: 'price',
+                        title: '价格',
+                        width: '7%',
+                        align: 'center',
+                    },
+                    {
+                        field: 'num',
+                        title: '数量',
+                        width: '7%',
+                        align: 'center',
+                    }
+                ]
+            ],
+            done: function (res, curr, count) {
+                $("#demo").rowspan(0)
+                // $("#demo").rowspan(5)
+                // tableIns.reload();
+                from.render()
+            }
+        });
+
+
+
+        $.fn.rowspan = function (combined) {
+            return this.each(function () {
+                var that;
+                $('tr').each(function (row) {
+                    $('td:eq(' + combined + ')', this).filter(':visible').each(function (col) {
+                        if (that != null && $(this).html() == $(that).html()) {
+                            rowspan = $(that).attr("rowSpan");
+                            if (rowspan == undefined) {
+                                $(that).attr("rowSpan", 1);
+                                rowspan = $(that).attr("rowSpan");
+                            }
+                            rowspan = Number(rowspan) + 1;
+                            $(that).attr("rowSpan", rowspan);
+                            $(this).hide();
+                        } else {
+                            that = this;
+                        }
+                    });
+                });
+            });
+        }
+    </script>
+</body>
+
+</html>
