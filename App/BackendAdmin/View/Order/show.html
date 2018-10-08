@@ -267,118 +267,127 @@
 
                 <!-- 订单基本信息 -->
                 <div class="text-c">
-                    <h4>
+                    <h4 id="orderInfo">
                         <i class="Hui-iconfont c-999">&#xe652;</i> 订单基本信息</h4>
                 </div>
-                <table class="table table-border table-hover mt-5" style="border-top:0px">
-                    <thead>
+                <div id="orderPrint">
+                    <div class="beforeHeader">订单基本信息</div>
+                    <table class="table table-border table-hover mt-5" style="border-top:0px">
+                        <thead>
+                            <tr class="text-c">
+                                <th width="50">订单编号</th>
+                                <th width="40">会员</th>
+                                <th width="40">电话</th>
+                                <th width="40">总价</th>
+                                <th width="60">订单状态</th>
+                                <th width="60">下单时间</th>
+                                <th width="60">支付方式</th>
+                            </tr>
+                        </thead>
                         <tr class="text-c">
-                            <th width="50">订单编号</th>
-                            <th width="40">会员</th>
-                            <th width="40">电话</th>
-                            <th width="40">总价</th>
-                            <th width="60">订单状态</th>
-                            <th width="60">下单时间</th>
-                            <th width="60">支付方式</th>
+                            <td>{$order_info.order_sn}</td>
+                            <td>{$order_info.uname}</td>
+                            <td>{$order_info['tel']}</td>
+                            <td>￥
+                                <?php echo number_format($order_info['price'],2); ?>
+                            </td>
+                            <td>
+                                <if condition="$order_info.back == 1">
+                                    <font style="color:red">申请退款</font>
+                                    <elseif condition="$order_info.back == 2" />
+                                    <font style="color:#900">已退款</font>
+                                    <else />
+                                    <font class='font_color' data-status="{$order_info['status']}">
+                                        <strong>{$order_status[$order_info['status']]}</strong>
+                                    </font>
+                                </if>
+                            </td>
+                            <td>{$order_info['addtime']|date="Y-m-d H:i:s",###}</td>
+                            <td>{$order_info.type}</td>
                         </tr>
-                    </thead>
-                    <tr class="text-c">
-                        <td>{$order_info.order_sn}</td>
-                        <td>{$order_info.uname}</td>
-                        <td>{$order_info['tel']}</td>
-                        <td>￥
-                            <?php echo number_format($order_info['price'],2); ?>
-                        </td>
-                        <td>
-                            <if condition="$order_info.back == 1">
-                                <font style="color:red">申请退款</font>
-                                <elseif condition="$order_info.back == 2" />
-                                <font style="color:#900">已退款</font>
-                                <else />
-                                <font class='font_color' data-status="{$order_info['status']}">
-                                    <strong>{$order_status[$order_info['status']]}</strong>
-                                </font>
-                            </if>
-                        </td>
-                        <td>{$order_info['addtime']|date="Y-m-d H:i:s",###}</td>
-                        <td>{$order_info.type}</td>
-                    </tr>
-                </table>
+                    </table>
+                </div>
                 <!-- /订单基本信息 -->
                 <div class="hr-line-dashed"></div>
 
                 <!-- 收货人信息 -->
                 <div class="text-c">
-                    <h4>
+                    <h4 id="shr">
                         <i class="Hui-iconfont c-999">&#xe652;</i> 收货人信息</h4>
                 </div>
-                <table class="table table-border table-hover mt-5" style="border-top:0px">
-                    <thead>
+                <div id="myElementId">
+                    <div class="beforeHeader">收货人信息</div>
+                    <table class="table table-border table-hover mt-5" style="border-top:0px">
+                        <thead>
+                            <tr class="text-c">
+                                <th width="50">收货人</th>
+                                <th width="40">联系电话</th>
+                                <th width="40">邮编</th>
+                                <th width="60">收货地址</th>
+                                <th width="40">配送方式</th>
+                            </tr>
+                        </thead>
                         <tr class="text-c">
-                            <th width="50">收货人</th>
-                            <th width="40">联系电话</th>
-                            <th width="40">邮编</th>
-                            <th width="60">收货地址</th>
-                            <th width="40">配送方式</th>
+                            <td>{$order_info['receiver']}</td>
+                            <td>{$order_info['tel']}</td>
+                            <td>{$order_info['code']}</td>
+                            <td>{$order_info['address_xq']}</td>
+                            <td>
+                                <!-- 以后改成 快递公司和门店选择 -->
+                                <if condition="$order_info.type == '微信支付'">
+                                    快递
+                                    <else /> 门店取货
+                                </if>
+                            </td>
                         </tr>
-                    </thead>
-                    <tr class="text-c">
-                        <td>{$order_info['receiver']}</td>
-                        <td>{$order_info['tel']}</td>
-                        <td>{$order_info['code']}</td>
-                        <td>{$order_info['address_xq']}</td>
-                        <td>
-                            <!-- 以后改成 快递公司和门店选择 -->
-                            <if condition="$order_info.type == '微信支付'">
-                                快递
-                                <else /> 门店取货
-                            </if>
-                        </td>
-                    </tr>
-                </table>
+                    </table>
+                </div>
                 <!-- /收货人信息 -->
 
                 <div class="hr-line-dashed"></div>
 
                 <!--  商品信息   -->
                 <div class="text-c">
-                    <h4>
+                    <h4 id="goodsInfo">
                         <i class="Hui-iconfont c-999">&#xe652;</i> 商品信息</h4>
                 </div>
                 <!-- <table class="table table-border table-bordered table-bg"> -->
-                <table class="table table-border table-hover mt-5" style="border-top:0px">
-                    <thead>
-                        <tr class="text-c">
-                            <th width="150">商品名称</th>
-                            <th width="40">商品价格</th>
-                            <th width="40">数量</th>
-                            <th width="40">总价</th>
-                            <!-- <th width="60">商品属性</th> -->
-                        </tr>
-                    </thead>
+                <div id="goodPrint">
+                    <div class="beforeHeader">商品信息</div>
+                    <table class=" table table-border table-hover mt-5" style="border-top:0px">
+                        <thead>
+                            <tr class="text-c">
+                                <th width="150">商品名称</th>
+                                <th width="40">商品价格</th>
+                                <th width="40">数量</th>
+                                <th width="40">总价</th>
+                                <!-- <th width="60">商品属性</th> -->
+                            </tr>
+                        </thead>
 
 
-                    <volist name='order_pro' id="pro">
-                        <tr id="concent_tr_{$pro.id}" class="text-c">
-                            <td>{$pro.name}</td>
-                            <td>￥ {$pro.price}</td>
-                            <td>{$pro.num}</td>
-                            <td>
-                                <font style="color:#c00;">￥
-                                    <?php echo number_format($pro['price']*$pro['num'],2); ?>
-                                </font>
-                            </td>
-                            <!-- <td>{$pro.pro_buff}</td> -->
-                        </tr>
-                    </volist>
-                </table>
+                        <volist name='order_pro' id="pro">
+                            <tr id="concent_tr_{$pro.id}" class="text-c">
+                                <td>{$pro.name}</td>
+                                <td>￥ {$pro.price}</td>
+                                <td>{$pro.num}</td>
+                                <td>
+                                    <font style="color:#c00;">￥
+                                        <?php echo number_format($pro['price']*$pro['num'],2); ?>
+                                    </font>
+                                </td>
+                                <!-- <td>{$pro.pro_buff}</td> -->
+                            </tr>
+                        </volist>
+                    </table>
+                </div>
                 <!--  /商品信息   -->
 
                 <div class="hr-line-dashed"></div>
 
                 <div class="text-c">
                     <h4>
-                        <i class="Hui-iconfont c-999">&#xe652;</i> 订单操作</h4>
+                        <i class="Hui-iconfont c-999">&#xe63c;</i> 订单操作</h4>
                 </div>
                 <hr>
 
@@ -403,7 +412,7 @@
                                     <option value="">全部状态</option>
                                     <?php foreach ($order_status as $key => $val) { ?>
                                     <?php if($key > 10){ ?>
-                                    <option value="<?php echo $key; ?>" <?php if($order_info[ 'status']==$key) { ?>selected="selected"
+                                    <option value="<?php echo $key; ?>" <?php if($order_info[ 'status' ]==$key) { ?>selected="selected"
                                         <?php } ?> >-
                                         <?php echo $val; ?>
                                     </option>
@@ -414,13 +423,11 @@
                         </td>
                         <td>
                             发货快递：
-                            <input class="input-text radius size-MINI" style="width:150px;" id="kuaidi_name" value="<?php echo $order_info['kuaidi_name'];?>"
-                            />
+                            <input class="input-text radius size-MINI" style="width:150px;" id="kuaidi_name" value="<?php echo $order_info['kuaidi_name'];?>" />
 
                         </td>
                         <td> 快递单号：
-                            <input class="input-text radius size-MINI" style="width:150px;" id="kuaidi_num" value="<?php echo $order_info['kuaidi_num'];?>"
-                            />
+                            <input class="input-text radius size-MINI" style="width:150px;" id="kuaidi_num" value="<?php echo $order_info['kuaidi_num'];?>" />
                         </td>
                         <?php if($order_info['status'] > 20){ ?>
                         <td>
@@ -458,7 +465,8 @@
                     <?php } ?>
                 </table>
 
-                <div id="modal-demo" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div id="modal-demo" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                    aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content radius">
                             <div class="modal-header">
@@ -473,7 +481,7 @@
                                             <div class="layui-timeline-content layui-text">
                                                 <h3 class="layui-timeline-title" style="color:#3399FF">{$vo->time}</h3>
                                                 <p>
-                                                        <b>{$vo->context}</b>
+                                                    <b>{$vo->context}</b>
                                                 </p>
                                             </div>
                                         </li>
@@ -500,6 +508,28 @@
     <include File='Page/footer' />
     <!-- /底部 -->
     <script type="text/javascript" src="__PUBLIC__/admin/lib/layui/layui.all.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/admin/js/jQuery.print.min.js"></script>
+
+    <style media="print">
+        @page {
+            size: auto;
+            /* auto is the initial value */
+            margin: 5mm;
+            /* this affects the margin in the printer settings */
+            width: 210mm;
+        }
+
+        .beforeHeader,
+        .afterFooter {
+            display: block;
+            text-align: center;
+            font-size: 5mm;
+            margin-bottom: 5mm;
+        }
+    </style>
+
+
+
     <script>
         function modaldemo() {
             $("#modal-demo").modal("show")
@@ -533,6 +563,23 @@
             if ($('.font_color').data('status') == 51) {
                 $('#zt_order_update').attr('disabled', true);
             }
+
+            $("#shr").click(function () {
+                $("#myElementId").print({
+                    iframe: false
+                });
+            })
+            $("#goodsInfo").click(function () {
+                $("#goodPrint").print({
+                    iframe: false
+                });
+            })
+            $("#orderInfo").click(function () {
+                $("#orderPrint").print({
+                    iframe: false
+                });
+            })
+
         });
 
 
