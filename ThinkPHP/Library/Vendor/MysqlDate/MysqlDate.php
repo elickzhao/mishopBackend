@@ -50,4 +50,17 @@ class MysqlDate
         $e = Carbon::now()->endOfMonth()->timestamp;
         return [$s,$e];
     }
+
+    /**
+     * [dayPeriod 某日的时间段]
+     * @param  [string] $date [字符串时间]
+     * @return [array]       [返回mysql需要的数组]
+     */
+    public function dayPeriod($date)
+    {
+        $day = Carbon::createFromFormat('Y-m-d', $date);
+        $s = $day->startOfDay()->timestamp;
+        $e = $day->endOfDay()->timestamp;
+        return [$s,$e];
+    }
 }

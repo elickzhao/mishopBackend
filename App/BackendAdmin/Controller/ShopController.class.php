@@ -3,6 +3,9 @@ namespace BackendAdmin\Controller;
 
 use Think\Controller;
 
+vendor("MysqlDate.MysqlDate");
+use MysqlDate\MysqlDate;
+
 class ShopController extends PublicController
 {
 
@@ -24,6 +27,41 @@ class ShopController extends PublicController
         $bc = ['门店管理','全部门店'];
         $this->assign('bc', $bc);
 
+        $this->display(); // 输出模板
+    }
+
+       /*
+    *
+    * 获取门店统计
+    */
+    public function count()
+    {
+        $chooseDay = $_POST['addtime'];
+        $mysqlDate =  new MysqlDate();
+        //指定日期或当天
+        $betweenDay = $chooseDay ? $mysqlDate->dayPeriod($chooseDay):$mysqlDate->todadyPeriod();
+  
+        $map['addtime']  = array('between',$betweenDay);
+        $map['back']  = '0';
+        $map['status']  = array('in',[20,30]);
+
+        $arr = ['鑫乐生活广场店','晓庄国际彩虹广场店','金盛田广场店'];
+
+        $r = [];
+        for ($i=0; $i < count($arr); $i++) {
+            $map['kuaidi_name']  = $arr[$i];
+            //$r[$i]['price'] = M('order')->field('SUM(price) as total')->where($map)->find();
+            $r[$i]['price'] = M('order')->where($map)->getField('SUM(price) as total');
+            $r[$i]['price'] = $r[$i]['price']?$r[$i]['price'] :0;
+            $r[$i]['count'] = M('order')->where($map)->count();
+        }
+        
+
+        $this->assign('result', $r);
+        $this->assign('chooseDay', $chooseDay?$chooseDay:date('Y-m-d', time()));
+
+        $bc = ['门店统计','门店统计'];
+        $this->assign('bc', $bc);
         $this->display(); // 输出模板
     }
 

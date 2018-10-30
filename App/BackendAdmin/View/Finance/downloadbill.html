@@ -65,7 +65,7 @@
 
                     <div class="row cl">
                         <div class="col-xs-4 col-sm-2 ml-30">
-                            <label class="layui-form-label">对账日期：</label>
+                            <label class="layui-form-label">订单类型：</label>
                         </div>
                         <div class="formControls col-xs-8 col-sm-4">
                             <select class="lay-search" name="bill_type" id="bill_type" lay-filter="bill_type" lay-search lay-verify="cateid">
@@ -103,7 +103,7 @@
     <script>
         $("#commentForm").validate();
         var form = layui.form;
-
+        
         //三个月前 对账单只能下载三个月内的
         let start_time = moment().subtract(3, 'M').format('Y-MM-DD HH:mm:ss');
         var laydate = layui.laydate;
