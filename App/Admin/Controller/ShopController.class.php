@@ -46,7 +46,8 @@ class ShopController extends PublicController
         $map['back']  = '0';
         $map['status']  = array('in',[20,30]);
 
-        $arr = ['鑫乐生活广场店','晓庄国际彩虹广场店','金盛田广场店'];
+        //$arr = ['鑫乐生活广场店','晓庄国际彩虹广场店','金盛田广场店'];
+        $arr = M('shop')->getField('name', true);
 
         $r = [];
         for ($i=0; $i < count($arr); $i++) {
@@ -62,6 +63,7 @@ class ShopController extends PublicController
         $this->assign('chooseDay', $chooseDay?$chooseDay:date('Y-m-d', time()));
 
         $bc = ['门店统计','门店统计'];
+        $this->assign('shopNames', $arr);
         $this->assign('bc', $bc);
         $this->display(); // 输出模板
     }

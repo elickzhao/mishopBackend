@@ -83,28 +83,38 @@
                     </colgroup>
                     <thead>
                         <tr>
-                            <th style="text-align:center;" colspan="2">鑫乐生活广场店</th>
+                            <foreach name="shopNames" item="vo">
+                                <th style="text-align:center;" colspan="2">{$vo}</th>
+                            </foreach>
+                            <!-- <th style="text-align:center;" colspan="2">鑫乐生活广场店</th>
                             <th style="text-align:center;" colspan="2">晓庄国际彩虹广场店</th>
-                            <th style="text-align:center;" colspan="2">金盛田广场店</th>
+                            <th style="text-align:center;" colspan="2">金盛田广场店</th> -->
                         </tr>
                         <tr>
-                            <th style="text-align:center;">销售金额</th>
+                            <foreach name="shopNames" item="vo">
+                                <th style="text-align:center;">销售金额</th>
+                                <th style="text-align:center;">销售订单总数</th>
+                            </foreach>
+                            <!-- <th style="text-align:center;">销售金额</th>
                             <th style="text-align:center;">销售订单总数</th>
                             <th style="text-align:center;">销售金额</th>
                             <th style="text-align:center;">销售订单总数</th>
                             <th style="text-align:center;">销售金额</th>
-                            <th style="text-align:center;">销售订单总数</th>
-
+                            <th style="text-align:center;">销售订单总数</th> -->
                         </tr>
                     </thead>
                     <tbody>
                         <tr style="text-align:center;">
-                            <td>{$result[0][price]}</td>
+                            <foreach name="shopNames" item="vo">
+                                <td>{$result[$key][price]}</td>
+                                <td>{$result[$key][count]}</td>
+                            </foreach>
+                            <!-- <td>{$result[0][price]}</td>
                             <td>{$result[0][count]}</td>
                             <td>{$result[1][price]}</td>
                             <td>{$result[1][count]}</td>
                             <td>{$result[2][price]}</td>
-                            <td>{$result[2][count]}</td>
+                            <td>{$result[2][count]}</td> -->
                         </tr>
                     </tbody>
                 </table>
@@ -113,11 +123,11 @@
         </div>
     </div>
 
-        <!-- 底部 -->
-        <div style="position:fixed; bottom:0; width:100%">
-                <include File='Page/footer' />
-            </div>
-            <!-- /底部 -->
+    <!-- 底部 -->
+    <div style="position:fixed; bottom:0; width:100%">
+        <include File='Page/footer' />
+    </div>
+    <!-- /底部 -->
 
     <script type="text/html" id="barDemo">
         <a class="layui-btn layui-btn-sm" href="{:U('add')}?adv_id={{d.id}}">编辑</a>
