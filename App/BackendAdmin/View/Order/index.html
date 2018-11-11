@@ -57,7 +57,8 @@
                             <div class="layui-inline">
                                 <!-- 支付类型 -->
                                 <div class="layui-input-inline" style="width: 260px;">
-                                    <select class="lay-search" name="type" id="type" lay-filter="type" lay-search lay-verify="cateid">
+                                    <select class="lay-search" name="type" id="type" lay-filter="type" lay-search
+                                        lay-verify="cateid">
                                         <option value>配送方式</option>
                                         <option value="weixin">配送到家</option>
                                         <option value="cash">店内自提</option>
@@ -67,7 +68,8 @@
 
                                 <!-- 订单状态 -->
                                 <div class="layui-input-inline" style="width: 260px;">
-                                    <select class="lay-search" name="pay_status" id="pay_status" lay-filter="pay_status" lay-search lay-verify="cateid">
+                                    <select class="lay-search" name="pay_status" id="pay_status" lay-filter="pay_status"
+                                        lay-search lay-verify="cateid">
                                         <option value>订单状态</option>
                                         <foreach name="order_status" item="vo">
                                             <option value="{$key}">{$vo}</option>
@@ -182,63 +184,73 @@
             cellMinWidth: 80,
             cols: [
                 [{
-                    field: 'id',
-                    title: 'ID',
-                    width: '7%',
-                    align: 'center',
-                    sort: true,
-                }, {
-                    field: 'u_name',
-                    title: '买家',
-                    //width: '20%',
-                    align: 'center',
-                }, {
-                    field: 'order_sn',
-                    title: '订单号',
-                    //width: '20%',
-                    align: 'center',
-                }, {
-                    field: 'price',
-                    title: '总金额',
-                    //width: '20%',
-                    sort: true,
-                    align: 'center',
-                }, {
-                    field: 'type',
-                    title: '配送方式',
-                    //width: '20%',
-                    align: 'center',
-                    templet: "#delivery"
-                    // templet: function (d) {
-                    //     var r = d.type == "weixin" ? "配送到家" : "店内自提";
-                    //     return r;
-                    // }
-                }, {
-                    field: 'back',
-                    title: '订单状态',
-                    //width: '15%',
-                    align: 'center',
-                    templet: "#typeTpl"
-                }, {
-                    field: 'addtime',
-                    title: '订单时间',
-                    //width: '15%',
-                    align: 'center',
-                    sort: true,
-                    templet: function (d) {
-                        Date.prototype.toLocaleString = function () {
-                            return this.getFullYear() + "-" + (this.getMonth() + 1) + "-" +
-                                this.getDate() + "  " + this.getHours() + ":" + this.getMinutes() +
-                                ":" + this.getSeconds();
-                        };
-                        return new Date(d.addtime * 1000).toLocaleString();
+                        field: 'id',
+                        title: 'ID',
+                        width: '7%',
+                        align: 'center',
+                        sort: true,
+                    }, {
+                        field: 'u_name',
+                        title: '买家',
+                        //width: '20%',
+                        align: 'center',
+                    }, {
+                        field: 'order_sn',
+                        title: '订单号',
+                        //width: '20%',
+                        align: 'center',
+                    }, {
+                        field: 'price',
+                        title: '总金额',
+                        //width: '20%',
+                        sort: true,
+                        align: 'center',
+                    },
+                    {
+                        field: 'type',
+                        title: '配送方式',
+                        //width: '20%',
+                        align: 'center',
+                        templet: "#delivery"
+                        // templet: function (d) {
+                        //     var r = d.type == "weixin" ? "配送到家" : "店内自提";
+                        //     return r;
+                        // }
+                    },
+                    {
+                        field: 'kuaidi_name',
+                        title: '配送负责',
+                        //width: '20%',
+                        align: 'center',
+                    },
+
+                    {
+                        field: 'back',
+                        title: '订单状态',
+                        //width: '15%',
+                        align: 'center',
+                        templet: "#typeTpl"
+                    }, {
+                        field: 'addtime',
+                        title: '订单时间',
+                        //width: '15%',
+                        align: 'center',
+                        sort: true,
+                        templet: function (d) {
+                            Date.prototype.toLocaleString = function () {
+                                return this.getFullYear() + "-" + (this.getMonth() + 1) + "-" +
+                                    this.getDate() + "  " + this.getHours() + ":" + this.getMinutes() +
+                                    ":" + this.getSeconds();
+                            };
+                            return new Date(d.addtime * 1000).toLocaleString();
+                        }
+                    }, {
+                        field: 'cz',
+                        title: '操作',
+                        //width: '14%',
+                        toolbar: '#barDemo'
                     }
-                }, {
-                    field: 'cz',
-                    title: '操作',
-                    //width: '14%',
-                    toolbar: '#barDemo'
-                }]
+                ]
             ],
             done: function (res, curr, count) {
                 //数据渲染完的回调 

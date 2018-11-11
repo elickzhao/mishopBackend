@@ -43,7 +43,7 @@ class ShopController extends PublicController
   
         $map['addtime']  = array('between',$betweenDay);
         $map['back']  = '0';
-        $map['status']  = array('in',[20,30]);
+        $map['status']  = array('in',[20,30,40,50]);
 
         //$arr = ['鑫乐生活广场店','晓庄国际彩虹广场店','金盛田广场店'];
         $arr = M('shop')->getField('name', true);
