@@ -696,7 +696,7 @@ class MoreController extends PublicController
                 $this->success('保存成功！', 'upload?tabnum='.$tabnum);
             }
         }
-        $rand = rand(5, 10);
+        $rand = random_int(100, 10000);
            
         $bc = ['综合管理','其他上传'];
         $this->assign('bc', $bc);

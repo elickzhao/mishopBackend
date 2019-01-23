@@ -4,31 +4,32 @@
 
 namespace Api\Controller;
 
-vendor('MysqlDate.MysqlDate');
+use Think\Controller;
+
+vendor("MysqlDate.MysqlDate");
 use MysqlDate\MysqlDate;
 
-vendor('Carbon.Carbon');
+vendor("Carbon.Carbon");
 use Carbon\Carbon;
 
-vendor('Underscore.Underscore');
+vendor("Underscore.Underscore");
 use Underscore\Types\Arrays;
 
-vendor('Guzzle.autoloader');
-vendor('Guzzle.GuzzleHttp.Client');
+vendor("Guzzle.autoloader");
+vendor("Guzzle.GuzzleHttp.Client");
 use GuzzleHttp\Client;
 
 class NewsController extends PublicController
 {
     public $cid;
     public $flag;
-
     public function __construct()
     {
         parent::__construct();
-        $arr = M('category')->where(['bz_4' => 0])->getField('id', true);
+        $arr = M('category')->where(['bz_4'=>0])->getField('id', true);
         $this->cid = implode(',', $arr);
 
-        $this->flag = ['is_hot', 'type', 'is_show', 'is_sale'];
+        $this->flag = ['is_hot','type','is_show','is_sale'];
     }
 
     //*****************************
@@ -39,32 +40,36 @@ class NewsController extends PublicController
 
     public function index()
     {
-        $keyword = $_POST['keyword'];
+        $keyword=$_POST['keyword'];
 
         $where = '1=1';
 
         if ($keyword) {
-            $where .= ' AND name LIKE "%'.$keyword.'%"';
+            $where .=' AND name LIKE "%'.$keyword.'%"';
         }
+
+
 
         $list = M('news')->where($where)->field('id,cid,digest,name,photo,addtime,source')->order('sort desc,addtime desc')->limit(8)->select();
 
         foreach ($list as $k => $v) {
-            $list[$k]['photo'] = __DATAURL__.$v['photo'];
+            $list[$k]['photo']=__DATAURL__.$v['photo'];
 
             $list[$k]['cname'] = M('news_cat')->where('id='.intval($v['cid']))->getField('name');
 
-            $list[$k]['addtime'] = date('Y-m-d', $v['addtime']);
+            $list[$k]['addtime']=date('Y-m-d', $v['addtime']);
         }
 
         //json加密输出
 
         //dump($json);
 
-        echo json_encode(array('list' => $list));
+        echo json_encode(array('list'=>$list));
 
         exit();
     }
+
+
 
     //*****************************
 
@@ -80,26 +85,30 @@ class NewsController extends PublicController
             $page = 2;
         }
 
-        $limit = $page * 8 - 8;
+        $limit = $page*8-8;
+
+
 
         $list = M('news')->where($where)->field('id,cid,digest,name,photo,addtime,source')->order('sort desc,addtime desc')->limit($limit.',8')->select();
 
         foreach ($list as $k => $v) {
-            $list[$k]['photo'] = __DATAURL__.$v['photo'];
+            $list[$k]['photo']=__DATAURL__.$v['photo'];
 
             $list[$k]['cname'] = M('news_cat')->where('id='.intval($v['cid']))->getField('name');
 
-            $list[$k]['addtime'] = date('Y-m-d', $v['addtime']);
+            $list[$k]['addtime']=date('Y-m-d', $v['addtime']);
         }
 
         //json加密输出
 
         //dump($json);
 
-        echo json_encode(array('list' => $list));
+        echo json_encode(array('list'=>$list));
 
         exit();
     }
+
+
 
     //*****************************
 
@@ -109,138 +118,136 @@ class NewsController extends PublicController
 
     public function detail()
     {
-        $newid = intval($_REQUEST['news_id']);
+        $newid=intval($_REQUEST['news_id']);
 
-        $detail = M('news')->where('id='.intval($newid))->find();
+        $detail=M('news')->where('id='.intval($newid))->find();
 
         if (!$detail) {
-            echo json_encode(array('status' => 0, 'err' => '没有找到相关信息.'));
+            echo json_encode(array('status'=>0,'err'=>'没有找到相关信息.'));
 
             exit();
         }
 
         $up = array();
 
-        $up['click'] = intval($detail['click']) + 1;
+        $up['click'] = intval($detail['click'])+1;
 
         M('news')->where('id='.intval($newid))->save($up);
 
         $content = str_replace('/minipetmrschool/Data/', __DATAURL__, $detail['content']);
 
-        $detail['content'] = html_entity_decode($content, ENT_QUOTES, 'utf-8');
+        $detail['content']=html_entity_decode($content, ENT_QUOTES, "utf-8");
 
-        $detail['addtime'] = date('Y-m-d', $detail['addtime']);
+        $detail['addtime'] = date("Y-m-d", $detail['addtime']);
+
 
         //$this->ajaxReturn(['code' => 0,'msg'=>'','list'=>$ggtop]);
-        echo json_encode(array('status' => 1, 'info' => $detail));
+        echo json_encode(array('status'=>1,'info'=>$detail));
 
         exit();
     }
 
     /**
-     * [doSign 签到].
-     *
+     * [doSign 签到]
      * @return [type] [description]
      */
     public function doSign()
     {
         if (IS_GET) {
-            $jifen = 10; //每日签到 赠送积分数量
+            $jifen= 10; //每日签到 赠送积分数量
 
             $count = M('user_course')->where("uid = '".$_GET['uid']."' AND DATE(FROM_UNIXTIME(ADDTIME)) = '".Carbon::now()->format('Y-m-d')."'")->find();
             if ($count) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '今日已签到!']);
+                $this->ajaxReturn(['code' => 1, 'msg'=>'今日已签到!']);
             }
 
-            $r = M('user')->where(['id' => $_GET['uid']])->setInc('jifen', $jifen);
+            $r = M('user')->where(['id'=>$_GET['uid']])->setInc('jifen', $jifen);
             //连续签到记录 在之前的记录加一
             $conDays = M('user_course')->where("uid = '".$_GET['uid']."'")->order('id desc')->limit(1)->getField('age');
-            $conDays += 1;
-            $rr = M('user_course')->add(['uid' => $_GET['uid'], 'addtime' => time(), 'age' => $conDays]);
+            $conDays +=1;
+            $rr = M('user_course')->add(['uid'=>$_GET['uid'],'addtime'=>time(),'age'=>$conDays]);
             if ($r && $rr) {
-                $this->ajaxReturn(['code' => 0, 'msg' => '']);
+                $this->ajaxReturn(['code' => 0, 'msg'=>'']);
             } else {
-                $this->ajaxReturn(['code' => 1, 'msg' => '签到失败!']);
+                $this->ajaxReturn(['code' => 1, 'msg'=>'签到失败!']);
             }
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求', 'list' => $list]);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求','list'=> $list]);
         }
     }
 
     /**
-     * [signInfo 过往签到信息].
-     *
+     * [signInfo 过往签到信息]
      * @return [type] [description]
      */
     public function signInfo()
     {
         if (IS_GET) {
-            if ('' == $_GET['uid']) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '参数错误!']);
+            if ($_GET['uid'] == "") {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
             }
 
-            $score = M('user')->where("id = '".$_GET['uid']."'")->getField('jifen');
-            $r = M('user_course')->field('DATE(FROM_UNIXTIME(ADDTIME)) as dtime,age')->where("uid = '".$_GET['uid']."'")->order('id desc')->find();
+            $score = M('user')->where("id = '".$_GET['uid']."'")->getField("jifen");
+            $r = M('user_course')->field("DATE(FROM_UNIXTIME(ADDTIME)) as dtime,age")->where("uid = '".$_GET['uid']."'")->order('id desc')->find();
             //当第一次签到
             if (!$r) {
-                $this->ajaxReturn(['code' => 0, 'msg' => '', 'conDays' => 0, 'hasSign' => 0, 'score' => 0, 'list' => []]);
+                $this->ajaxReturn(['code' => 0, 'msg'=>'','conDays'=>0,'hasSign'=>0,'score'=>0,'list'=>[]]);
             }
             //$sql = M('user_course')->getlastsql();
-            $conDays = $r['age'] ? $r['age'] : 0; //连续签到天数
+            $conDays = $r['age']?$r['age']:0; //连续签到天数
             //$dt = $date = new Carbon($r['dtime']);
             $date = new Carbon($r['dtime']);
             $rr = $date->diffInDays(Carbon::now());
-
+        
             //如果已经不是连续签到 并且连续签到数据不是原始的 就设置为0
             if ($rr > 1 && $conDays > 0) {
-                $conDays = 0;
-                $addr = M('user_course')->where("uid = '".$_GET['uid']."'")->order('id desc')->limit(1)->save(['age' => $conDays]);
+                $conDays =0;
+                $addr = M('user_course')->where("uid = '".$_GET['uid']."'")->order('id desc')->limit(1)->save(['age'=>$conDays]);
             }
-
-            if (false === $addr) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '签到出错', 'erro' => '更新连续签到时保存数据库出错']);
+            
+            if ($addr === false) {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'签到出错','erro'=>'更新连续签到时保存数据库出错']);
             }
 
             //如果签到间隔大于0就说明没有签到
-            $hasSign = (0 == $rr) ? 1 : 0;
+            $hasSign = ($rr == 0)?1:0;
 
-            $list = M('user_course')->field('DATE(FROM_UNIXTIME(ADDTIME)) as signTime,10 as signPoint,0 as isdeleted,sex')->where("uid = '".$_GET['uid']."'")->order('id desc')->limit(30)->select();
+            $list = M('user_course')->field("DATE(FROM_UNIXTIME(ADDTIME)) as signTime,10 as signPoint,0 as isdeleted,sex")->where("uid = '".$_GET['uid']."'")->order('id desc')->limit(30)->select();
 
-            $this->ajaxReturn(['code' => 0, 'msg' => '', 'conDays' => $conDays, 'hasSign' => $hasSign, 'score' => $score, 'list' => $list, 'sql' => $rr.'--'.$date.'--'.$date->diffInDays(Carbon::now()).'-->'.$r.'===>'.$sql]);
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','conDays'=>$conDays,'hasSign'=>$hasSign,'score'=>$score,'list'=>$list,'sql'=>$rr."--".$date."--". $date->diffInDays(Carbon::now())."-->".$r."===>".$sql]);
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求']);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求']);
         }
     }
 
+
     /**
-     * [signInfo 最近七天签到情况].
-     *
+     * [signInfo 最近七天签到情况]
      * @return [type] [description]
      */
     public function getSignDate()
     {
         if (IS_GET) {
-            if ('' == $_GET['uid']) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '参数错误!']);
+            if ($_GET['uid'] == "") {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
             }
             $list = [];
 
-            for ($i = 0; $i < 7; ++$i) {
+            for ($i=0; $i < 7; $i++) {
                 $dd = Carbon::now()->subDays(6 - $i);
                 $r = M('user_course')->where("uid = '".$_GET['uid']."' AND DATE(FROM_UNIXTIME(ADDTIME)) = '".$dd->format('Y-m-d')."'")->find();
 
-                $flag = $r ? 1 : 0;
-                $list[$i] = ['signed' => $flag, 'signTime' => $dd->day.'日', 'sql' => M('user_course')->getlastsql()];
+                $flag = $r?1:0;
+                $list[$i] = ['signed'=>$flag,'signTime'=>$dd->day."日",'sql'=>M('user_course')->getlastsql()];
             }
-            $this->ajaxReturn(['code' => 0, 'msg' => '', 'list' => $list]);
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=> $list]);
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求', 'list' => $list]);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求','list'=> $list]);
         }
     }
 
     /**
-     * [discountGoodsList 首页热销7个].
-     *
+     * [discountGoodsList 首页热销7个]
      * @return [type] [description]
      */
     public function discountGoodsList()
@@ -248,23 +255,43 @@ class NewsController extends PublicController
         if (IS_GET) {
             // $arr = ['is_hot','is_show','is_sale'];
             $where = 'del=0  AND is_down=0 AND type=1 AND cid in ('.$this->cid.')';   //目前是推荐+热销就会出现在首页7个
-            if ('' != $_GET['flag']) {
-                $where .= ' AND '.$this->flag[$_GET['flag']].'=1';
+            if ($_GET['flag'] != "") {
+                $where .= ' AND '.$this->flag[$_GET['flag']].'=1' ;
             } else {
-                $this->ajaxReturn(['code' => 1, 'msg' => '参数错误!', 'list' => $list]);
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!','list'=> $list]);
             }
-            $list = M('product')->field('id,name,intro,pro_number,price,price_yh,photo_x,photo_d,shiyong,type,is_show,is_hot,is_sale')->where($where)->cache(true, 1800)->order('sort desc,id desc')->limit(7)->select();
+            $list = M('product')->field("id,name,intro,pro_number,price,price_yh,photo_x,photo_d,shiyong,type,is_show,is_hot,is_sale")->where($where)->cache(true, 1800)->order('sort desc,id desc')->limit(7)->select();
             //$list = M('product')->field("id,name,intro,pro_number,price,price_yh,photo_x,photo_d,shiyong,type,is_show,is_hot,is_sale")->where($where)->order('sort desc,id desc')->limit(7)->select();
 
-            $this->ajaxReturn(['code' => 0, 'msg' => '', 'list' => $list]);
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=> $list]);
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求!', 'list' => $list]);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!','list'=> $list]);
+        }
+    }
+    /**
+     * [discountGoodsList 2.5版首页热销7个]
+     * @return [type] [description]
+     */
+    public function hotList()
+    {
+        if (IS_GET) {
+            // $arr = ['is_hot','is_show','is_sale'];
+            $where = 'del=0  AND is_down=0 AND type=1 AND cid in ('.$this->cid.')';   //目前是推荐+热销就会出现在首页7个
+            if ($_GET['flag'] != "") {
+                $where .= ' AND '.$this->flag[$_GET['flag']].'=1' ;
+            } else {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!','list'=> $list]);
+            }
+            $list = M('product')->field("id,name,intro,pro_number,price,price_yh,photo_x,photo_d,shiyong,type,is_show,is_hot,is_sale")->where($where)->cache(true, 1800)->order('sort desc,id desc')->limit(7)->select();
+        
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','data'=> $list]);
+        } else {
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!','data'=> $list]);
         }
     }
 
     /**
-     * [searchGoodsList 搜索商品列表].
-     *
+     * [searchGoodsList 搜索商品列表]
      * @return [type] [description]
      */
     public function searchGoodsList()
@@ -277,27 +304,27 @@ class NewsController extends PublicController
             $limit = intval($page * 16) - 16;
 
             //促销类型
-            if ('' != $_GET['locationFlag']) {
-                $where .= ' AND '.$this->flag[$_GET['locationFlag']].'=1';
+            if ($_GET['locationFlag'] != "") {
+                $where .= ' AND '.$this->flag[$_GET['locationFlag']].'=1' ;
             }
 
             //分类检索
-            if ('' != $_GET['cateCode']) {
-                $where .= ' AND cid='.$_GET['cateCode'];
+            if ($_GET['cateCode'] != "") {
+                $where .= ' AND cid='.$_GET['cateCode'] ;
             }
 
             //关键字查询
             $keyword = trim($_REQUEST['searchKeyWords']);
             $uid = $uid = intval($_REQUEST['uid']);
-            if ('' != $keyword) {
+            if ($keyword != "") {
                 /*=============================================
                 =       这段是增加用户个人搜索个数的 block       =
                 =============================================*/
                 if ($uid) {
                     $check = M('search_record')->where('uid='.intval($uid).' AND keyword="'.$keyword.'"')->find();
                     if ($check) {
-                        $num = intval($check['num']) + 1;
-                        M('search_record')->where('id='.intval($check['id']))->save(array('num' => $num));
+                        $num = intval($check['num'])+1;
+                        M('search_record')->where('id='.intval($check['id']))->save(array('num'=>$num));
                     } else {
                         $add = array();
                         $add['uid'] = $uid;
@@ -307,47 +334,47 @@ class NewsController extends PublicController
                     }
                 }
                 /*=====  End of Section 这段是增加用户个人搜索个数的 block  ======*/
-
-                $where .= 'AND name LIKE "%'.$keyword.'%"';
+                
+                $where .=  'AND name LIKE "%'.$keyword.'%"';
             }
 
             //排序
             switch ($_GET['sort']) {
                 case '4':
-                    $order = 'renqi desc';
+                    $order = "renqi desc";
                     break;
                 case '3':
-                    $order = 'shiyong desc';
+                    $order = "shiyong desc";
                     break;
                 case '2':
-                    $order = 'price_yh asc';
+                    $order = "price_yh asc";
                     break;
                 case '1':
-                    $order = 'price_yh desc';
+                    $order = "price_yh desc";
                     break;
                 default:
                     $order = 'sort desc,id desc';
                     break;
             }
 
+
             //现在这个当做搜索 所以有可能是所有产品
             // else {
             //     $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!','list'=> $list]);
             // }
-            $list = M('product')->field('id,name,intro,pro_number,price,price_yh,photo_x,photo_d,shiyong,type,is_show,is_hot,is_sale,num')->where($where)->cache(true, 1800)->order($order)->limit($limit.',16')->select();
+            $list = M('product')->field("id,name,intro,pro_number,price,price_yh,photo_x,photo_d,shiyong,type,is_show,is_hot,is_sale,num")->where($where)->cache(true, 1800)->order($order)->limit($limit.',16')->select();
 
-            $total = M('product')->where($where)->count('id');
-            $pageTotal = ceil($total / 16);
+            $total = M('product')->where($where)->count("id");
+            $pageTotal = ceil($total /16);
 
-            $this->ajaxReturn(['code' => 0, 'msg' => '', 'list' => $list, 'page_total' => $pageTotal]);
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=> $list,'page_total'=>$pageTotal]);
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求!']);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
 
     /**
-     * [rootCtegoryList 一级栏目列表].
-     *
+     * [rootCtegoryList 一级栏目列表]
      * @return [type] [description]
      */
     public function rootCtegoryList()
@@ -355,15 +382,14 @@ class NewsController extends PublicController
         if (IS_GET) {
             $list = M('category')->where('tid=1 AND bz_4=0 ')->field('id,tid,name')->order('sort desc,id asc')->select();
             //$code = Arrays::pluck($list, 'id');
-            $this->ajaxReturn(['code' => 0, 'msg' => '', 'list' => $list]);
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=> $list]);
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求!']);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
 
     /**
-     * [childGoodsCatetoryList 二级栏目列表].
-     *
+     * [childGoodsCatetoryList 二级栏目列表]
      * @return [type] [description]
      */
     public function childGoodsCatetoryList()
@@ -371,76 +397,74 @@ class NewsController extends PublicController
         if (IS_GET) {
             $catid = intval($_REQUEST['cat_id']);
             if (!$catid) {
-                echo json_encode(array('status' => 0, 'err' => '没有找到产品数据.'));
+                echo json_encode(array('status'=>0,'err'=>'没有找到产品数据.'));
                 exit();
             }
 
             $catList = M('category')->where('tid='.intval($catid).' AND bz_4=0 ')->field('id,name,bz_1')->select();
-
-            $this->ajaxReturn(['code' => 0, 'msg' => '', 'list' => $catList]);
+ 
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=> $catList]);
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求!']);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
 
     /**
-     * [searchHotKey 热门搜索关键词列表].
-     *
+     * [searchHotKey 热门搜索关键词列表]
      * @return [type] [description]
      */
     public function searchHotKey()
     {
         if (IS_GET) {
-            $list = M('search_record')->group('keyword')->field('keyword')->order('SUM(num) desc')->limit(10)->select();
+            $list =   M('search_record')->group('keyword')->field('keyword')->order('SUM(num) desc')->limit(10)->select();
             //$code = Arrays::pluck($list, 'id');
-            $this->ajaxReturn(['code' => 0, 'msg' => '', 'list' => $list]);
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=> $list]);
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求!']);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
 
+
     /**
-     * [searchHotKey 历史搜索关键词列表].
-     *
+     * [searchHotKey 历史搜索关键词列表]
      * @return [type] [description]
      */
     public function historyKeyList()
     {
         if (IS_GET) {
-            if ('' == $_GET['uid']) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '参数错误!']);
+            if ($_GET['uid'] == "") {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
             }
-            $list = M('search_record')->where('uid='.intval($_GET['uid']))->order('addtime desc')->field('keyword')->limit(10)->select();
-            $this->ajaxReturn(['code' => 0, 'msg' => '', 'list' => $list]);
+            $list =   M('search_record')->where('uid='.intval($_GET['uid']))->order('addtime desc')->field('keyword')->limit(10)->select();
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=> $list]);
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求!']);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
 
     /**
-     * [searchHotKey 删除历史搜索关键词列表].
-     *
+     * [searchHotKey 删除历史搜索关键词列表]
      * @return [type] [description]
      */
     public function delHistory()
     {
         if (IS_GET) {
-            if ('' == $_GET['uid']) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '参数错误!']);
+            if ($_GET['uid'] == "") {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
             }
             $res = $history = M('search_record')->where('uid='.intval($_GET['uid']))->delete();
             if (!$res) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '删除失败!']);
+                $this->ajaxReturn(['code' => 1, 'msg'=>'删除失败!']);
             }
-            $this->ajaxReturn(['code' => 0, 'msg' => '', 'list' => $list]);
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=> $list]);
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求!']);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
 
+
     /**
-     * [goods 商品详情].
-     *
+     * [goods 商品详情]
      * @return [type] [商品详情]
      */
     public function goods()
@@ -450,14 +474,14 @@ class NewsController extends PublicController
 
             $pro_id = intval($_REQUEST['pro_id']);
             if (!$pro_id) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '商品不存在或已下架！']);
+                $this->ajaxReturn(['code' => 1, 'msg'=>'商品不存在或已下架！']);
                 echo json_encode(array('status' => 0, 'err' => '商品不存在或已下架！'));
                 exit();
             }
 
             $pro = $product->where('id='.intval($pro_id).' AND del=0 AND is_down=0')->find();
             if (!$pro) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '商品不存在或已下架！']);
+                $this->ajaxReturn(['code' => 1, 'msg'=>'商品不存在或已下架！']);
                 echo json_encode(array('status' => 0, 'err' => '商品不存在或已下架！'.__LINE__));
                 exit();
             }
@@ -512,11 +536,12 @@ class NewsController extends PublicController
                 $pro['collect'] = 0;
             }
 
-            $this->ajaxReturn(['code' => 0, 'msg' => '', 'data' => $pro, 'commodityAttr' => $commodityAttr, 'attrValueList' => $attrValueList]);
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','data' => $pro, 'commodityAttr' => $commodityAttr, 'attrValueList' => $attrValueList]);
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求!']);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
+
 
     //***************************
     //  获取sessionkey 接口
@@ -529,12 +554,12 @@ class NewsController extends PublicController
 
         $code = trim($_REQUEST['code']);
         if (!$code) {
-            echo json_encode(array('status' => 0, 'err' => '非法操作！'));
+            echo json_encode(array('status'=>0,'err'=>'非法操作！'));
             exit();
         }
 
         if (!$appid || !$secret) {
-            echo json_encode(array('status' => 0, 'err' => '非法操作！'.__LINE__));
+            echo json_encode(array('status'=>0,'err'=>'非法操作！'.__LINE__));
             exit();
         }
 
@@ -552,34 +577,30 @@ class NewsController extends PublicController
     }
 
     /**
-     * [searchHotKey 用户登录并获取信息].
-     *
+     * [searchHotKey 用户登录并获取信息]
      * @return [type] [description]
      */
     public function user2session()
     {
         if (IS_GET) {
             if (!$_GET['openId']) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '登录状态异常!']);
+                $this->ajaxReturn(['code' => 1, 'msg'=>'登录状态异常!']);
             }
 
-            if ('undefined' == $_GET['NickName']) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '用户昵称获取失败,请授权!']);
-            }
             $openid = trim($_GET['openId']);
             $con = array();
-            $con['openid'] = trim($_GET['openId']);
+            $con['openid']=trim($_GET['openId']);
             $uid = M('user')->where($con)->getField('id');
             if ($uid) {
                 $userinfo = M('user')->where('id='.intval($uid))->find();
-                if (1 == intval($userinfo['del'])) {
-                    $this->ajaxReturn(['code' => 1, 'msg' => '账号状态异常！']);
+                if (intval($userinfo['del'])==1) {
+                    $this->ajaxReturn(['code' => 1, 'msg'=>'账号状态异常！']);
                 }
                 $arr = array();
                 $arr['ID'] = intval($uid);
                 $arr['NickName'] = $_GET['NickName'];
                 $arr['avatarUrl'] = $_GET['avatarUrl'];
-                $this->ajaxReturn(['code' => 0, 'msg' => '', 'data' => $arr]);
+                $this->ajaxReturn(['code' => 0, 'msg'=>'','data'=> $arr]);
                 // echo json_encode(array('status'=>1,'arr'=>$err));
                 // exit();
             } else {
@@ -592,116 +613,215 @@ class NewsController extends PublicController
                 $data['source'] = 'wx';
                 $data['addtime'] = time();
                 if (!$data['openid']) {
-                    $this->ajaxReturn(['code' => 1, 'msg' => '授权失败！'.__LINE__, 'errData' => $data]);
+                    $this->ajaxReturn(['code' => 1, 'msg'=>'授权失败！'.__LINE__, 'errData'=>$data]);
                 }
+
+                if ($_GET['NickName'] == "undefined") {
+                    $this->ajaxReturn(['code' => 1, 'msg'=>'用户昵称获取失败,请授权!']);
+                }
+
                 $res = M('user')->add($data);
                 if ($res) {
                     $arr = array();
                     $arr['ID'] = intval($res);
                     $arr['NickName'] = $data['name'];
                     $arr['avatarUrl'] = $data['photo'];
-                    $this->ajaxReturn(['code' => 0, 'msg' => '', 'data' => $arr]);
+                    $this->ajaxReturn(['code' => 0, 'msg'=>'','data'=> $arr]);
                     // echo json_encode(array('status'=>1,'arr'=>$err));
                     // exit();
                 } else {
-                    $this->ajaxReturn(['code' => 1, 'msg' => '授权失败！'.__LINE__]);
+                    $this->ajaxReturn(['code' => 1, 'msg'=>'授权失败！'.__LINE__]);
                     // echo json_encode(array('status'=>0,'err'=>'授权失败！'.__LINE__));
                     // exit();
                 }
             }
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求!']);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
+        }
+    }
+
+
+    //***************************
+    //  获取sessionkey 接口
+    //***************************
+    public function getsessionkey2()
+    {
+        $wx_config = C('weixin');
+        $appid = $wx_config['appid'];
+        $secret = $wx_config['secret'];
+
+        $code = trim($_REQUEST['code']);
+        if (!$code) {
+            echo json_encode(array('code'=>1,'msg'=>'非法操作！'));
+            exit();
+        }
+
+        if (!$appid || !$secret) {
+            echo json_encode(array('code'=>1,'msg'=>'非法操作！'.__LINE__));
+            exit();
+        }
+
+        $get_token_url = 'https://api.weixin.qq.com/sns/jscode2session?appid='.$appid.'&secret='.$secret.'&js_code='.$code.'&grant_type=authorization_code';
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $get_token_url);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+        $res = curl_exec($ch);
+        curl_close($ch);
+        // echo $res;
+        // //echo json_encode(array('status'=>1,'result'=>$res));
+        // exit();
+        $this->ajaxReturn(['code' => 0, 'msg'=>'','data'=>$res]);
+    }
+
+    /**
+     * [searchHotKey 用户登录并获取信息]
+     * @return [type] [description]
+     */
+    public function user2session2()
+    {
+        if (IS_GET) {
+            if (!$_GET['openId']) {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'登录状态异常!']);
+            }
+
+            $openid = trim($_GET['openId']);
+            $con = array();
+            $con['openid']=trim($_GET['openId']);
+            $uid = M('user')->where($con)->getField('id');
+            if ($uid) {
+                $userinfo = M('user')->where('id='.intval($uid))->find();
+                if (intval($userinfo['del'])==1) {
+                    $this->ajaxReturn(['code' => 1, 'msg'=>'账号状态异常！']);
+                }
+                $arr = array();
+                $arr['ID'] = intval($uid);
+                $arr['openid'] = $_GET['openId'];
+                $this->ajaxReturn(['code' => 0, 'msg'=>'','data'=> $arr]);
+                // echo json_encode(array('status'=>1,'arr'=>$err));
+                // exit();
+            } else {
+                $data = array();
+                $data['name'] = $_GET['NickName'];
+                $data['uname'] = $_GET['NickName'];
+                $data['photo'] = $_GET['avatarUrl'];
+                $data['sex'] = $_GET['gender'];
+                $data['openid'] = $openid;
+                $data['source'] = 'wx';
+                $data['addtime'] = time();
+                if (!$data['openid']) {
+                    $this->ajaxReturn(['code' => 1, 'msg'=>'授权失败！'.__LINE__, 'errData'=>$data]);
+                }
+
+                if (!$_GET['NickName']) {
+                    $this->ajaxReturn(['code' => 1, 'msg'=>'用户昵称获取失败,请授权!']);
+                }
+
+                $res = M('user')->add($data);
+                if ($res) {
+                    $arr = array();
+                    $arr['ID'] = intval($res);
+                    $arr['NickName'] = $data['name'];
+                    $arr['avatarUrl'] = $data['photo'];
+                    $arr['openid'] = $data['openId'];
+                    $this->ajaxReturn(['code' => 0, 'msg'=>'','data'=> $arr]);
+                    // echo json_encode(array('status'=>1,'arr'=>$err));
+                    // exit();
+                } else {
+                    $this->ajaxReturn(['code' => 1, 'msg'=>'授权失败！'.__LINE__]);
+                    // echo json_encode(array('status'=>0,'err'=>'授权失败！'.__LINE__));
+                    // exit();
+                }
+            }
+        } else {
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
 
     /**
-     * [searchHotKey 起送费].
-     *
+     * [searchHotKey 起送费]
      * @return [type] [description]
      */
     public function miniNum()
     {
         if (IS_GET) {
             $m = F('ORDER_MSG');
-            $this->ajaxReturn(['code' => 0, 'msg' => '', 'data' => $m]);
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','data'=> $m]);
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求!']);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
 
     /**
-     * [searchHotKey 商品是否收藏].
-     *
+     * [searchHotKey 商品是否收藏]
      * @return [type] [description]
      */
     public function goodsIsFavorite()
     {
         if (IS_GET) {
-            if ('' == $_GET['uid'] || '' == $_GET['goodsId']) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '参数错误!']);
+            if ($_GET['uid'] == "" || $_GET['goodsId'] =="") {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
             }
-            $where = ['uid' => $_GET['uid'], 'pid' => $_GET['goodsId']];
+            $where  = ['uid'=>$_GET['uid'],'pid'=>$_GET['goodsId']];
             $m = M('product_sc')->where($where)->count();
-            $this->ajaxReturn(['code' => 0, 'msg' => '', 'isFavorite' => $m]);
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','isFavorite'=> $m]);
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求!']);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
 
     /**
-     * [searchHotKey 商品是收藏].
-     *
+     * [searchHotKey 商品是收藏]
      * @return [type] [description]
      */
     public function goodsFavoriteAdd()
     {
         if (IS_GET) {
-            if ('' == $_GET['uid'] || '' == $_GET['goodsId']) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '参数错误!']);
+            if ($_GET['uid'] == "" || $_GET['goodsId'] =="") {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
             }
-            $data = ['uid' => $_GET['uid'], 'pid' => $_GET['goodsId']];
+            $data  = ['uid'=>$_GET['uid'],'pid'=>$_GET['goodsId']];
             $m = M('product_sc')->data($data)->add();
-            if ('' == $m) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '收藏失败!']);
+            if ($m == "") {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'收藏失败!']);
             }
-            $this->ajaxReturn(['code' => 0, 'msg' => '']);
+            $this->ajaxReturn(['code' => 0, 'msg'=>'']);
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求!']);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
 
     /**
-     * [searchHotKey 商品是删除收藏].
-     *
+     * [searchHotKey 商品是删除收藏]
      * @return [type] [description]
      */
     public function goodsFavoriteDelete()
     {
         if (IS_GET) {
-            if ('' == $_GET['uid'] || '' == $_GET['goodsId']) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '参数错误!']);
+            if ($_GET['uid'] == "" || $_GET['goodsId'] =="") {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
             }
-            $data = ['uid' => $_GET['uid'], 'pid' => $_GET['goodsId']];
+            $data  = ['uid'=>$_GET['uid'],'pid'=>$_GET['goodsId']];
             $m = M('product_sc')->where($data)->delete();
-            if (1 != $m) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '取消收藏失败!']);
+            if ($m != 1) {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'取消收藏失败!']);
             }
-            $this->ajaxReturn(['code' => 0, 'msg' => '']);
+            $this->ajaxReturn(['code' => 0, 'msg'=>'']);
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求!']);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
 
     /**
-     * [searchHotKey 添加购物车].
-     *
+     * [searchHotKey 添加购物车]
      * @return [type] [description]
      */
     public function goodsCartAdd()
     {
         if (IS_GET) {
-            if ('' == $_GET['uid']) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '登录状态异常!']);
+            if ($_GET['uid'] == "") {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'登录状态异常!']);
             }
 
             $uid = $_GET['uid'];
@@ -709,58 +829,59 @@ class NewsController extends PublicController
             $num = intval($_REQUEST['num']);
 
             if (!intval($pid) || !intval($num)) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '参数错误!']);
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
             }
 
             //加入购物车
             $check = $this->check_cart(intval($pid));
-            if (0 == $check['status']) {
-                $this->ajaxReturn(['code' => 1, 'msg' => $check['err']]);
+            if ($check['status']==0) {
+                $this->ajaxReturn(['code' => 1, 'msg'=>$check['err']]);
             }
 
             $check_info = M('product')->where('id='.intval($pid).' AND del=0 AND is_down=0')->find();
             //判断库存
-            if (intval($check_info['num']) <= $num) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '库存不足！']);
+            if (intval($check_info['num'])<=$num) {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'库存不足！']);
             }
 
-            $shpp = M('shopping_char');
+            $shpp=M("shopping_char");
 
             //判断购物车内是否已经存在该商品
             $data = array();
             $cart_info = $shpp->where('pid='.intval($pid).' AND uid='.intval($uid))->field('id,num')->find();
             if ($cart_info) {
-                $data['num'] = intval($cart_info['num']) + intval($num);
+                $data['num'] = intval($cart_info['num'])+intval($num);
                 //判断库存
-                if (intval($check_info['num']) <= $data['num']) {
-                    $this->ajaxReturn(['code' => 1, 'msg' => '库存不足！']);
+                if (intval($check_info['num'])<=$data['num']) {
+                    $this->ajaxReturn(['code' => 1, 'msg'=>'库存不足！']);
                 }
                 $res = $shpp->where('id='.intval($cart_info['id']))->save($data);
             } else {
-                $data['pid'] = intval($pid);
-                $data['num'] = intval($num);
-                $data['addtime'] = time();
-                $data['uid'] = intval($uid);
-                $data['shop_id'] = intval($check_info['shop_id']);
+                $data['pid']=intval($pid);
+                $data['num']=intval($num);
+                $data['addtime']=time();
+                $data['uid']=intval($uid);
+                $data['shop_id']=intval($check_info['shop_id']);
                 $ptype = 1;
                 if (intval($check_info['pro_type'])) {
                     $ptype = intval($check_info['pro_type']);
                 }
-                $data['type'] = $ptype;
+                $data['type']=$ptype;
                 $data['price'] = $check_info['price_yh'];
 
-                $res = $shpp->add($data);
+                $res=$shpp->add($data);
             }
 
             if ($res) {
-                $this->ajaxReturn(['code' => 0, 'msg' => '']);
+                $this->ajaxReturn(['code' => 0, 'msg'=>'']);
             } else {
-                $this->ajaxReturn(['code' => 1, 'msg' => '加入失败!']);
+                $this->ajaxReturn(['code' => 1, 'msg'=>'加入失败!']);
             }
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求!']);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
+
 
     //购物车添加。删除检测公共方法
     public function check_cart($pid)
@@ -768,73 +889,71 @@ class NewsController extends PublicController
         //检查产品是否存在或删除
         $check_info = M('product')->where('id='.intval($pid).' AND del=0 AND is_down=0')->find();
         if (!$check_info) {
-            return array('status' => 0, 'err' => '商品不存在或已下架.');
+            return array('status'=>0,'err'=>'商品不存在或已下架.');
         }
 
-        return array('status' => 1);
+        return array('status'=>1);
     }
 
     /**
-     * [searchHotKey 检查购物车所有商品信息].
-     *
+     * [searchHotKey 检查购物车所有商品信息]
      * @return [type] [description]
      */
     public function goodsCartCheckAll()
     {
         if (IS_GET) {
-            if ('' == $_GET['uid']) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '参数错误!']);
+            if ($_GET['uid'] == "") {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
             }
 
             $uid = $_GET['uid'];
-            $cart = M('shopping_char')->where('uid='.intval($uid))->field('pid')->select();
+            $cart = M("shopping_char")->where('uid='.intval($uid))->field('pid')->select();
             foreach ($cart as $k => $v) {
                 $this->goodsCartCheck(intval($v['pid']));
             }
 
-            $this->ajaxReturn(['code' => 0, 'msg' => '']);
+            $this->ajaxReturn(['code' => 0, 'msg'=>'']);
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求!']);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
 
+
     /**
-     * [searchHotKey 单个商品添加购物车检查].
-     *
+     * [searchHotKey 单个商品添加购物车检查]
      * @return [type] [description]
      */
     public function goodsCartCheck($pro_id = '')
     {
         if (IS_GET) {
-            $pid = $_GET['pid'] ? $_GET['pid'] : $pro_id;
+            $pid =  $_GET['pid']?$_GET['pid']:$pro_id;
             $uid = $_GET['uid'];
 
-            if ('' == $uid || '' == $pid) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '参数错误!']);
+            if ($uid == "" || $pid =="") {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
             }
 
             //判断是否已经下架或删除
             $check = $this->check_cart(intval($pid));
-            if (0 == $check['status']) {
-                $this->ajaxReturn(['code' => 1, 'msg' => $check['err']]);
+            if ($check['status']==0) {
+                $this->ajaxReturn(['code' => 1, 'msg'=>$check['err']]);
             }
 
-            $cart_info = M('shopping_char')->where('pid='.intval($pid).' AND uid='.intval($uid))->field('id,num')->find();
+            $cart_info = M("shopping_char")->where('pid='.intval($pid).' AND uid='.intval($uid))->field('id,num')->find();
             $check_info = M('product')->where('id='.intval($pid).' AND del=0 AND is_down=0')->field('id,num')->find();
             //判断库存
             if (intval($check_info['num']) <= intval($cart_info['num'])) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '库存不足！']);
+                $this->ajaxReturn(['code' => 1, 'msg'=>'库存不足！']);
             }
 
-            $this->ajaxReturn(['code' => 0, 'msg' => '']);
+            $this->ajaxReturn(['code' => 0, 'msg'=>'']);
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求!']);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
 
     /**
-     * [searchHotKey 更新购物车商品数量].
-     *
+     * [searchHotKey 更新购物车商品数量]
      * @return [type] [description]
      */
     public function cartUpdateNum()
@@ -842,142 +961,140 @@ class NewsController extends PublicController
         if (IS_GET) {
             $uid = intval($_REQUEST['uid']);
             $cart_id = intval($_REQUEST['cid']);
-            $num = intval($_REQUEST['num']);
+            $num=intval($_REQUEST['num']);
 
-            if ('' == $uid || '' == $cart_id || '' == $num) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '参数错误!']);
+            if ($uid == "" || $cart_id  =="" || $num == "") {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
             }
 
-            $shopping = M('shopping_char');
+            $shopping=M("shopping_char");
 
             $check = $shopping->where('id='.intval($cart_id))->find();
             if (!$check) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '购物车信息错误！']);
+                $this->ajaxReturn(['code' => 1, 'msg'=>'购物车信息错误！']);
             }
 
             //检测库存
             $pro_num = M('product')->where('id='.intval($check['pid']))->getField('num');
-            if ($num > intval($pro_num)) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '库存不足！']);
+            if ($num>intval($pro_num)) {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'库存不足！']);
             }
 
-            $res = $shopping->where('id ='.intval($cart_id).' AND uid='.intval($uid))->save(['num' => $num]);
+            $res = $shopping->where('id ='.intval($cart_id).' AND uid='.intval($uid))->save(['num'=>$num]);
             if (!$res) {
-                echo json_encode(array('status' => 1, 'succ' => '操作失败!'));
+                echo json_encode(array('status'=>1,'succ'=>'操作失败!'));
                 exit();
             }
-            $this->ajaxReturn(['code' => 0, 'msg' => '']);
+            $this->ajaxReturn(['code' => 0, 'msg'=>'']);
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求!']);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
 
     /**
-     * [searchHotKey 购物车删除产品].
-     *
+     * [searchHotKey 购物车删除产品]
      * @return [type] [description]
      */
     public function goodsCartDelete()
     {
         if (IS_GET) {
-            if ('' == $_GET['uid'] && $_REQUEST['cid']) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '参数错误!']);
+            if ($_GET['uid'] == "" && $_REQUEST['cid']) {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
             }
 
-            $shopping = M('shopping_char');
-            $cart_id = intval($_REQUEST['cid']);
+            $shopping=M("shopping_char");
+            $cart_id=intval($_REQUEST['cid']);
             $check_id = $shopping->where('id='.intval($cart_id))->getField('id');
             if (!$check_id) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '非法请求!']);
+                $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
             }
 
             $res = $shopping->where('id ='.intval($cart_id))->delete(); // 删除
             if (!$res) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '删除失败!']);
+                $this->ajaxReturn(['code' => 1, 'msg'=>'删除失败!']);
             }
 
-            $this->ajaxReturn(['code' => 0, 'msg' => '']);
+            $this->ajaxReturn(['code' => 0, 'msg'=>'']);
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求!']);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
+     
 
     /**
-     * [searchHotKey 购物车商品列表].
-     *
+     * [searchHotKey 购物车商品列表]
      * @return [type] [description]
      */
     public function goodsCartList()
     {
         if (IS_GET) {
-            $qz = C('DB_PREFIX');
-            $shopping = M('shopping_char');
-            $shangchang = M('shangchang');
-            $product = M('product');
+            $qz=C('DB_PREFIX');
+            $shopping=M("shopping_char");
+            $shangchang=M("shangchang");
+            $product=M("product");
             $user_id = intval($_REQUEST['uid']);
-            if ('' == $_GET['uid']) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '参数错误!']);
+            if ($_GET['uid'] == "") {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
             }
+
 
             $cart = $shopping->where('uid='.intval($user_id))->field('id,uid,pid,price,num')->select();
 
             foreach ($cart as $k => $v) {
                 $pro_info = $product->where('id='.intval($v['pid']).' AND del=0 AND is_down=0 AND num > 0')->field('name,photo_x')->find();
                 //$pro_info = $product->where('id='.intval($v['pid']).' AND del=0 AND is_down=0 ')->field('name,photo_x')->find();
-                if (null == $pro_info['name']) {
+                if ($pro_info['name'] == null) {
                     $status = 3;
                     $shopping->where('uid='.intval($user_id).' AND id='.$v['id'])->delete();
                     unset($cart[$k]);
                     continue;
                 }
-                $cart[$k]['pro_name'] = $pro_info['name'];
-                $cart[$k]['photo_x'] = __DATAURL__.$pro_info['photo_x'];
-                $cart[$k]['selected'] = 1;
+                $cart[$k]['pro_name']=$pro_info['name'];
+                $cart[$k]['photo_x']=__DATAURL__.$pro_info['photo_x'];
+                $cart[$k]['selected']=1;
                 //$this->ajaxReturn(['status'=>1,'cart'=>$cart,'sql'=>$product->getlastsql(),'info'=>$pro_info]);
             }
             sort($cart);
-            $this->ajaxReturn(['code' => 0, 'msg' => '', 'list' => $cart]);
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=>$cart]);
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求!']);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
 
     /**
-     * [searchHotKey 购物车商品列表].
-     *
+     * [searchHotKey 购物车商品列表]
      * @return [type] [description]
      */
     public function getOrderCount()
     {
         if (IS_GET) {
-            if ('' == $_GET['uid']) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '参数错误!']);
+            if ($_GET['uid'] == "") {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
             }
             $orders = M('order');
             $count = [];
             $order_status = array('10' => '待付款', '20' => '待发货', '30' => '待收货');
             foreach ($order_status as $k => $v) {
-                $count[] = $orders->where(['status' => $k, 'uid' => $_GET['uid'], 'del' => 0, 'back' => '0'])->count();
+                $count[] = $orders->where(['status'=>$k,'uid'=>$_GET['uid'],'del'=>0,'back'=>'0'])->count();
             }
 
             //$sql = $orders->getlastsql();
             //$this->ajaxReturn(['code' => 0, 'msg'=>'','count'=>$count,'sql'=>$sql]);
-            $this->ajaxReturn(['code' => 0, 'msg' => '', 'count' => $count]);
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','count'=>$count]);
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求!']);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
 
     /**
-     * [searchHotKey 获取订单列表].
-     *
+     * [searchHotKey 获取订单列表]
      * @return [type] [description]
      */
     public function getMyOrderList()
     {
         if (IS_GET) {
-            if ('' == $_GET['uid']) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '参数错误!']);
+            if ($_GET['uid'] == "") {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
             }
 
             //分页
@@ -1010,12 +1127,14 @@ class NewsController extends PublicController
                 $order_type = 10;
             }
 
-            if ('refund' == $order_type) {
+            if ($order_type == "refund") {
                 $condition['back'] = array('gt', '0');
             } else {
                 $condition['back'] = '0';
-                $condition['status'] = $order_type;
+                $condition['status'] =$order_type;
             }
+            
+
 
             $eachpage = 7;
 
@@ -1024,12 +1143,12 @@ class NewsController extends PublicController
             $order_status = array('0' => '已取消', '10' => '待付款', '20' => '待发货', '30' => '待收货', '40' => '待评价', '50' => '交易完成', '51' => '交易关闭');
 
             $order = $orders->where($condition)->order('id desc')->field('id,order_sn,pay_sn,status,price,amount,type,product_num,addtime,back')->limit($limit.','.$eachpage)->select();
-
-            $total = $orders->where($condition)->count('id');
+            
+            $total = $orders->where($condition)->count("id");
             $pageTotal = ceil($total / $eachpage);
 
             //$sql = $orders->getlastsql();
-
+            
             foreach ($order as $n => $v) {
                 $order[$n]['desc'] = $order_status[$v['status']];
 
@@ -1044,29 +1163,28 @@ class NewsController extends PublicController
                 $order[$n]['price_yh'] = $prolist['price'];
 
                 $order[$n]['pro_count'] = $orderp->where('order_id='.intval($v['id']))->getField('COUNT(id)');
-                $order[$n]['addtime'] = date('Y-m-d H:i', $v['addtime']);
+                $order[$n]['addtime'] =  date('Y-m-d H:i', $v['addtime']);
             }
 
             // echo json_encode(array('status' => 1, 'ord' => $order, 'eachpage' => $eachpage));
             // exit();
             //$this->ajaxReturn(['code' => 0, 'msg'=>'','list'=>$order,'eachpage' => $eachpage,'page_total'=>$pageTotal,'sql'=>$sql]);
-            $this->ajaxReturn(['code' => 0, 'msg' => '', 'list' => $order, 'eachpage' => $eachpage, 'page_total' => $pageTotal]);
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=>$order,'eachpage' => $eachpage,'page_total'=>$pageTotal]);
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求!']);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
 
     /**
-     * [searchHotKey 获取订单详情].
-     *
+     * [searchHotKey 获取订单详情]
      * @return [type] [description]
      */
     public function getOrderDetail()
     {
         if (IS_GET) {
             $order_id = intval($_REQUEST['order_id']);
-            if ('' == $order_id) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '参数错误!']);
+            if ($order_id  == "") {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
             }
 
             //订单详情
@@ -1084,16 +1202,16 @@ class NewsController extends PublicController
             $order_info = $orders->where('id='.intval($order_id).' AND del=0')->field('id,order_sn,shop_id,status,addtime,price,amount,type,post,tel,receiver,address_xq,remark,back,kuaidi_num')->find();
 
             if (!$order_info) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '订单信息错误!']);
+                $this->ajaxReturn(['code' => 1, 'msg'=>'订单信息错误!']);
             }
 
             //订单状态
 
             $order_status = array('0' => '已取消', '10' => '待付款', '20' => '待发货', '30' => '待收货', '40' => '已收货', '50' => '交易完成');
 
-            $expressNo = '';
+            $expressNo = "";
             //XXX 快递信息
-            if ('' != $order_info['kuaidi_num'] && strlen($order_info['kuaidi_num']) > 5) {
+            if ($order_info['kuaidi_num'] != "" && strlen($order_info['kuaidi_num']) > 5) {
                 //$post_info = array();
                 //快递公司简称 暂时没用
                 // if (intval($order_info['post'])) {
@@ -1144,28 +1262,28 @@ class NewsController extends PublicController
                 $pro[$k]['photo_x'] = __DATAURL__.$v['photo_x'];
             }
 
-            $this->ajaxReturn(['code' => 0, 'msg' => '', 'pro' => $pro, 'ord' => $order_info, 'expressNo' => $expressNo]);
+            $this->ajaxReturn(['code' => 0, 'msg'=>'', 'pro' => $pro, 'ord' => $order_info,'expressNo'=>$expressNo]);
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求!']);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
 
+
     /**
-     * [orderExpressInfo 查询订单快递信息].
-     *
+     * [orderExpressInfo 查询订单快递信息]
      * @return [type] [查询订单快递信息]
      */
     public function orderExpressInfo()
     {
         if (IS_GET) {
             $expressNo = intval($_REQUEST['expressNo']);
-            if ('' == $expressNo) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '参数错误!']);
+            if ($expressNo  == "") {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
             }
 
             $client = new Client();
             //$response = $client->request('GET', 'http://sp0.baidu.com/9_Q4sjW91Qh3otqbppnN2DJv/pae/channel/data/asyncqury?appid=4001&com=&nu=3369785056558');
-            $url = 'http://www.kuaidi100.com/query?type=shentong&postid='.$expressNo;
+            $url = "http://www.kuaidi100.com/query?type=shentong&postid=".$expressNo;
             $response = $client->request('GET', $url);
             $a = $response->getBody()->getContents();
             $b = json_decode($a);
@@ -1173,19 +1291,20 @@ class NewsController extends PublicController
 
             $list = [];
             foreach ($b->data as $key => $value) {
-                $list[$key]['title'] = $value->time;
-                $list[$key]['desc'] = $value->context;
+                $list[$key]['title'] =  $value->time;
+                $list[$key]['desc'] =$value->context;
             }
 
-            $this->ajaxReturn(['code' => 0, 'msg' => '', 'list' => $list]);
+ 
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=>$list]);
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求!']);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
 
+
     /**
-     * [searchHotKey 购物车商品列表].
-     *
+     * [searchHotKey 购物车商品列表]
      * @return [type] [description]
      */
     public function ordersEdit()
@@ -1198,14 +1317,14 @@ class NewsController extends PublicController
             $uid = intval($_REQUEST['uid']);
             $type = $_REQUEST['flag'];
 
-            if ('' == $order_id || '' == $type || '' == $uid) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '参数错误!']);
+            if ($order_id  == "" ||  $type== "" || $uid =="") {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
             }
 
             $order_sn = $orders->where('id='.intval($order_id)." AND del=0 AND back='0' AND uid =".$uid)->getField('order_sn');
 
             if (!$order_sn || !$type) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '订单信息错误!']);
+                $this->ajaxReturn(['code' => 1, 'msg'=>'订单信息错误!']);
             }
 
             $data = array();
@@ -1218,7 +1337,7 @@ class NewsController extends PublicController
                 $transaction_id = $orders->where('id='.intval($order_id)." AND del=0 AND back='0'")->getField('trade_no');
 
                 if (!$transaction_id) {
-                    $this->ajaxReturn(['code' => 1, 'msg' => '订单信息错误!', 'err' => __LINE__]);
+                    $this->ajaxReturn(['code' => 1, 'msg'=>'订单信息错误!','err'=>__LINE__]);
                 }
 
                 $input = new \WxPayOrderQuery();
@@ -1231,7 +1350,7 @@ class NewsController extends PublicController
                  */
 
                 if ('SUCCESS' != $res['return_code'] || 'SUCCESS' != $res['result_code'] || 'SUCCESS' != $res['trade_state']) {
-                    $this->ajaxReturn(['code' => 1, 'msg' => '申请退款失败!', 'err' => __LINE__]);
+                    $this->ajaxReturn(['code' => 1, 'msg'=>'申请退款失败!','err'=>__LINE__]);
                 }
 
                 $data['back'] = 1;
@@ -1242,23 +1361,24 @@ class NewsController extends PublicController
                 $result = $orders->where('id='.intval($order_id))->save($data);
 
                 if (false !== $result) {
-                    $this->ajaxReturn(['code' => 0, 'msg' => '']);
+                    $this->ajaxReturn(['code' => 0, 'msg'=>'']);
                 } else {
-                    $this->ajaxReturn(['code' => 1, 'msg' => '操作失败!', 'err' => __LINE__]);
+                    $this->ajaxReturn(['code' => 1, 'msg'=>'操作失败!','err'=>__LINE__]);
                 }
             } else {
-                $this->ajaxReturn(['code' => 1, 'msg' => '订单信息错误!', 'err' => __LINE__]);
+                $this->ajaxReturn(['code' => 1, 'msg'=>'订单信息错误!','err'=>__LINE__]);
             }
 
-            $this->ajaxReturn(['code' => 0, 'msg' => '']);
+            $this->ajaxReturn(['code' => 0, 'msg'=>'']);
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求!']);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
 
+
+
     /**
-     * [searchHotKey 商品收藏].
-     *
+     * [searchHotKey 商品收藏]
      * @return [type] [description]
      */
     public function favoriteInfo()
@@ -1267,8 +1387,8 @@ class NewsController extends PublicController
             $uid = intval($_REQUEST['uid']);
             $page = intval($_REQUEST['page']);
 
-            if ('' == $uid) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '参数错误!']);
+            if ($uid == "") {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
             }
 
             $eachpage = 7;
@@ -1276,11 +1396,11 @@ class NewsController extends PublicController
             $limit = intval($page * $eachpage) - $eachpage;
 
             $arr = M('product_sc')->where('uid='.intval($uid))->getField('pid', true);
-            $total = M('product_sc')->where('uid='.intval($uid))->count('id');
+            $total = M('product_sc')->where('uid='.intval($uid))->count("id");
             $pageTotal = ceil($total / $eachpage);
 
             if (!$arr) {
-                $this->ajaxReturn(['code' => 0, 'msg' => '', 'list' => []]);
+                $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=>[]]);
             }
 
             $map['id'] = array('in', $arr);
@@ -1290,49 +1410,48 @@ class NewsController extends PublicController
             }
 
             if ($list) {
-                $this->ajaxReturn(['code' => 0, 'msg' => '', 'list' => $list, 'page_total' => $pageTotal]);
+                $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=>$list,'page_total'=>$pageTotal]);
             } else {
-                $this->ajaxReturn(['code' => 1, 'msg' => '网络错误']);
+                $this->ajaxReturn(['code' => 1, 'msg'=>'网络错误']);
             }
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求!']);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
 
     /**
-     * [searchHotKey 收货地址].
-     *
+     * [searchHotKey 收货地址]
      * @return [type] [description]
      */
     public function getUserAddress()
     {
         if (IS_GET) {
             $uid = intval($_REQUEST['uid']);
-            if ('' == $uid) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '参数错误!']);
+            if ($uid == "") {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
             }
 
             //所有地址
             $addressModel = M('address');
-            $adds_list = $addressModel->where('uid='.$uid)->order('is_default desc,id desc')->select();
-
-            $this->ajaxReturn(['code' => 0, 'msg' => '', 'list' => $adds_list, 'sheng_list' => $sheng]);
+            $adds_list=$addressModel->where('uid='.$uid)->order('is_default desc,id desc')->select();
+        
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=>$adds_list,'sheng_list'=>$sheng]);
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求!']);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
 
+
     /**
-     * [searchHotKey 保存收货地址].
-     *
+     * [searchHotKey 保存收货地址]
      * @return [type] [description]
      */
     public function saveAddress()
     {
         if (IS_GET) {
             $uid = intval($_REQUEST['uid']);
-            if ('' == $uid) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '参数错误!']);
+            if ($uid == "") {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
             }
 
             $data = array();
@@ -1345,7 +1464,7 @@ class NewsController extends PublicController
             $data['code'] = $_REQUEST['code'];
             $data['uid'] = intval($uid);
             if (!$data['name'] || !$data['tel'] || !$data['address']) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '请先完善信息后再提交.!']);
+                $this->ajaxReturn(['code' => 1, 'msg'=>'请先完善信息后再提交.!']);
             }
 
             //为了老版本兼容 如果传过来的是文字 不是 地址代码 则查询id
@@ -1356,7 +1475,7 @@ class NewsController extends PublicController
                 $data['address_xq'] = $_REQUEST['sheng'].' '.$_REQUEST['city'].' '.$_REQUEST['quyu'].' '.$data['address'];
 
                 if (!$data['sheng'] || !$data['city'] || !$data['quyu']) {
-                    $this->ajaxReturn(['code' => 1, 'msg' => '请选择省市区.!']);
+                    $this->ajaxReturn(['code' => 1, 'msg'=>'请选择省市区.!']);
                 }
             } else {
                 //如果传来的是id 则查询文字 组合成详细地址
@@ -1375,21 +1494,23 @@ class NewsController extends PublicController
             //     }
             // }
 
+
+
             //如果没有地址设为默认地址
-            if (0 == M('address')->where(['uid' => $data['uid']])->count()) {
-                $data['is_default'] = 1;
+            if (M('address')->where(['uid'=>$data['uid']])->count() == 0) {
+                $data['is_default']=1;
             } elseif ($_REQUEST['isDef']) {
-                $r = M('address')->where(['uid' => $data['uid'], 'is_default' => 1])->getField('id');
+                $r = M('address')->where(['uid'=>$data['uid'],'is_default'=>1])->getField('id');
                 if ($r) {
-                    M('address')->where(['id' => $r])->save(['is_default' => 0]);
+                    M('address')->where(['id'=>$r])->save(['is_default'=>0]);
                 }
-                $data['is_default'] = 1;
+                $data['is_default']=1;
             }
 
             //有ID是更新 所以
             if (intval($_REQUEST['id'])) {
-                $res = M('address')->where(['id' => intval($_REQUEST['id'])])->save($data);
-                $this->ajaxReturn(['code' => 0, 'msg' => '']);
+                $res = M('address')->where(['id'=>intval($_REQUEST['id'])])->save($data);
+                $this->ajaxReturn(['code' => 0, 'msg'=>'']);
                 // if ($res) {
                 //     $this->ajaxReturn(['code' => 0, 'msg'=>'']);
                 // } else {
@@ -1404,18 +1525,17 @@ class NewsController extends PublicController
                 $arr['rec'] = $data['name'];
                 $arr['tel'] = $data['tel'];
                 $arr['addr_xq'] = $data['address_xq'];
-                $this->ajaxReturn(['code' => 0, 'msg' => '', 'data' => $arr]);
+                $this->ajaxReturn(['code' => 0, 'msg'=>'','data'=>$arr]);
             } else {
-                $this->ajaxReturn(['code' => 1, 'msg' => '操作失败!']);
+                $this->ajaxReturn(['code' => 1, 'msg'=>'操作失败!']);
             }
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求!']);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
 
     /**
-     * [searchHotKey 获取编辑的收货地址].
-     *
+     * [searchHotKey 获取编辑的收货地址]
      * @return [type] [description]
      */
     public function receiverInfoById()
@@ -1423,17 +1543,17 @@ class NewsController extends PublicController
         if (IS_GET) {
             $addr_id = intval($_REQUEST['id']);
             if (!$addr_id) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '参数错误!']);
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
             }
 
             $address = M('address')->where('id='.intval($addr_id))->find();
             if (!$address) {
-                $this->ajaxReturn(['code' => 2, 'msg' => '查询失败!']);
+                $this->ajaxReturn(['code' => 2, 'msg'=>'查询失败!']);
             }
-            $arr = array();
-            $arr['id'] = $address['id'];
-            $arr['isDef'] = $address['is_default'];
-            $arr['addr_id'] = $address['id'];
+            $arr=array();
+            $arr['id']=$address['id'];
+            $arr['isDef']=$address['is_default'];
+            $arr['addr_id']=$address['id'];
             $arr['name'] = $address['name'];
             $arr['tel'] = $address['tel'];
             $arr['addr_xq'] = $address['address'];
@@ -1441,16 +1561,15 @@ class NewsController extends PublicController
             $arr['provinceName'] = M('china_city')->where('id='.intval($address['sheng']))->getField('name');
             $arr['cityName'] = M('china_city')->where('id='.intval($address['city']))->getField('name');
             $arr['areaName'] = M('china_city')->where('id='.intval($address['quyu']))->getField('name');
-
-            $this->ajaxReturn(['code' => 0, 'msg' => '', 'receiverInfo' => $arr]);
+        
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','receiverInfo'=>$arr]);
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求!']);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
 
     /**
-     * [searchHotKey 获取编辑的收货地址].
-     *
+     * [searchHotKey 获取编辑的收货地址]
      * @return [type] [description]
      */
     public function delUserAddress()
@@ -1459,23 +1578,22 @@ class NewsController extends PublicController
             $addr_id = intval($_REQUEST['id']);
             $uid = intval($_REQUEST['uid']);
             if (!$addr_id || !$uid) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '参数错误!']);
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
             }
 
             $res = M('address')->where('uid='.intval($uid).' AND id = '.$addr_id)->delete();
             if ($res) {
-                $this->ajaxReturn(['code' => 0, 'msg' => '']);
+                $this->ajaxReturn(['code' => 0, 'msg'=>'']);
             } else {
-                $this->ajaxReturn(['code' => 1, 'msg' => '操作失败!']);
+                $this->ajaxReturn(['code' => 1, 'msg'=>'操作失败!']);
             }
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求!']);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
 
     /**
-     * [searchHotKey 购物车下单].
-     *
+     * [searchHotKey 购物车下单]
      * @return [type] [description]
      */
     public function buyCart()
@@ -1484,7 +1602,7 @@ class NewsController extends PublicController
             $cart_id = trim($_REQUEST['cart_id'], ',');
             $uid = intval($_REQUEST['uid']);
             if (!$uid || !$cart_id) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '参数错误!', 'err' => $cart_id.'-->'.__LINE__]);
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!','err'=>$cart_id ."-->".__LINE__]);
             }
 
             $address = M('address');
@@ -1494,7 +1612,7 @@ class NewsController extends PublicController
 
             $product = M('product');
             $shopping = M('shopping_char');
-
+            
             $id = explode(',', $cart_id);
             $qz = C('DB_PREFIX');
             $pro = array();
@@ -1503,10 +1621,11 @@ class NewsController extends PublicController
                 //检测购物车是否有对应数据
                 $check_cart = $shopping->where('id='.intval($v))->getField('id');
                 if (!$check_cart) {
-                    $this->ajaxReturn(['code' => 1, 'msg' => '非法操作!', 'err' => __LINE__]);
+                    $this->ajaxReturn(['code' => 1, 'msg'=>'非法操作!','err'=>__LINE__]);
                 }
 
                 $pro[$k] = $shopping->where(''.$qz.'shopping_char.uid='.intval($uid).' and '.$qz.'shopping_char.id='.$v)->join('LEFT JOIN __PRODUCT__ ON __PRODUCT__.id=__SHOPPING_CHAR__.pid')->join('LEFT JOIN __SHANGCHANG__ ON __SHANGCHANG__.id=__SHOPPING_CHAR__.shop_id')->field(''.$qz.'product.num as pnum,'.$qz.'shopping_char.id,'.$qz.'shopping_char.pid,'.$qz.'product.name,'.$qz.'product.shop_id,'.$qz.'product.photo_x,'.$qz.'product.price_yh,'.$qz.'product.pro_type,'.$qz.'shopping_char.num,'.$qz.'shopping_char.buff,'.$qz.'shopping_char.price')->find();
+
 
                 if ($pro[$k]['buff'] != '') {
                     $pro[$k]['zprice'] = $pro[$k]['price'] * $pro[$k]['num'];
@@ -1531,7 +1650,7 @@ class NewsController extends PublicController
             //     }
             //     $price += $pro1[$ks]['zprice'];
             // }
-
+            
             //去掉特惠商品的总价
             $limitPrice = 0;
             //计算总价
@@ -1551,6 +1670,7 @@ class NewsController extends PublicController
 
             $limitPrice = $price - $limitPrice;
 
+
             if (!$add) {
                 $addemt = 0;
             } else {
@@ -1558,15 +1678,15 @@ class NewsController extends PublicController
             }
 
             //获取用户可用积分
-            $userScore = M('user')->where(['id' => $uid])->getField('jifen');
+            $userScore = M('user')->where(['id'=>$uid])->getField('jifen');
 
             //vou 优惠券 price总价 adds收货地址 addemt 是否存在收货地址
             //$this->ajaxReturn(['code' => 0, 'msg'=>'','list'=>$pro,'vou' => $vou, 'price' => floatval($price), 'adds' => $add, 'addemt' => $addemt,'userScore'=>intval($userScore)]);
-            $this->ajaxReturn(['code' => 0, 'msg' => '', 'list' => $pro, 'vou' => $vou, 'price' => floatval($price), 'adds' => $add, 'addemt' => $addemt, 'userScore' => intval($userScore), 'limitPrice' => floatval(number_format($limitPrice, 2))]);
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=>$pro,'vou' => $vou, 'price' => floatval($price), 'adds' => $add, 'addemt' => $addemt,'userScore'=>intval($userScore), 'limitPrice'=>floatval(number_format($limitPrice, 2))]);
             // echo json_encode(array('status' => 1, 'vou' => $vou, 'price' => floatval($price), 'pro' => $pro, 'adds' => $add, 'addemt' => $addemt));
             // exit();
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求!']);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
 
@@ -1610,8 +1730,7 @@ class NewsController extends PublicController
     }
 
     /**
-     * [searchHotKey  购物车结算 下订单].
-     *
+     * [searchHotKey  购物车结算 下订单]
      * @return [type] [description]
      */
     public function payment()
@@ -1620,7 +1739,7 @@ class NewsController extends PublicController
             $cart_id = trim($_REQUEST['cart_id'], ',');
             $uid = intval($_REQUEST['uid']);
             if (!$cart_id || !$uid) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '参数错误!']);
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
             }
 
             $product = M('product');
@@ -1630,25 +1749,27 @@ class NewsController extends PublicController
             $order_pro = M('order_product');
             $shopping = M('shopping_char');
 
+
             /*=============================================
             =            检查订单商品库存                 =
             =============================================*/
-
+        
             $cid = explode(',', $cart_id);  //这是购物车id
             $arr = [];
             //检测产品数量
             foreach ($cid as $key => $var) {
                 $pid = $shopping->where('id='.intval($var))->getField('pid');
                 $num = $product->where('id='.$pid.' AND del=0 AND is_down=0')->getField('num');
-                if (0 == $num) {
+                if ($num == 0) {
                     $arr[$key] = $pid;
                 }
             }
             if (count($arr) > 0) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '该商品已抢光!', 'err' => $arr]);
+                $this->ajaxReturn(['code' => 1, 'msg'=>'该商品已抢光!','err'=>$arr]);
             }
-
+        
             /*=====  End of 检查订单商品库存       ======*/
+        
 
             //生成订单
             try {
@@ -1713,15 +1834,15 @@ class NewsController extends PublicController
                 $data['status'] = 10;
 
                 $adds_id = intval($_REQUEST['aid']);
-                if (!$adds_id && '' == $_REQUEST['address']) {
+                if (!$adds_id && $_REQUEST['address'] == '') {
                     throw new \Exception('请选择收货地址.'.__LINE__);
                 }
                 //$adds_info =  M('address')->where('id='.intval($adds_id))->find();
-                $adds_info = ('' == $_REQUEST['address']) ? M('address')->where('id='.intval($adds_id))->find() : json_decode($_REQUEST['address'], true);
+                $adds_info = ($_REQUEST['address'] == '') ? M('address')->where('id='.intval($adds_id))->find() : json_decode($_REQUEST['address'], true);
                 $data['receiver'] = $adds_info['name'];
                 $data['tel'] = $adds_info['tel'];
                 $data['address_xq'] = $adds_info['address_xq'];
-                $data['code'] = $adds_info['code'] ? $adds_info['code'] : 100000;
+                $data['code'] = $adds_info['code']?$adds_info['code']:100000;
                 $data['product_num'] = $num;
                 $data['remark'] = $_REQUEST['remark'];
                 $data['order_sn'] = $this->build_order_no(); //生成唯一订单号
@@ -1775,7 +1896,7 @@ class NewsController extends PublicController
                     throw new \Exception('下单 失败！');
                 }
             } catch (Exception $e) {
-                $this->ajaxReturn(['code' => 1, 'msg' => $e->getMessage()]);
+                $this->ajaxReturn(['code' => 1, 'msg'=>$e->getMessage()]);
                 // echo json_encode(array('code' => 1, 'msg' => $e->getMessage()));
                 // exit();
             }
@@ -1786,15 +1907,15 @@ class NewsController extends PublicController
             $arr['order_sn'] = $data['order_sn'];
             $arr['pay_type'] = $_REQUEST['type'];
 
-            $this->ajaxReturn(['code' => 0, 'msg' => '', 'data' => $arr]);
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','data' => $arr]);
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求!']);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
 
+
     /**
-     * [searchHotKey  购物车结算 下订单].
-     *
+     * [searchHotKey  购物车结算 下订单]
      * @return [type] [description]
      */
     public function payment1()
@@ -1803,7 +1924,7 @@ class NewsController extends PublicController
             $cart_id = trim($_REQUEST['cart_id'], ',');
             $uid = intval($_REQUEST['uid']);
             if (!$cart_id || !$uid) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '参数错误!']);
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
             }
 
             $product = M('product');
@@ -1813,25 +1934,27 @@ class NewsController extends PublicController
             $order_pro = M('order_product');
             $shopping = M('shopping_char');
 
+
             /*=============================================
             =            检查订单商品库存                 =
             =============================================*/
-
+        
             $cid = explode(',', $cart_id);  //这是购物车id
             $arr = [];
             //检测产品数量
             foreach ($cid as $key => $var) {
                 $pid = $shopping->where('id='.intval($var))->getField('pid');
                 $num = $product->where('id='.$pid.' AND del=0 AND is_down=0')->getField('num');
-                if (0 == $num) {
+                if ($num == 0) {
                     $arr[$key] = $pid;
                 }
             }
             if (count($arr) > 0) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '该商品已抢光!', 'err' => $arr]);
+                $this->ajaxReturn(['code' => 1, 'msg'=>'该商品已抢光!','err'=>$arr]);
             }
-
+        
             /*=====  End of 检查订单商品库存       ======*/
+        
 
             //生成订单
             try {
@@ -1866,6 +1989,7 @@ class NewsController extends PublicController
                     $data['price'] = floatval($ozprice);
                 }
 
+
                 //优惠券id
                 $vid = intval($_REQUEST['vid']);
 
@@ -1875,9 +1999,9 @@ class NewsController extends PublicController
                     //XXX 检测一下然后 减去相应积分
                     // actualPrice 这是前台传来的计算的结果
                     // 一旦下单就必须减去积分 因为下单后支付金额是不会变的
-                    M('user')->where(['id' => $uid])->setDec('jifen', 100);
+                    M('user')->where(['id'=>$uid])->setDec('jifen', 100);
                     // 减是没错了 不过没有记录到积分使用里
-                    M('user_course')->add(['uid' => $uid, 'addtime' => time(), 'sex' => 2]);
+                    M('user_course')->add(['uid'=>$uid,'addtime'=>time(),'sex'=>2]);
                 } else {
                     $data['amount'] = $data['price'];
                 }
@@ -1890,23 +2014,23 @@ class NewsController extends PublicController
                         //throw new \Exception("此优惠券不可用，请选择其他.".__LINE__);
                         // echo json_encode(array('status' => 0, 'err' => '此优惠券不可用，请选择其他.'));
                         // exit();
-                        $this->ajaxReturn(['code' => 1, 'msg' => '此优惠券不可用，请选择其他.', 'err' => __LINE__]);
+                        $this->ajaxReturn(['code' => 1, 'msg'=>'此优惠券不可用，请选择其他.','err'=>__LINE__]);
                     }
                     if ($vouinfo['end_time'] < time()) {
                         //throw new \Exception("优惠券已过期了.".__LINE__);
                         // echo json_encode(array('status' => 0, 'err' => '优惠券已过期了.'.__LINE__));
                         // exit();
-                        $this->ajaxReturn(['code' => 1, 'msg' => '优惠券已过期了.', 'err' => __LINE__]);
+                        $this->ajaxReturn(['code' => 1, 'msg'=>'优惠券已过期了.','err'=>__LINE__]);
                     }
                     if ($vouinfo['start_time'] > time()) {
                         //throw new \Exception("优惠券还未生效.".__LINE__);
                         // echo json_encode(array('status' => 0, 'err' => '优惠券还未生效.'.__LINE__));
                         // exit();
-                        $this->ajaxReturn(['code' => 1, 'msg' => '优惠券还未生效.', 'err' => __LINE__]);
+                        $this->ajaxReturn(['code' => 1, 'msg'=>'优惠券还未生效.','err'=>__LINE__]);
                     }
                     $data['vid'] = intval($vid);
                     $data['amount'] = floatval($data['price']) - floatval($vouinfo['amount']);
-                    M('user_voucher')->where('uid='.intval($uid).' AND vid='.intval($vid))->save(['status' => 2]);
+                    M('user_voucher')->where('uid='.intval($uid).' AND vid='.intval($vid))->save(['status'=>2]);
                 }
 
                 $data['addtime'] = time();
@@ -1915,11 +2039,11 @@ class NewsController extends PublicController
                 $data['status'] = 10;
 
                 $adds_id = intval($_REQUEST['aid']);
-                if (!$adds_id && '' == $_REQUEST['address']) {
+                if (!$adds_id && $_REQUEST['address'] == '') {
                     throw new \Exception('请选择收货地址.'.__LINE__);
                 }
-
-                $adds_info = ('' == $_REQUEST['address']) ? M('address')->where('id='.intval($adds_id))->find() : json_decode($_REQUEST['address'], true);
+                
+                $adds_info = ($_REQUEST['address'] == '') ? M('address')->where('id='.intval($adds_id))->find() : json_decode($_REQUEST['address'], true);
 
                 if ( $_REQUEST['type'] != 'cash') {
                     $adds = M('address')->field('city,quyu')->where('id='.intval($adds_id))->find();
@@ -1932,10 +2056,11 @@ class NewsController extends PublicController
                     $data['kuaidi_name'] = $adds_info['address_xq'];
                 }
 
+                
                 $data['receiver'] = $adds_info['name'];
                 $data['tel'] = $adds_info['tel'];
                 $data['address_xq'] = $adds_info['address_xq'];
-                $data['code'] = $adds_info['code'] ? $adds_info['code'] : 100000;
+                $data['code'] = $adds_info['code']?$adds_info['code']:100000;
                 $data['product_num'] = $num;
                 $data['remark'] = $_REQUEST['remark'];
                 $data['order_sn'] = $this->build_order_no(); //生成唯一订单号
@@ -1989,7 +2114,7 @@ class NewsController extends PublicController
                     throw new \Exception('下单 失败！');
                 }
             } catch (Exception $e) {
-                $this->ajaxReturn(['code' => 1, 'msg' => $e->getMessage()]);
+                $this->ajaxReturn(['code' => 1, 'msg'=>$e->getMessage()]);
                 // echo json_encode(array('code' => 1, 'msg' => $e->getMessage()));
                 // exit();
             }
@@ -2000,12 +2125,11 @@ class NewsController extends PublicController
             $arr['order_sn'] = $data['order_sn'];
             $arr['pay_type'] = $_REQUEST['type'];
 
-            $this->ajaxReturn(['code' => 0, 'msg' => '', 'data' => $arr]);
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','data' => $arr]);
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求!']);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
-
     /**针对涂屠生成唯一订单号
     *@return int 返回16位的唯一订单号
     */
@@ -2014,9 +2138,9 @@ class NewsController extends PublicController
         return date('Ymd').substr(implode(null, array_map('ord', str_split(substr(uniqid(), 7, 13), 1))), 0, 8);
     }
 
+
     /**
-     * [searchHotKey 查询订单详情].
-     *
+     * [searchHotKey 查询订单详情]
      * @return [type] [description]
      */
     public function getPayOrderDetail()
@@ -2024,7 +2148,7 @@ class NewsController extends PublicController
         if (IS_GET) {
             $oid = intval($_REQUEST['oid']);
             if (!$oid) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '参数错误!']);
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
             }
 
             $orders = M('order');
@@ -2034,39 +2158,38 @@ class NewsController extends PublicController
             $res = $orders->where('id='.$oid)->getField('price_h');
 
             if ($res) {
-                $this->ajaxReturn(['code' => 0, 'msg' => '', 'order' => $res]);
+                $this->ajaxReturn(['code' => 0, 'msg'=>'','order'=>$res]);
             } else {
-                $this->ajaxReturn(['code' => 1, 'msg' => '操作失败!']);
+                $this->ajaxReturn(['code' => 1, 'msg'=>'操作失败!']);
             }
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求!']);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
 
     /**
-     * [searchHotKey 查询优惠券列表  这是优惠券领取页面].
-     *
-     * @return [type] [description]
-     */
+      * [searchHotKey 查询优惠券列表  这是优惠券领取页面]
+      * @return [type] [description]
+      */
     public function getCouponList()
     {
         if (IS_GET) {
             $uid = intval($_REQUEST['uid']);
             if (!$uid) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '参数错误!']);
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
             }
 
-            if ('xianxia' == $_REQUEST['flag']) {
-                $res = M('voucher')->where('end_time > UNIX_TIMESTAMP(NOW()) AND del = 0 AND type > 2')->select();
+            if ($_REQUEST['flag'] == "xianxia") {
+                $res = M('voucher')->where("end_time > UNIX_TIMESTAMP(NOW()) AND del = 0 AND type > 2")->select();
             } else {
-                $res = M('voucher')->where('end_time > UNIX_TIMESTAMP(NOW()) AND del = 0 AND type = 1')->select();
+                $res = M('voucher')->where("end_time > UNIX_TIMESTAMP(NOW()) AND del = 0 AND type = 1")->select();
             }
-
-            if (false === $res) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '查询失败!']);
+            
+            if ($res === false) {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'查询失败!']);
             }
             //已经拥有的优惠券
-            $vids = M('user_voucher')->where(['uid' => $uid])->getField('vid', true);
+            $vids = M('user_voucher')->where(['uid'=>$uid])->getField('vid', true);
 
             //状态说明 status = 0 未领取优惠券 1 已经领取的优惠券
             foreach ($res as $k => $v) {
@@ -2075,74 +2198,73 @@ class NewsController extends PublicController
                 $res[$k]['receive_num'] = intval($v['receive_num']);
                 $res[$k]['count'] = intval($v['count']);
                 $date = new Carbon(date('Y-m-d h:i:s', $v['end_time']));
-                $res[$k]['littleTime'] = $date->diffInDays(Carbon::now()) + 1;
+                $res[$k]['littleTime'] = $date->diffInDays(Carbon::now())+1;
                 $res[$k]['status'] = (in_array($v['id'], $vids)) ? 1 : 0;
                 //$res[$k]['percent'] = (intval($v['receive_num']) / intval($v['count'])) * 100;
             }
 
-            $this->ajaxReturn(['code' => 0, 'msg' => '', 'list' => $res]);
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=>$res]);
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求!']);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
 
     /**
-     * [searchHotKey 获得优惠券].
-     *
-     * @return [type] [description]
-     */
+      * [searchHotKey 获得优惠券]
+      * @return [type] [description]
+      */
     public function addVoucher()
     {
         if (IS_GET) {
             $uid = intval($_REQUEST['uid']);
             $vid = intval($_REQUEST['vid']);
             if (!$uid || !$vid) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '参数错误!']);
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
             }
 
-            $voucher = M('voucher')->where(['id' => $vid, 'del' => 0])->find();
+            
+            $voucher = M('voucher')->where(['id'=>$vid,'del'=>0])->find();
             //这里删除的验证
             if (!$voucher) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '活动已下线!']);
+                $this->ajaxReturn(['code' => 1, 'msg'=>'活动已下线!']);
             }
             if ($voucher['receive_num'] == $voucher['count']) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '已领完!']);
+                $this->ajaxReturn(['code' => 1, 'msg'=>'已领完!']);
             }
             //不能二次领取
-            $r = M('user_voucher')->where(['uid' => $uid, 'vid' => $vid])->find();
+            $r = M('user_voucher')->where(['uid'=>$uid,'vid'=>$vid])->find();
             if ($r) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '不能重复领取!']);
+                $this->ajaxReturn(['code' => 1, 'msg'=>'不能重复领取!']);
             }
 
-            M('voucher')->where(['id' => $vid])->setInc('receive_num');
+            M('voucher')->where(['id'=>$vid])->setInc("receive_num");
 
-            $data['uid'] = $uid;
-            $data['vid'] = $vid;
-            $data['shop_id'] = $voucher['shop_id'];
-            $data['full_money'] = $voucher['full_money'];
-            $data['amount'] = $voucher['amount'];
-            $data['start_time'] = $voucher['start_time'];
-            $data['end_time'] = $voucher['end_time'];
-            $data['addtime'] = time();
-            $data['status'] = 1;
+            $data['uid']=$uid;
+            $data['vid']=$vid;
+            $data['shop_id']=$voucher['shop_id'];
+            $data['full_money']=$voucher['full_money'];
+            $data['amount']=$voucher['amount'];
+            $data['start_time']=$voucher['start_time'];
+            $data['end_time']=$voucher['end_time'];
+            $data['addtime']=time();
+            $data['status']=1;
 
             $res = M('user_voucher')->data($data)->add();
 
-            if (false === $res) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '查询失败!']);
+            if ($res === false) {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'查询失败!']);
             }
-
-            $this->ajaxReturn(['code' => 0, 'msg' => '成功领取!', 'list' => $res]);
+ 
+            $this->ajaxReturn(['code' => 0, 'msg'=>'成功领取!','list'=>$res]);
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求!']);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
 
     /**
-     * [searchHotKey 查询优惠券列表 这是付款的时候的优惠券页面].
-     *
-     * @return [type] [description]
-     */
+      * [searchHotKey 查询优惠券列表 这是付款的时候的优惠券页面]
+      * @return [type] [description]
+      */
     public function getCustCouponList()
     {
         if (IS_GET) {
@@ -2150,19 +2272,21 @@ class NewsController extends PublicController
             $flag = intval($_REQUEST['flag']);
             $totalPrice = floatval($_REQUEST['totalPrice']);    //浮点数比较
             if (!$uid && !$flag && !$totalPrice) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '参数错误!']);
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
             }
+
 
             //好像失效状态没什么意义 没有监控 只有这时再改变一下看过期的给与一个状态 但也好像没必要
             // if($flag == 1){
             //     $where['status'] = $flag;
             // }
-
+            
             $olds = M('user_voucher')->where('uid='.$uid.' and end_time < UNIX_TIMESTAMP(NOW())')->getField('id', true);
             if (count($olds)) {
-                $strOlds = implode(',', $olds);
-                M('user_voucher')->where(' id in ('.$strOlds.')')->save(['status' => 3]);
+                $strOlds = implode(",", $olds);
+                M('user_voucher')->where(" id in (".$strOlds.")")->save(['status'=>3]);
             }
+            
 
             if ($totalPrice) {
                 $where = 'uid='.$uid.' and status=1 and end_time > UNIX_TIMESTAMP(NOW()) AND  full_money <'.$totalPrice;
@@ -2174,40 +2298,42 @@ class NewsController extends PublicController
             //已经拥有的优惠券
             $vids = M('user_voucher')->where($where)->getField('vid', true);
             if (!count($vids)) {
-                $this->ajaxReturn(['code' => 0, 'msg' => '未有可使用优惠券', 'list' => '']);
+                $this->ajaxReturn(['code' => 0, 'msg'=>'未有可使用优惠券','list'=>'']);
             } else {
-                $strVids = implode(',', $vids);
+                $strVids = implode(",", $vids);
                 //把时间去掉 就是失效的也查询
-                $res = M('voucher')->where('del = 0 and id in ('.$strVids.')')->select();
-                if (false === $res) {
-                    $this->ajaxReturn(['code' => 1, 'msg' => '查询失败!']);
+                $res = M('voucher')->where("del = 0 and id in (".$strVids.")")->select();
+                if ($res === false) {
+                    $this->ajaxReturn(['code' => 1, 'msg'=>'查询失败!']);
                 }
             }
+
+
 
             //状态说明 status = 0 未领取优惠券 1 已经领取的优惠券
             foreach ($res as $k => $v) {
                 $res[$k]['start_time'] = date('Y.m.d h:i', $v['start_time']);
                 $res[$k]['end_time'] = date('Y.m.d h:i', $v['end_time']);
                 $date = new Carbon(date('Y-m-d h:i:s', $v['end_time']));
-                $res[$k]['littleTime'] = $date->diffInDays(Carbon::now()) + 1;
-                if (3 == $flag) {
+                $res[$k]['littleTime'] = $date->diffInDays(Carbon::now())+1;
+                if ($flag == 3) {
                     $res[$k]['status'] = 4;
                 } else {
-                    $res[$k]['status'] = (1 == $flag) ? 2 : 3;
+                    $res[$k]['status'] = ($flag == 1) ? 2 : 3;
                 }
+                
 
                 //$res[$k]['percent'] = (intval($v['receive_num']) / intval($v['count'])) * 100;
             }
 
-            $this->ajaxReturn(['code' => 0, 'msg' => '', 'list' => $res, 'sql' => $strVids]);
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=>$res,'sql'=>$strVids]);
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求!']);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
 
     /**
-     * [messageInfo 发送模版消息].
-     *
+     * [messageInfo 发送模版消息]
      * @return [type] [发送模版消息]
      */
     public function messageInfo()
@@ -2217,10 +2343,12 @@ class NewsController extends PublicController
             $fid = $_REQUEST['fid'];
             $oid = intval($_REQUEST['oid']);
             $flag = intval($_REQUEST['flag']);
-            $msg = $_REQUEST['msg'] ? $_REQUEST['msg'] : 'null';
-            if (!$openid || !$fid || !$oid || $flag < 0) {
-                $this->ajaxReturn(['code' => 1, 'msg' => '参数错误!']);
+            $msg = $_REQUEST['msg']?$_REQUEST['msg']:'null';
+            if (!$openid || !$fid || !$oid || $flag<0) {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
             }
+
+
 
             $client = new Client();
             // S('name',$value,300);
@@ -2238,82 +2366,83 @@ class NewsController extends PublicController
             $url = 'https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token='.$token;
 
             $d = $this->messageData($oid, $flag, $msg);
-
+            
             //模版id flag 0 购买成功通知 1 订单支付失败通知 2 待付款提醒     //这里还是放在配置文件里吧
-            $template_id = ['WLBNaOxKetJ86Sw8B8H8Fd2YpShGAHAEr8ierqcmOkE', '62mYgCdy3XKPL6bd7c1eGpOzf0AgoLaZhetJIyvfvmk'];
+            $template_id = ['WLBNaOxKetJ86Sw8B8H8Fd2YpShGAHAEr8ierqcmOkE','62mYgCdy3XKPL6bd7c1eGpOzf0AgoLaZhetJIyvfvmk'];
 
             $r = $client->request('POST', $url, [
-                'json' => [
-                    'touser' => $openid,
-                    'template_id' => $template_id[$flag],
-                    'page' => '/pages/home',
-                    'form_id' => $fid,
-                    'page' => '/pages/info',
-                    'data' => $d,
+                'json'=>[
+                    'touser'=>$openid,
+                    'template_id'=>$template_id[$flag],
+                    'page'=> '/pages/home',
+                    'form_id'=> $fid,
+                    'page'=> '/pages/info',
+                    'data'=>$d
                 ],
-                'verify' => false, ]);
-
+                'verify' => false]);
+            
             //dump($r->getBody()->getContents());
 
-            $this->ajaxReturn(['code' => 0, 'msg' => '成功领取!', 'data' => $r->getBody()->getContents()]);
+        
+            $this->ajaxReturn(['code' => 0, 'msg'=>'成功领取!','data'=>$r->getBody()->getContents()]);
         } else {
-            $this->ajaxReturn(['code' => 1, 'msg' => '非法请求!']);
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
 
     /**
-     * 组合发送信息的格式 比如模版.
+     * 组合发送信息的格式 比如模版
      */
     public function messageData($oid, $flag, $msg)
     {
         //$oid = "2018082055504999";
         //读取
-        $order_info = M('order')->field('id,amount,addtime,order_sn')->where(['id' => $oid])->find();
-        $goods = M('order_product')->field('name')->where(['order_id' => $order_info['id']])->find();
+        $order_info = M('order')->field('id,amount,addtime,order_sn')->where(['id'=>$oid])->find();
+        $goods = M('order_product')->field('name')->where(['order_id'=>$order_info['id']])->find();
         //dump($order_info);
         switch ($flag) {
             case 0:
                 $data = [
-                          'keyword1' => [
-                            'value' => $goods['name'],
-                            'color' => '#4a4a4a',
+                          "keyword1"=> [
+                            "value"=>  $goods['name'],
+                            "color"=> "#4a4a4a"
                           ],
-                          'keyword2' => [
-                            'value' => $order_info['amount'].'元',
-                            'color' => '#9b9b9b',
+                          "keyword2"=> [
+                            "value"=> $order_info['amount']."元",
+                            "color"=> "#9b9b9b"
                           ],
-                          'keyword3' => [
-                            'value' => $order_info['order_sn'],
-                            'color' => '#9b9b9b',
+                          "keyword3"=> [
+                            "value"=> $order_info['order_sn'],
+                            "color"=> "#9b9b9b"
                           ],
-                          'keyword4' => [
-                            'value' => date('Y-m-d H:i:s', $order_info['addtime']),
-                            'color' => '#9b9b9b',
-                          ],
+                          "keyword4"=> [
+                            "value"=> date('Y-m-d H:i:s', $order_info['addtime']),
+                            "color"=> "#9b9b9b"
+                          ]
                         ];
                 break;
             case 1:
                 $data = [
-                          'keyword1' => [
-                            'value' => $goods['name'],
-                            'color' => '#9b9b9b',
+                          "keyword1"=> [
+                            "value"=> $goods['name'],
+                            "color"=> "#9b9b9b"
                           ],
-                          'keyword2' => [
-                            'value' => $order_info['amount'].'元',
-                            'color' => '#9b9b9b',
+                          "keyword2"=> [
+                            "value"=> $order_info['amount']."元",
+                            "color"=> "#9b9b9b"
                           ],
-                           'keyword3' => [
-                            'value' => date('Y-m-d H:i:s', $order_info['addtime']),
-                            'color' => '#4a4a4a',
+                           "keyword3"=> [
+                            "value"=> date('Y-m-d H:i:s', $order_info['addtime']),
+                            "color"=> "#4a4a4a"
                            ],
-                          'keyword4' => [
-                            'value' => $order_info['order_sn'],
-                            'color' => '#9b9b9b',
+                          "keyword4"=> [
+                            "value"=> $order_info['order_sn'],
+                            "color"=> "#9b9b9b"
                           ],
-                          'keyword5' => [
-                            'value' => $msg,
-                            'color' => '#9b9b9b',
-                          ],
+                          "keyword5"=> [
+                            "value"=> $msg,
+                            "color"=> "#9b9b9b"
+                          ]
                         ];
                 break;
                 // 代付款 已经发货 等等....
@@ -2321,5 +2450,29 @@ class NewsController extends PublicController
         // dump($data);
         //$this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!','data'=>$data]);
         return $data;
+    }
+
+
+    /**
+     * [ggtop 首页广告swiper]
+     * @return [json] [广告滚动图]
+     */
+    public function getSwipers()
+    {
+        //如果缓存首页没有数据，那么就读取数据库
+        /***********获取首页顶部轮播图************/
+        $ggtop = M('guanggao')->where('position=1')->order('sort desc,id asc')->field('id,name,photo,action')->limit(10)->select();
+        foreach ($ggtop as $k => $v) {
+            if (!empty($v['action']) && M('product')->find($v['action'])) {
+                $ggtop[$k]['link'] = '/pages/goods_detail?id='.$v['action'];
+            } else {
+                $ggtop[$k]['link'] = 'index';
+            }
+            $ggtop[$k]['photo'] = __DATAURL__.$v['photo'];
+            $ggtop[$k]['name'] = urlencode($v['name']);
+        }
+        /***********获取首页顶部轮播图 end************/
+
+        $this->ajaxReturn(['code' => 0,'msg'=>'','data'=>$ggtop]);
     }
 }
