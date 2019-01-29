@@ -374,6 +374,89 @@ class NewsController extends PublicController
     }
 
     /**
+     * [searchGoodsList 搜索商品列表]
+     * @return [type] [description]
+     */
+    public function searchGoodsListNew()
+    {
+        if (IS_GET) {
+            $page = intval($_REQUEST['page']);
+            // $arr = ['is_hot','type','is_show','is_sale'];
+            $where = 'del=0  AND is_down=0 AND cid in ('.$this->cid.')';
+
+            $limit = intval($page * 16) - 16;
+
+            //促销类型
+            if ($_GET['locationFlag'] != "") {
+                $where .= ' AND '.$this->flag[$_GET['locationFlag']].'=1' ;
+            }
+
+            //分类检索
+            if ($_GET['cateCode'] != "") {
+                $where .= ' AND cid='.$_GET['cateCode'] ;
+            }
+
+            //关键字查询
+            $keyword = trim($_REQUEST['searchKeyWords']);
+            $uid = $uid = intval($_REQUEST['uid']);
+            if ($keyword != "") {
+                /*=============================================
+                =       这段是增加用户个人搜索个数的 block       =
+                =============================================*/
+                if ($uid) {
+                    $check = M('search_record')->where('uid='.intval($uid).' AND keyword="'.$keyword.'"')->find();
+                    if ($check) {
+                        $num = intval($check['num'])+1;
+                        M('search_record')->where('id='.intval($check['id']))->save(array('num'=>$num));
+                    } else {
+                        $add = array();
+                        $add['uid'] = $uid;
+                        $add['keyword'] = $keyword;
+                        $add['addtime'] = time();
+                        M('search_record')->add($add);
+                    }
+                }
+                /*=====  End of Section 这段是增加用户个人搜索个数的 block  ======*/
+                
+                $where .=  'AND name LIKE "%'.$keyword.'%"';
+            }
+
+            //排序
+            switch ($_GET['sort']) {
+                case '4':
+                    $order = "renqi desc";
+                    break;
+                case '3':
+                    $order = "shiyong desc";
+                    break;
+                case '2':
+                    $order = "price_yh asc";
+                    break;
+                case '1':
+                    $order = "price_yh desc";
+                    break;
+                default:
+                    $order = 'sort desc,id desc';
+                    break;
+            }
+
+
+            //现在这个当做搜索 所以有可能是所有产品
+            // else {
+            //     $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!','list'=> $list]);
+            // }
+            $list = M('product')->field("id,name,intro,pro_number,price,price_yh,photo_x,photo_d,shiyong,type,is_show,is_hot,is_sale,num")->where($where)->cache(true, 1800)->order($order)->limit($limit.',16')->select();
+
+            $total = M('product')->where($where)->count("id");
+            $pageTotal = ceil($total /16);
+
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','data'=> $list,'page_total'=>$pageTotal]);
+        } else {
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
+        }
+    }
+
+    /**
      * [rootCtegoryList 一级栏目列表]
      * @return [type] [description]
      */

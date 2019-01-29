@@ -76,7 +76,7 @@ class ProductController extends PublicController
     public function getGoods()
     {
         //$where="1=1 AND pro_type = 1 AND del<1";    //这是原版 只列出普通商品 以后应该也分开促销商品到营销分区里去 不过现在为了求快暂时放在一起
-        $where="1=1 AND del<1";
+        $where="1 = 1 AND del < 1";
 
         if ($_GET['cid'] == 0) {
             unset($_GET['cid']);
@@ -94,7 +94,13 @@ class ProductController extends PublicController
                 break;
             }
         }
-
+		
+		if($_GET['field'] != '' && $_GET['order'] != ''){
+			$order = $_GET['field'].' '.$_GET['order'];
+		}else{
+			$order ='updatetime desc';
+		}
+		
 
 
         $count=M('product')->where($where)->count();
@@ -102,7 +108,7 @@ class ProductController extends PublicController
         $page = (int) -- $_GET['page'] ;
         $rows = $_GET['limit'] ? $_GET['limit'] : 10;
         $limit= $page*$rows;
-        $productlist=M('product')->where($where)->order('updatetime desc')->limit($limit, $rows)->select();
+        $productlist=M('product')->where($where)->order($order)->limit($limit, $rows)->select();
         $sql = M('product')->getlastsql();
 
         //$resuslt = [code=>0,msg=>'',count=>$count,data=>$productlist,sql=>$sql];
