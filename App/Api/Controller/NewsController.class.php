@@ -219,6 +219,49 @@ class NewsController extends PublicController
             $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求']);
         }
     }
+    /**
+     * [signInfo 过往签到信息]
+     * @return [type] [description]
+     */
+    public function getSignInfo()
+    {
+        if (IS_GET) {
+            if ($_GET['uid'] == "") {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
+            }
+
+            $score = M('user')->where("id = '".$_GET['uid']."'")->getField("jifen");
+            $r = M('user_course')->field("DATE(FROM_UNIXTIME(ADDTIME)) as dtime,age")->where("uid = '".$_GET['uid']."'")->order('id desc')->find();
+            //当第一次签到
+            if (!$r) {
+                $this->ajaxReturn(['code' => 0, 'msg'=>'','conDays'=>0,'hasSign'=>0,'score'=>0,'list'=>[]]);
+            }
+            //$sql = M('user_course')->getlastsql();
+            $conDays = $r['age']?$r['age']:0; //连续签到天数
+            //$dt = $date = new Carbon($r['dtime']);
+            $date = new Carbon($r['dtime']);
+            $rr = $date->diffInDays(Carbon::now());
+        
+            //如果已经不是连续签到 并且连续签到数据不是原始的 就设置为0
+            if ($rr > 1 && $conDays > 0) {
+                $conDays =0;
+                $addr = M('user_course')->where("uid = '".$_GET['uid']."'")->order('id desc')->limit(1)->save(['age'=>$conDays]);
+            }
+            
+            if ($addr === false) {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'签到出错','erro'=>'更新连续签到时保存数据库出错']);
+            }
+
+            //如果签到间隔大于0就说明没有签到
+            $hasSign = ($rr == 0)?1:0;
+
+            $list = M('user_course')->field("DATE(FROM_UNIXTIME(ADDTIME)) as signTime,10 as signPoint,0 as isdeleted,sex")->where("uid = '".$_GET['uid']."'")->order('id desc')->limit(30)->select();
+
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','data'=>['conDays'=>$conDays,'hasSign'=>$hasSign,'score'=>$score,'list'=>$list]]);
+        } else {
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求']);
+        }
+    }
 
 
     /**
@@ -241,6 +284,29 @@ class NewsController extends PublicController
                 $list[$i] = ['signed'=>$flag,'signTime'=>$dd->day."日",'sql'=>M('user_course')->getlastsql()];
             }
             $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=> $list]);
+        } else {
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求','list'=> $list]);
+        }
+    }   /**
+     * [signInfo 最近七天签到情况]
+     * @return [type] [description]
+     */
+    public function getSignDateNew()
+    {
+        if (IS_GET) {
+            if ($_GET['uid'] == "") {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
+            }
+            $list = [];
+
+            for ($i=0; $i < 7; $i++) {
+                $dd = Carbon::now()->subDays(6 - $i);
+                $r = M('user_course')->where("uid = '".$_GET['uid']."' AND DATE(FROM_UNIXTIME(ADDTIME)) = '".$dd->format('Y-m-d')."'")->find();
+
+                $flag = $r?1:0;
+                $list[$i] = ['signed'=>$flag,'signTime'=>$dd->day."日",'sql'=>M('user_course')->getlastsql()];
+            }
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','data'=> $list]);
         } else {
             $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求','list'=> $list]);
         }
@@ -268,6 +334,7 @@ class NewsController extends PublicController
             $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!','list'=> $list]);
         }
     }
+
     /**
      * [discountGoodsList 2.5版首页热销7个]
      * @return [type] [description]
@@ -381,6 +448,9 @@ class NewsController extends PublicController
     {
         if (IS_GET) {
             $page = intval($_REQUEST['page']);
+			if (!$page) {
+			    $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
+			}
             // $arr = ['is_hot','type','is_show','is_sale'];
             $where = 'del=0  AND is_down=0 AND cid in ('.$this->cid.')';
 
@@ -450,7 +520,7 @@ class NewsController extends PublicController
             $total = M('product')->where($where)->count("id");
             $pageTotal = ceil($total /16);
 
-            $this->ajaxReturn(['code' => 0, 'msg'=>'','data'=> $list,'page_total'=>$pageTotal]);
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','data'=> [ 'list'=>$list,'page_total'=>$pageTotal]]);
         } else {
             $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
@@ -2128,7 +2198,7 @@ class NewsController extends PublicController
                 
                 $adds_info = ($_REQUEST['address'] == '') ? M('address')->where('id='.intval($adds_id))->find() : json_decode($_REQUEST['address'], true);
 
-                if ( $_REQUEST['type'] != 'cash') {
+                if ($_REQUEST['type'] != 'cash') {
                     $adds = M('address')->field('city,quyu')->where('id='.intval($adds_id))->find();
                     //如果是南京本地发货 自动选择当地区域门店为配送起点
                     if (891 == $adds['city']) {
