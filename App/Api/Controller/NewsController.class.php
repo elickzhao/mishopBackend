@@ -540,6 +540,20 @@ class NewsController extends PublicController
             $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
+    /**
+     * [rootCtegoryList 一级栏目列表]
+     * @return [type] [description]
+     */
+    public function getRootCategoryList()
+    {
+        if (IS_GET) {
+            $list = M('category')->where('tid=1 AND bz_4=0 ')->field('id,tid,name')->order('sort desc,id asc')->select();
+            //$code = Arrays::pluck($list, 'id');
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','data'=> $list]);
+        } else {
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
+        }
+    }
 
     /**
      * [childGoodsCatetoryList 二级栏目列表]
@@ -561,6 +575,27 @@ class NewsController extends PublicController
             $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
     }
+	
+    /**
+     * [childGoodsCatetoryList 二级栏目列表]
+     * @return [type] [description]
+     */
+    public function getChildGoodsCatetoryList()
+    {
+        if (IS_GET) {
+            $catid = intval($_REQUEST['cat_id']);
+            if (!$catid) {
+                echo json_encode(array('status'=>0,'err'=>'没有找到产品数据.'));
+                exit();
+            }
+
+            $catList = M('category')->where('tid='.intval($catid).' AND bz_4=0 ')->field('id,name,bz_1')->select();
+ 
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','data'=> $catList]);
+        } else {
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
+        }
+    }
 
     /**
      * [searchHotKey 热门搜索关键词列表]
@@ -572,6 +607,20 @@ class NewsController extends PublicController
             $list =   M('search_record')->group('keyword')->field('keyword')->order('SUM(num) desc')->limit(10)->select();
             //$code = Arrays::pluck($list, 'id');
             $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=> $list]);
+        } else {
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
+        }
+    }
+    /**
+     * [searchHotKey 热门搜索关键词列表]
+     * @return [type] [description]
+     */
+    public function getSearchHotKey()
+    {
+        if (IS_GET) {
+            $list =   M('search_record')->group('keyword')->field('keyword')->order('SUM(num) desc')->limit(10)->select();
+            //$code = Arrays::pluck($list, 'id');
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','data'=> $list]);
         } else {
             $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
@@ -590,6 +639,22 @@ class NewsController extends PublicController
             }
             $list =   M('search_record')->where('uid='.intval($_GET['uid']))->order('addtime desc')->field('keyword')->limit(10)->select();
             $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=> $list]);
+        } else {
+            $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
+        }
+    }
+    /**
+     * [searchHotKey 历史搜索关键词列表]
+     * @return [type] [description]
+     */
+    public function getHistoryKeyList()
+    {
+        if (IS_GET) {
+            if ($_GET['uid'] == "") {
+                $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
+            }
+            $list =   M('search_record')->where('uid='.intval($_GET['uid']))->order('addtime desc')->field('keyword')->limit(10)->select();
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','data'=> $list]);
         } else {
             $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
