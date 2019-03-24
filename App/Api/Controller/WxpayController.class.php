@@ -1,4 +1,5 @@
 <?php
+
 namespace Api\Controller;
 
 use Think\Controller;
@@ -69,6 +70,74 @@ class WxpayController extends Controller
         $arr['paySign'] = strtoupper(MD5($jmstr));
         echo json_encode(array('status'=>1,'arr'=>$arr));
         exit();
+        //获取共享收货地址js函数参数
+        //$editAddress = $tools->GetEditAddressParameters();
+        //$this->assign('jsApiParameters',$jsApiParameters);
+        //$this->assign('editAddress',$editAddress);
+    }
+
+
+    //***************************
+    //  微信支付 接口
+    //***************************
+    public function wxpayNew()
+    {
+        $pay_sn = trim($_REQUEST['order_sn']);
+        if (!$pay_sn) {
+            // echo json_encode(array('status'=>0,'err'=>'支付信息错误！'));
+            // exit();
+            $this->ajaxReturn(['code' => 1, 'status'=>0,'msg'=>'支付信息错误！','err'=>__LINE__]);
+        }
+
+        $order_info = M('order')->where('order_sn="'.$pay_sn.'"')->find();
+        if (!$order_info) {
+            // echo json_encode(array('status'=>0,'err'=>'没有找到支付订单！'));
+            // exit();
+            $this->ajaxReturn(['code' => 1, 'status'=>0,'msg'=>'没有找到支付订单！','err'=>__LINE__]);
+        }
+
+        if (intval($order_info['status'])!=10) {
+            // echo json_encode(array('status'=>0,'err'=>'订单状态异常！'));
+            // exit();
+            $this->ajaxReturn(['code' => 1, 'status'=>0,'msg'=>'订单状态异常！','err'=>__LINE__]);
+        }
+
+        //①、获取用户openid
+        $tools = new \JsApiPay();
+        $openId = M('user')->where('id='.intval($order_info['uid']))->getField('openid');
+        if (!$openId) {
+            // echo json_encode(array('status'=>0,'err'=>'用户状态异常！'));
+            // exit();
+            $this->ajaxReturn(['code' => 1, 'status'=>0,'msg'=>'用户状态异常！','err'=>__LINE__]);
+        }
+        
+        //②、统一下单
+        $input = new \WxPayUnifiedOrder();
+        $input->SetBody("环球集市海购购买_".trim($order_info['order_sn']));
+        $input->SetAttach("环球集市海购购买_".trim($order_info['order_sn']));
+        $input->SetOut_trade_no($pay_sn);
+        $input->SetTotal_fee(floatval($order_info['amount'])*100);
+        $input->SetTime_start(date("YmdHis"));
+        $input->SetTime_expire(date("YmdHis", time() + 3600));
+        $input->SetGoods_tag("环球集市海购购买_".trim($order_info['order_sn']));
+        $input->SetNotify_url('https://small.huanqiujishi.com/index.php/Api/Wxpay/notify');
+        $input->SetTrade_type("JSAPI");
+        $input->SetOpenid($openId);
+        $order = \WxPayApi::unifiedOrder($input);
+        //echo '<font color="#f00"><b>统一下单支付单信息</b></font><br/>';
+        //printf_info($order);
+        $arr = array();
+        $arr['appId'] = $order['appid'];
+        $arr['nonceStr'] = $order['nonce_str'];
+        $arr['package'] = "prepay_id=".$order['prepay_id'];
+        $arr['signType'] = "MD5";
+        $arr['timeStamp'] = (string)time();
+        $str = $this->ToUrlParams($arr);
+        $jmstr = $str."&key=".\WxPayConfig::KEY;
+        $arr['paySign'] = strtoupper(MD5($jmstr));
+        $this->ajaxReturn(['code' => 0, 'msg'=>'支付成功！','data'=>['status'=>1,'arr'=>$arr]]);
+        // echo json_encode(array('status'=>1,'arr'=>$arr));
+        // exit();
         //获取共享收货地址js函数参数
         //$editAddress = $tools->GetEditAddressParameters();
         //$this->assign('jsApiParameters',$jsApiParameters);

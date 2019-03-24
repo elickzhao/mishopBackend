@@ -61,11 +61,13 @@ class AddressController extends PublicController
             if ($_POST['sheng'] == "天津市") {
                 $_POST['sheng'] = $_POST['city']= "天津";
             }
+            
             $data['sheng'] = M('china_city')->where('name="'.$_POST['sheng'].'"')->getField('id');
             $data['city'] = M('china_city')->where('name="'.$_POST['city'].'"')->getField('id');
             $data['quyu'] = M('china_city')->where('name="'.$_POST['quyu'].'"')->getField('id');
+            $sql =M('china_city')->getlastsql();
             if (!$data['sheng'] || !$data['city'] || !$data['quyu']) {
-                echo json_encode(array('status'=>0,'err'=>'请选择省市区.'));
+                echo json_encode(array('status'=>0,'err'=>'请选择省市区.','sql'=>$sql));
                 exit();
             }
         }
@@ -261,6 +263,17 @@ class AddressController extends PublicController
             $resuslt = ['status'=>1,'msg'=>'成功.','data'=>$r];
         } else {
             $resuslt = ['status'=>0,'msg'=>'失败.','data'=>$r];
+        }
+
+        $this->ajaxReturn($resuslt);
+    }
+    public function getShops()
+    {
+        $r = M('shop')->getField('name', true);
+        if ($r) {
+            $resuslt = ['code'=>0,'msg'=>'成功.','data'=>$r];
+        } else {
+            $resuslt = ['code'=>1,'msg'=>'失败.','data'=>$r];
         }
 
         $this->ajaxReturn($resuslt);
