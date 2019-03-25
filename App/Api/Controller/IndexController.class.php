@@ -6,6 +6,11 @@ vendor("Guzzle.autoloader");
 vendor("Guzzle.GuzzleHttp.Client");
 use GuzzleHttp\Client;
 
+vendor("QRCode.QRCode");
+use QRCode\QRCode;
+
+// import("ORG.File");
+
 class IndexController extends PublicController
 {
     //***************************
@@ -131,6 +136,15 @@ class IndexController extends PublicController
         }
 
         echo $str;
+        $QRCode = new QRCode();
+        // \File::write_file('Data\UploadFiles\product\3333.png', $QRCode->getQRCode());
+        //  file_put_content 无法创建目录 只能拿已经存在的目录测试
+        if (!$QRCode->isHasQR('152076592')) {
+            $QRCode->createQRCode('152076592');
+        } else {
+            dump('已经存在!');
+            dump('Data\UploadFiles\product\222\qrcode.png');
+        }
     }
 
     /**
@@ -208,6 +222,6 @@ class IndexController extends PublicController
         // 所以这里用dump() 显示信息 如果返回正确图片 就为空了 不显示
         dump($b);
         // 保存这里 也得需要改  这里应该返回数据 还写个保存图片的方法
-        file_put_contents('Data\UploadFiles\product\223.jpg', $b);
+        file_put_contents('Data/UploadFiles/product/23.jpg', $b);
     }
 }

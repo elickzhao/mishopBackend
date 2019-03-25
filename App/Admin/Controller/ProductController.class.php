@@ -3,6 +3,9 @@ namespace Admin\Controller;
 
 use Think\Controller;
 
+vendor("QRCode.QRCode");
+use QRCode\QRCode;
+
 class ProductController extends PublicController
 {
     //***********************************************
@@ -94,13 +97,13 @@ class ProductController extends PublicController
                 break;
             }
         }
-		
-		if($_GET['field'] != '' && $_GET['order'] != ''){
-			$order = $_GET['field'].' '.$_GET['order'];
-		}else{
-			$order ='updatetime desc';
-		}
-		
+        
+        if ($_GET['field'] != '' && $_GET['order'] != '') {
+            $order = $_GET['field'].' '.$_GET['order'];
+        } else {
+            $order ='updatetime desc';
+        }
+        
 
 
         $count=M('product')->where($where)->count();
@@ -1088,5 +1091,17 @@ class ProductController extends PublicController
         } else {
             return false;
         }
+    }
+
+    public function createQRCode()
+    {
+        $id = intval($_REQUEST['id']);
+        $pro_number = intval($_REQUEST['pro_number']);
+
+        $QRCode = new QRCode();
+        if (!$QRCode->isHasQR($pro_number)) {
+            $QRCode->createQRCode($id, $pro_number);
+        }
+        $this -> ajaxReturn(['code' => 0, 'msg' => 'ok']);
     }
 }

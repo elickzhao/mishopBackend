@@ -10,4 +10,9 @@ return array(
     'ORDER_STATUS'         => array('0'=>'已取消','10' => '待付款', '20' => '待发货', '30' => '已发货', '40' => '已收货', '50' => '交易完成', '51' => '交易关闭' ,'back'=>'退款中'),
     'ORDER_MSG' => array('orderMSG'=>1,'autoClose'=>0,'heartbeat'=>15,'minimum'=>20,'freight'=>3),
     'PRO_TYPE' => array('1'=>'普通商品','2'=>'特价商品'),
+    //微信配置参数
+    'weixin'=>array(
+        'appid' =>'wx026f26d858d16098',         //微信appid
+        'secret'=>'4ec65ec9c4d07568e78b0954608125ad', //微信secret
+    )
 );

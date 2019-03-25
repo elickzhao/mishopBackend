@@ -48,8 +48,8 @@ return array(
    
 	//微信配置参数
     'weixin'=>array(
-        'appid' =>'wxe3cddba969751685',			//微信appid
-        'secret'=>'795e1a2694489316e1063c94ed944fe0', //微信secret
+        'appid' =>'wx026f26d858d16098',			//微信appid
+        'secret'=>'4ec65ec9c4d07568e78b0954608125ad', //微信secret
 
         'mchid' => '',      //微信支付 mchid
         'key' => '',        //微信支付 key
