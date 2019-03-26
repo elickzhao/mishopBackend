@@ -45,7 +45,8 @@ class QRCode
         // dump($token);
 
         $url = "https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=" . $token;
-        $body = ["scene" => 'id='.$id, "page" => "pages/goods_detail", "auto_color" => true, "is_hyaline" => true];
+        // $body = ["scene" => 'id='.$id, "page" => "pages/goods_detail", "auto_color" => true, "is_hyaline" => true];
+        $body = ["scene" => "'id':'".$id."'", "page" => "pages/goods_detail", "auto_color" => true, "is_hyaline" => true];
         $response = $client -> request('POST', $url, ['json' => $body, 'verify' => false]);
         $b = $response -> getBody() -> getContents();
         // 靠 是dump的问题 dump() 不显示返回的jpg编码 只显示 错误信息 估计是string格式
@@ -71,14 +72,20 @@ class QRCode
     public function isHasQR($pro_number = '')
     {
         // return file_exists('Data/UploadFiles/product/'.$pro_number.'/qrcode.png');
-        return file_exists('Data/UploadFiles/product/'.$pro_number.'/'.$pro_number.'.png');
+        return file_exists('Data/UploadFiles/product/'.$pro_number.'/qrcode_'.$pro_number.'.png');
     }
 
+    /**
+     * [createQRCode 创建小程序码]
+     * @param  string $id         [商品ID用于请求小程序码]
+     * @param  string $pro_number [商品货号用于保存小程序码文件夹]
+     * @return [type]             [description]
+     */
     public function createQRCode($id = '', $pro_number = '')
     {
         $qr = $this->getQRCode($id);
         // $r = file_put_contents('Data/UploadFiles/product/'.$pro_number.'/qrcode.png', $qr);
-        $r = file_put_contents('Data/UploadFiles/product/'.$pro_number.'/'.$pro_number.'.png', $qr);
+        $r = file_put_contents('Data/UploadFiles/product/'.$pro_number.'/qrcode_'.$pro_number.'.png', $qr);
         // $r = file_put_contents('Data/UploadFiles/product/qrcode.png', $qr);
         // dump('成功!-------->'.$r);
     }

@@ -252,8 +252,7 @@
 			let pro_number = $(this).attr('data-pro_number')
 			// console.log(pro_number, '----===========--------')
 
-			if (!isHasImg('https://small.huanqiujishi.com/Data/UploadFiles/product/' + pro_number + '/' + pro_number +
-					'.png')) {
+			if (!isHasImg('https://small.huanqiujishi.com/Data/UploadFiles/product/' + pro_number + '/qrcode_' + pro_number +'.png')) {
 				// console.log("生成图片");
 				createImg(id, pro_number)
 			}
@@ -261,7 +260,7 @@
 			timer = setTimeout(function () {
 				layer.tips(
 					"<img alt='' src='https://small.huanqiujishi.com/Data/UploadFiles/product/" +
-					pro_number + "/" + pro_number + ".png' style='width:120px;height:120px;'>",
+					pro_number + "/qrcode_" + pro_number + ".png' style='width:120px;height:120px;'>",
 					'#' + id, {
 						time: 2000,
 						tips: [3, 'rgba(41,41,41,.2)']
