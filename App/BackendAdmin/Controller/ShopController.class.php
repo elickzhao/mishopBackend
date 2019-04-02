@@ -30,41 +30,53 @@ class ShopController extends PublicController
         $this->display(); // 输出模板
     }
 
-       /*
+
+    /*
     *
     * 获取门店统计
     */
     public function count()
     {
         $chooseDay = $_POST['addtime'];
-        $mysqlDate =  new MysqlDate();
+        $mysqlDate = new MysqlDate();
         //指定日期或当天
-        $betweenDay = $chooseDay ? $mysqlDate->dayPeriod($chooseDay):$mysqlDate->todadyPeriod();
-  
-        $map['addtime']  = array('between',$betweenDay);
-        $map['back']  = '0';
-        $map['status']  = array('in',[20,30,40,50]);
+        $betweenDay = $chooseDay ? $mysqlDate->dayPeriod($chooseDay) : $mysqlDate->todadyPeriod();
+
+        $this->assign('chooseDay', $chooseDay ? $chooseDay : date('Y-m-d', time()));
+        $bc = ['门店统计', '门店统计新'];
+        $this->assign('bc', $bc);
+        $this->display('count_new'); // 输出模板
+    }
+
+    public function getCount()
+    {
+        $chooseDay = $_GET['addtime'];
+        $mysqlDate = new MysqlDate();
+        //指定日期或当天
+        $betweenDay = $chooseDay ? $mysqlDate->dayPeriod($chooseDay) : $mysqlDate->todadyPeriod();
+
+        $map['addtime'] = array('between', $betweenDay);
+        $map['back'] = '0';
+        $map['status'] = array('in', [20, 30, 40, 50]);
 
         //$arr = ['鑫乐生活广场店','晓庄国际彩虹广场店','金盛田广场店'];
         $arr = M('shop')->getField('name', true);
 
         $r = [];
-        for ($i=0; $i < count($arr); $i++) {
-            $map['kuaidi_name']  = $arr[$i];
+        for ($i = 0; $i < count($arr); ++$i) {
+            $map['kuaidi_name'] = $arr[$i];
+            $r[$i]['name'] = $arr[$i];
             //$r[$i]['price'] = M('order')->field('SUM(price) as total')->where($map)->find();
             $r[$i]['price'] = M('order')->where($map)->getField('SUM(price) as total');
-            $r[$i]['price'] = $r[$i]['price']?$r[$i]['price'] :0;
+            $r[$i]['price'] = $r[$i]['price'] ? $r[$i]['price'] : 0;
             $r[$i]['count'] = M('order')->where($map)->count();
         }
-        
-        
-        $this->assign('result', $r);
-        $this->assign('chooseDay', $chooseDay?$chooseDay:date('Y-m-d', time()));
+        // dump($r);
+        // $sql= M('order')->getlastsql();
 
-        $bc = ['门店统计','门店统计'];
-        $this->assign('shopNames', $arr);
-        $this->assign('bc', $bc);
-        $this->display(); // 输出模板
+        // $resuslt = [code => 0, msg => '', data => $r, sql=>$sql];
+        $resuslt = [code => 0, msg => '', data => $r];
+        $this->ajaxReturn($resuslt);
     }
 
 
@@ -241,5 +253,81 @@ class ShopController extends PublicController
         $resuslt = [code=>0,msg=>'',count=>1,data=>$r,exc=>$exclude,shopScope=>$shopScope];
 
         $this->ajaxReturn($resuslt);
+    }
+
+    /**
+     * [orderDetail 店铺订单详情]
+     * @return [type] [description]
+     */
+    public function orderDetail()
+    {
+        // dump($_GET);
+        $orderStatus = C('ORDER_STATUS');
+        $chooseDay = trim($_GET['date']);
+        $mysqlDate = new MysqlDate();
+        //指定日期或当天
+        $betweenDay = $chooseDay ? $mysqlDate->dayPeriod($chooseDay) : $mysqlDate->todadyPeriod();
+
+        $map['addtime'] = array('between', $betweenDay);
+        $map['back'] = '0';
+        $map['status'] = array('in', [0,10, 20, 30, 40, 50,51]);
+        $map['kuaidi_name'] = $_GET['shop'];
+
+        // 订单总量 = 订单状态数 + 退款
+        $count = M('order')->where($map)->count();
+        $all = M('order')->field('id,order_sn,receiver,price_h,kuaidi_name,status,addtime,back')->where($map)->select();
+
+        // 查询退款订单
+        $map['back'] = ['in',['1','2']];
+        $backCount = M('order')->where($map)->count();
+        $backAll = M('order')->field('id,order_sn,receiver,price_h,kuaidi_name,status,addtime,back')->where($map)->select();
+
+        // 合并退款订单
+        $count = $count + $backCount;
+        $all = array_merge($all, $backAll);
+ 
+        // 图表数组
+        $arr = [];
+        // 数据数组
+        $list = [];
+
+        // 初始化图表数组
+        foreach ($orderStatus as $k => $v) {
+            $arr[$k]['status'] = $k;
+            $arr[$k]['type'] = $v;
+            $arr[$k]['count'] = 0;
+        }
+
+        // 组织图表数组和数据数组
+        foreach ($all as $k => $v) {
+            if (key_exists($v['status'], $arr)) {
+                if ($v['back'] != 0) {
+                    $v['status'] = 'back';
+                }
+                if ($list[$v['status']] != '') {
+                    array_push($list[$v['status']], $v);
+                } else {
+                    $list[$v['status']] = [$v];
+                }
+                $arr[$v['status']]['count']++;
+            }
+        }
+
+        // 图表数据 去除下标并编码json格式
+        $arr = json_encode(array_values($arr));
+        // 分类订单数据
+        $list = json_encode($list);
+        // 订单总数据
+        $all = json_encode($all);
+        // 订单状态
+        $orderStatus = json_encode($orderStatus);
+
+        
+        $this->assign('orderStatus', $orderStatus);
+        $this->assign('all', $all);
+        $this->assign('list', $list);
+        $this->assign('total', $count);  // 订单总数
+        $this->assign('g2', $arr);
+        $this->display('get_shop_order_detail');
     }
 }

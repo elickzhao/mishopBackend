@@ -1,0 +1,192 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="renderer" content="webkit|ie-comp|ie-stand">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport"
+		content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+	<link rel="Bookmark" href="/favicon.ico">
+	<link rel="Shortcut Icon" href="/favicon.ico" />
+	<!--[if lt IE 9]>
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/html5shiv.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/respond.min.js"></script>
+    <![endif]-->
+	<link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui/css/H-ui.min.css" />
+	<link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/css/H-ui.admin.css" />
+	<link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/lib/Hui-iconfont/1.0.8/iconfont.css" />
+	<link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/skin/default/skin.css" id="skin" />
+	<link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/css/style.css" />
+	<link rel="stylesheet" href="__PUBLIC__/admin/css/common.css">
+	<link rel="stylesheet" href="__PUBLIC__/admin/lib/layui/css/layui.css">
+	<!--[if IE 6]>
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+    <script>DD_belatedPNG.fix('*');</script>
+    <![endif]-->
+	<style>
+		.layui-table-cell {
+			height: inherit;
+		}
+
+		.layui-table-cell a {
+			text-decoration: none;
+		}
+
+		::-webkit-scrollbar {
+			display: none
+		}
+	</style>
+
+	<title>门店管理</title>
+</head>
+
+<body>
+	<!-- 导航 -->
+	<include File='Page/nav' />
+	<!-- /导航 -->
+
+	<div class="page-container">
+		<div class="panel panel-default mt-40">
+			<div class="panel-header">{$bc[1]}</div>
+			<div class="panel-body">
+
+				<div class="row cl">
+					<div class="col-sm-4">
+						<button class="layui-btn layui-btn">
+							<i class="Hui-iconfont">&#xe690;</i><span id="curr-day"> {$chooseDay}</span></button>
+
+					</div>
+					<div class="col-sm-8 f-r">
+						<form class="layui-form f-r" method="post">
+							<div class="layui-inline">
+								<div class="layui-input-inline" style="width: 260px;">
+									<input type="text" autocomplete="off" class="layui-input" placeholder='选择日期.'
+										name="addtime" id="addtime">
+								</div>
+								<button class="layui-btn layui-btn-normal" lay-submit name="submit" lay-filter="*">
+									<i class="Hui-iconfont">&#xe665;</i> 搜索</button>
+							</div>
+						</form>
+					</div>
+				</div>
+
+				<div class="hr-line-dashed"></div>
+
+				<table id="demo" lay-filter="test" lay-data="{id: 'idTest'}"></table>
+
+			</div>
+		</div>
+	</div>
+
+	<!-- 底部 -->
+	<div style="position:fixed; bottom:0; width:100%">
+		<include File='Page/footer' />
+	</div>
+	<!-- /底部 -->
+
+	<script type="text/html" id="barDemo">
+		<a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="detail">查看详情</a>
+		<!-- <a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del">删除</a> -->
+	</script>
+
+	<script>
+		var table = layui.table;
+		var form = layui.form;
+
+		/*=============================================
+		=            头部检索表单提交                  =
+		=============================================*/
+
+		form.on('submit(*)', function (data) {
+			//console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
+			var field = data.field;
+			if (field.addtime != " ") {
+				$('#curr-day').html(' ' + field.addtime)
+				tableIns.reload({
+					url: "{:U('Shop/getCount')}",
+					where: { //设定异步数据接口的额外参数，任意设
+						addtime: field.addtime,
+					}
+				});
+				field = "";
+			} else {
+				tableIns.reload({
+					url: "{:U('Order/getOrders')}"
+				});
+			}
+			return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+		});
+		/*=====  End of 头部检索表单提交  ======*/
+
+
+		var tableIns = table.render({
+			elem: '#demo',
+			height: 'full-290',
+			url: "{:U('Shop/getCount')}",
+			cellMinWidth: 80,
+			cols: [
+				[{
+					field: 'name',
+					title: '门店名称',
+					align: 'center',
+				}, {
+					field: 'count',
+					title: '销售订单总数',
+					align: 'center',
+				}, {
+					field: 'price',
+					title: '销售金额',
+					align: 'center',
+				}, {
+					field: 'cz',
+					title: '操作',
+					width: '14%',
+					align: 'center',
+					toolbar: '#barDemo'
+				}]
+			],
+		});
+
+
+
+		/*=============================================
+		=            日期选择            			  =
+		=============================================*/
+
+		var laydate = layui.laydate;
+		//执行一个laydate实例
+		laydate.render({
+			elem: '#addtime',
+			format: 'yyyy-MM-dd',
+			value: "{$chooseDay}",
+			max: 0
+		});
+
+		/*=====  End of 日期选择  ======*/
+
+
+		//监听工具条
+		table.on('tool(test)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+			var data = obj.data; //获得当前行数据
+			var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+			var tr = obj.tr; //获得当前行 tr 的DOM对象
+			if (layEvent === 'detail') {
+				let currDay = $('#curr-day').html();
+				layer.open({
+					type: 2,
+					title: '选择区域',
+					area: ['1280px', '800px'],
+					fixed: false, //不固定
+					maxmin: true,
+					shadeClose: true,
+					content: "./orderDetail.html?shop=" + data.name + "&date=" + currDay
+				});
+			}
+		})
+	</script>
+
+</body>
+
+</html>

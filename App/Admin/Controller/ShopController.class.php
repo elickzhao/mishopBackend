@@ -1,35 +1,36 @@
 <?php
+
 namespace Admin\Controller;
 
-use Think\Controller;
-
-vendor("MysqlDate.MysqlDate");
+vendor('MysqlDate.MysqlDate');
 use MysqlDate\MysqlDate;
 
+/**
+ * [PublicController 门店管理类].
+ */
 class ShopController extends PublicController
 {
-
-    /*
-    *
-    * 构造函数，用于导入外部文件和公共方法
-    */
+    /**
+     * 构造函数，用于导入外部文件和公共方法
+     * [_initialize description].
+     *
+     * @return [type] [return description]
+     */
     public function _initialize()
     {
         $this->shop = M('shop');
     }
 
-    /*
-    *
-    * 获取、查询广告表数据
-    */
+    /**
+     * 获取、查询广告表数据.
+     */
     public function index()
     {
-        $bc = ['门店管理','全部门店'];
+        $bc = ['门店管理', '全部门店'];
         $this->assign('bc', $bc);
 
         $this->display(); // 输出模板
     }
-
 
     /*
     *
@@ -38,62 +39,93 @@ class ShopController extends PublicController
     public function count()
     {
         $chooseDay = $_POST['addtime'];
-        $mysqlDate =  new MysqlDate();
+        $mysqlDate = new MysqlDate();
         //指定日期或当天
-        $betweenDay = $chooseDay ? $mysqlDate->dayPeriod($chooseDay):$mysqlDate->todadyPeriod();
-  
-        $map['addtime']  = array('between',$betweenDay);
-        $map['back']  = '0';
-        $map['status']  = array('in',[20,30,40,50]);
+        $betweenDay = $chooseDay ? $mysqlDate->dayPeriod($chooseDay) : $mysqlDate->todadyPeriod();
+
+        // $map['addtime']  = array('between',$betweenDay);
+        // $map['back']  = '0';
+        // $map['status']  = array('in',[20,30,40,50]);
+
+        // //$arr = ['鑫乐生活广场店','晓庄国际彩虹广场店','金盛田广场店'];
+        // $arr = M('shop')->getField('name', true);
+
+        // $r = [];
+        // for ($i=0; $i < count($arr); $i++) {
+        //     $map['kuaidi_name']  = $arr[$i];
+        //     $r[$i]['name'] = $arr[$i];
+        //     //$r[$i]['price'] = M('order')->field('SUM(price) as total')->where($map)->find();
+        //     $r[$i]['price'] = M('order')->where($map)->getField('SUM(price) as total');
+        //     $r[$i]['price'] = $r[$i]['price']?$r[$i]['price'] :0;
+        //     $r[$i]['count'] = M('order')->where($map)->count();
+        // }
+        // dump($r);
+
+        // $this->assign('result', $r);
+        // $this->assign('shopNames', $arr);
+
+        $this->assign('chooseDay', $chooseDay ? $chooseDay : date('Y-m-d', time()));
+        $bc = ['门店统计', '门店统计新'];
+        $this->assign('bc', $bc);
+        $this->display('count_new'); // 输出模板
+    }
+
+    public function getCount()
+    {
+        $chooseDay = $_GET['addtime'];
+        $mysqlDate = new MysqlDate();
+        //指定日期或当天
+        $betweenDay = $chooseDay ? $mysqlDate->dayPeriod($chooseDay) : $mysqlDate->todadyPeriod();
+
+        $map['addtime'] = array('between', $betweenDay);
+        $map['back'] = '0';
+        $map['status'] = array('in', [20, 30, 40, 50]);
 
         //$arr = ['鑫乐生活广场店','晓庄国际彩虹广场店','金盛田广场店'];
         $arr = M('shop')->getField('name', true);
 
         $r = [];
-        for ($i=0; $i < count($arr); $i++) {
-            $map['kuaidi_name']  = $arr[$i];
+        for ($i = 0; $i < count($arr); ++$i) {
+            $map['kuaidi_name'] = $arr[$i];
+            $r[$i]['name'] = $arr[$i];
             //$r[$i]['price'] = M('order')->field('SUM(price) as total')->where($map)->find();
             $r[$i]['price'] = M('order')->where($map)->getField('SUM(price) as total');
-            $r[$i]['price'] = $r[$i]['price']?$r[$i]['price'] :0;
+            $r[$i]['price'] = $r[$i]['price'] ? $r[$i]['price'] : 0;
             $r[$i]['count'] = M('order')->where($map)->count();
         }
-        
+        // dump($r);
+        // $sql= M('order')->getlastsql();
 
-        $this->assign('result', $r);
-        $this->assign('chooseDay', $chooseDay?$chooseDay:date('Y-m-d', time()));
-
-        $bc = ['门店统计','门店统计'];
-        $this->assign('shopNames', $arr);
-        $this->assign('bc', $bc);
-        $this->display(); // 输出模板
-    }
-
-
-    /**
-      * [getGoods ajax获取广告列表]
-      * @return [json] [广告数据]
-      */
-    public function getshops()
-    {
-        $where="1=1";
-        if ($_GET['name'] != "") {
-            $where .= ' AND name like "%'. $_GET['name'].'%"';
-        }
-
-        $count=M('shop')->where($where)->count();
-        $rows=ceil($count/rows);
-        $page = (int) -- $_GET['page'] ;
-        $rows = $_GET['limit'] ? $_GET['limit'] : 20;
-        $limit= $page*$rows;
-        $shoplist=M('shop')->where($where)->order('id desc')->limit($limit, $rows)->select();
-        $sql = M('shop')->getlastsql();
-        
-        //$resuslt = [code=>0,msg=>'',count=>$count,data=>$shoplist,sql=>$sql];
-        $resuslt = [code=>0,msg=>'',count=>$count,data=>$shoplist];
-
+        // $resuslt = [code => 0, msg => '', data => $r, sql=>$sql];
+        $resuslt = [code => 0, msg => '', data => $r];
         $this->ajaxReturn($resuslt);
     }
 
+    /**
+     * [getGoods ajax获取广告列表].
+     *
+     * @return [json] [广告数据]
+     */
+    public function getshops()
+    {
+        $where = '1=1';
+        if ('' != $_GET['name']) {
+            $where .= ' AND name like "%'.$_GET['name'].'%"';
+        }
+
+        $count = M('shop')->where($where)->count();
+        $rows = ceil($count / rows);
+        $page = (int) --$_GET['page'];
+        $rows = $_GET['limit'] ? $_GET['limit'] : 20;
+        $limit = $page * $rows;
+        $shoplist = M('shop')->where($where)->order('id desc')->limit($limit, $rows)->select();
+        $sql = M('shop')->getlastsql();
+
+        //$resuslt = [code=>0,msg=>'',count=>$count,data=>$shoplist,sql=>$sql];
+        $resuslt = [code => 0, msg => '', count => $count, data => $shoplist];
+
+        $this->ajaxReturn($resuslt);
+    }
 
     /*
     *
@@ -114,9 +146,9 @@ class ShopController extends PublicController
             //配送范围
             if ($adv_info['scope']) {
                 $scope = explode(',', $adv_info['scope']);
-                $scopeName="";
+                $scopeName = '';
                 foreach ($scope as $v) {
-                    $r = M('china_city')->where(['id'=>$v])->getField('name');
+                    $r = M('china_city')->where(['id' => $v])->getField('name');
                     $scopeName .= $r.',';
                 }
                 $adv_info['scopeName'] = trim($scopeName, ',');
@@ -125,11 +157,10 @@ class ShopController extends PublicController
             $this->assign('adv_info', $adv_info);
         }
 
-        $bc = ['门店管理','添加门店'];
+        $bc = ['门店管理', '添加门店'];
         $this->assign('bc', $bc);
         $this->display();
     }
-
 
     /*
     *
@@ -166,7 +197,6 @@ class ShopController extends PublicController
 
         F('shopScope', $arr);
 
-
         //判断数据是否更新成功
         if ($result) {
             $this->success('操作成功.', 'index');
@@ -192,7 +222,7 @@ class ShopController extends PublicController
         //修改对应的删除状态
         $up = $this->shop->where('id='.intval($adv_id))->delete();
         if ($up) {
-            $url = "Data/".$check_info['photo'];
+            $url = 'Data/'.$check_info['photo'];
             if (file_exists($url)) {
                 @unlink($url);
             }
@@ -203,7 +233,7 @@ class ShopController extends PublicController
     }
 
     /**
-     * [setGoodsAtrr 设置门店属性]
+     * [setGoodsAtrr 设置门店属性].
      */
     public function setAtrr()
     {
@@ -213,7 +243,7 @@ class ShopController extends PublicController
             $val = $_POST['val'];
 
             if (is_array($pro_id)) {
-                $where = 'id in ('. implode(',', $pro_id).')';
+                $where = 'id in ('.implode(',', $pro_id).')';
             } else {
                 $where = 'id='.intval($pro_id);
             }
@@ -222,10 +252,10 @@ class ShopController extends PublicController
             $up = $this->shop->where($where)->save($data);
             //$rr = $this->shop->getlastsql();
 
-            $resuslt = [code=>$up,msg=>$up];
+            $resuslt = [code => $up, msg => $up];
             $this->ajaxReturn($resuslt);
         } else {
-            $this->ajaxReturn([code=>1,msg=>'非法请求']);
+            $this->ajaxReturn([code => 1, msg => '非法请求']);
         }
     }
 
@@ -236,7 +266,7 @@ class ShopController extends PublicController
 
         $r = M('china_city')->field('ID,name')->where('tid="891"')->select();
         $shop = M('shop')->field('name,scope')->select();
-        
+
         $arr = [];
         $all = [];
         foreach ($shop as $k => $v) {
@@ -250,23 +280,100 @@ class ShopController extends PublicController
                 }
             }
         }
-        
-        $limit=intval($_REQUEST['limit']);
+
+        $limit = intval($_REQUEST['limit']);
         if ($limit) {
             $shopScope = M('shop')->where('id='.$limit)->getField('scope');
             $shopScope = explode(',', $shopScope);
-            $exclude=array_values(array_diff($all, $shopScope));
+            $exclude = array_values(array_diff($all, $shopScope));
         } else {
             // sort($all);
-            $exclude =$all;
+            $exclude = $all;
         }
 
         foreach ($r as $k => $v) {
             $r[$k]['shop'] = $arr[$v['id']];
         }
 
-        $resuslt = [code=>0,msg=>'',count=>1,data=>$r,exc=>$exclude,shopScope=>$shopScope];
+        $resuslt = [code => 0, msg => '', count => 1, data => $r, exc => $exclude, shopScope => $shopScope];
 
         $this->ajaxReturn($resuslt);
+    }
+
+    /**
+     * [orderDetail 店铺订单详情]
+     *
+     * @return  [type]  [return description]
+     */
+    public function orderDetail()
+    {
+        // dump($_GET);
+        $orderStatus = C('ORDER_STATUS');
+        $chooseDay = trim($_GET['date']);
+        $mysqlDate = new MysqlDate();
+        //指定日期或当天
+        $betweenDay = $chooseDay ? $mysqlDate->dayPeriod($chooseDay) : $mysqlDate->todadyPeriod();
+
+        $map['addtime'] = array('between', $betweenDay);
+        $map['back'] = '0';
+        $map['status'] = array('in', [0,10, 20, 30, 40, 50,51]);
+        $map['kuaidi_name'] = $_GET['shop'];
+
+        // 订单总量 = 订单状态数 + 退款
+        $count = M('order')->where($map)->count();
+        $all = M('order')->field('id,order_sn,receiver,price_h,kuaidi_name,status,addtime,back')->where($map)->select();
+
+        // 查询退款订单
+        $map['back'] = ['in',['1','2']];
+        $backCount = M('order')->where($map)->count();
+        $backAll = M('order')->field('id,order_sn,receiver,price_h,kuaidi_name,status,addtime,back')->where($map)->select();
+
+        // 合并退款订单
+        $count = $count + $backCount;
+        $all = array_merge($all, $backAll);
+ 
+        // 图表数组
+        $arr = [];
+        // 数据数组
+        $list = [];
+
+        // 初始化图表数组
+        foreach ($orderStatus as $k => $v) {
+            $arr[$k]['status'] = $k;
+            $arr[$k]['type'] = $v;
+            $arr[$k]['count'] = 0;
+        }
+
+        // 组织图表数组和数据数组
+        foreach ($all as $k => $v) {
+            if (key_exists($v['status'], $arr)) {
+                if ($v['back'] != 0) {
+                    $v['status'] = 'back';
+                }
+                if ($list[$v['status']] != '') {
+                    array_push($list[$v['status']], $v);
+                } else {
+                    $list[$v['status']] = [$v];
+                }
+                $arr[$v['status']]['count']++;
+            }
+        }
+
+        // 图表数据 去除下标并编码json格式
+        $arr = json_encode(array_values($arr));
+        // 分类订单数据
+        $list = json_encode($list);
+        // 订单总数据
+        $all = json_encode($all);
+        // 订单状态
+        $orderStatus = json_encode($orderStatus);
+
+        
+        $this->assign('orderStatus', $orderStatus);
+        $this->assign('all', $all);
+        $this->assign('list', $list);
+        $this->assign('total', $count);  // 订单总数
+        $this->assign('g2', $arr);
+        $this->display('get_shop_order_detail');
     }
 }
