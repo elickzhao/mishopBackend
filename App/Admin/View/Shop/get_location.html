@@ -1,0 +1,188 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+        content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <link rel="Bookmark" href="/favicon.ico">
+    <link rel="Shortcut Icon" href="/favicon.ico" />
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/html5shiv.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/respond.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui/css/H-ui.min.css" />
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/css/H-ui.admin.css" />
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/lib/Hui-iconfont/1.0.8/iconfont.css" />
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/skin/default/skin.css" id="skin" />
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/admin/static/h-ui.admin/css/style.css" />
+    <link rel="stylesheet" href="__PUBLIC__/admin/css/common.css">
+    <link rel="stylesheet" href="__PUBLIC__/admin/lib/layui/css/layui.css">
+    <!--[if IE 6]>
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+    <script>DD_belatedPNG.fix('*');</script>
+    <![endif]-->
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/admin/js/action.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/admin/lib/layui/layui.all.js"></script>
+    <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.14&key=92160cec394369bb0cf8b92d51504306">
+    </script>
+    <script type="text/javascript" src="https://cache.amap.com/lbs/static/addToolbar.js"></script>
+    <style>
+        .layui-table-cell {
+            height: inherit;
+        }
+
+        .layui-table-cell a {
+            text-decoration: none;
+        }
+
+        ::-webkit-scrollbar {
+            display: none
+        }
+
+
+        #container {
+            /* width: 1280px; */
+            height: 700px;
+            font-size: 14px;
+        }
+
+        #panel {
+            position: absolute;
+            background-color: white;
+            max-height: 90%;
+            overflow-y: auto;
+            top: 100px;
+            right: 10px;
+            width: 280px;
+        }
+
+
+
+
+        #pickerBox {
+            position: absolute;
+            z-index: 9999;
+            top: 50px;
+            right: 30px;
+            width: 300px;
+        }
+
+        #pickerInput {
+            width: 200px;
+            padding: 5px 5px;
+        }
+
+        #poiInfo {
+            background: #fff;
+        }
+
+        .amap_lib_placeSearch .poibox.highlight {
+            background-color: #CAE1FF;
+        }
+
+        .amap_lib_placeSearch .poi-more {
+            display: none !important;
+        }
+    </style>
+    <title>选择地址</title>
+</head>
+
+<body style="background-color: #fff;">
+
+    <div class="panel panel-default" style="border:0px;">
+        <div class="panel-body">
+            <div class="row cl">
+                <div class="col-sm-4">
+                    <div class="layui-input-inline" style="width: 260px;">
+                        <input id='tipinput' type="text" name="name" placeholder="请输入地址" autocomplete="off"
+                            class="layui-input">
+                    </div>
+                    <button class="layui-btn layui-btn-normal" lay-submit name="submit" onclick="onSearch()">
+                        <i class="Hui-iconfont">&#xe665;</i> 搜索</button>
+                </div>
+                <div class="col-sm-8 f-r">
+                    <button class="layui-btn layui-btn-normal f-r" id="transmit">
+                        <i class="Hui-iconfont">&#xe603;</i> 确认区域</button>
+                </div>
+            </div>
+            <div class="hr-line-dashed"></div>
+            <div id="container" class="col-sm-12"></div>
+            <div id="panel"></div>
+        </div>
+    </div>
+
+    <script>
+        var lngLat = '';
+        var placeSearch;
+        var autocomplete;
+
+        function onSearch() {
+            placeSearch.search($('#tipinput').val());
+        }
+
+        var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+        //给父页面传值
+        $('#transmit').on('click', function () {
+            // console.log(lngLat)
+            let str = lngLat.lng + ',' + lngLat.lat
+            // console.log(str)
+            if (lngLat.lng == undefined || lngLat.lat == undefined) {
+                layer.msg('请选择坐标!', {
+                    icon: 0
+                });
+                return false
+            }
+
+            parent.$('#lnglat').val(str);
+            parent.$('#longitude').val(lngLat.lng);
+            parent.$('#latitude').val(lngLat.lat);
+            parent.layer.close(index);
+        });
+
+        // 自定义式开发
+        var map = new AMap.Map('container', {
+            zoom: 12, //级别
+            resizeEnable: true,
+            viewMode: '3D' //使用3D视图
+        });
+
+        AMap.plugin(['AMap.Autocomplete', 'AMap.PlaceSearch'], function () {
+            var autoOptions = {
+                // 城市，默认全国 
+                city: "南京", // 以后从前台传过来值 来定  目前父页面无法传入地址 以后新框架再改 现在限定到南京
+                // 使用联想输入的input的id
+                input: "tipinput"
+            }
+            autocomplete = new AMap.Autocomplete(autoOptions)
+
+            placeSearch = new AMap.PlaceSearch({
+                city: '南京', // 以后从前台传过来值 来定  地图初始化不设置中心点会自动根据地址 返回中心点
+                panel: 'panel',
+                autoFitView: true,
+                pageSize: 7,
+                map: map
+            })
+            AMap.event.addListener(autocomplete, 'select', function (e) {
+                placeSearch.search(e.poi.name)
+
+            })
+            AMap.event.addListener(placeSearch, 'selectChanged', function (e) {
+                lngLat = e.selected.data.location
+            })
+
+        })
+    </script>
+
+
+
+
+
+
+</body>
+
+</html>

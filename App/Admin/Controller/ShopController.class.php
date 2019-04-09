@@ -144,21 +144,31 @@ class ShopController extends PublicController
             }
 
             //配送范围
-            if ($adv_info['scope']) {
-                $scope = explode(',', $adv_info['scope']);
-                $scopeName = '';
-                foreach ($scope as $v) {
-                    $r = M('china_city')->where(['id' => $v])->getField('name');
-                    $scopeName .= $r.',';
-                }
-                $adv_info['scopeName'] = trim($scopeName, ',');
-            }
+            // if ($adv_info['scope']) {
+            //     $scope = explode(',', $adv_info['scope']);
+            //     $scopeName = '';
+            //     foreach ($scope as $v) {
+            //         $r = M('china_city')->where(['id' => $v])->getField('name');
+            //         $scopeName .= $r.',';
+            //     }
+            //     $adv_info['scopeName'] = trim($scopeName, ',');
+            // }
+                        
+            $adv_info['lnglat'] = $adv_info['longitude'].','.$adv_info['latitude'];
+            $this->assign('shop_info', $adv_info);
 
-            $this->assign('adv_info', $adv_info);
+
+            $cityList = M('china_city')->where(['tid'=>$adv_info['province']])->field('id,name')->select();
+            $districtList = M('china_city')->where(['tid'=>$adv_info['city']])->field('id,name')->select();
+            $this->assign('city_list', $cityList);
+            $this->assign('district_list', $districtList);
         }
+
+        $cateList = M('china_city')->where('tid=0')->field('id,name')->select();
 
         $bc = ['门店管理', '添加门店'];
         $this->assign('bc', $bc);
+        $this->assign('cate_list', $cateList);
         $this->display();
     }
 
@@ -181,27 +191,27 @@ class ShopController extends PublicController
             $result = $this->shop->add();
         }
 
-        //缓存配送区域
-        $r = M('shop')->field('id,name,scope')->select();
-        $arr = [];
-        foreach ($r as $k => $v) {
-            if ($v['scope']) {
-                $scope = explode(',', $v['scope']);
-                if (is_array($scope)) {
-                    foreach ($scope as $vv) {
-                        $arr[$vv] = $v['name'];
-                    }
-                }
-            }
-        }
+        // //缓存配送区域
+        // $r = M('shop')->field('id,name,scope')->select();
+        // $arr = [];
+        // foreach ($r as $k => $v) {
+        //     if ($v['scope']) {
+        //         $scope = explode(',', $v['scope']);
+        //         if (is_array($scope)) {
+        //             foreach ($scope as $vv) {
+        //                 $arr[$vv] = $v['name'];
+        //             }
+        //         }
+        //     }
+        // }
 
-        F('shopScope', $arr);
+        // F('shopScope', $arr);
 
         //判断数据是否更新成功
         if ($result) {
             $this->success('操作成功.', 'index');
         } else {
-            $this->error('操作失败.');
+            $this->error('操作失败.数据无变化!');
         }
     }
 
@@ -376,4 +386,16 @@ class ShopController extends PublicController
         $this->assign('g2', $arr);
         $this->display('get_shop_order_detail');
     }
+
+    /*
+    * 商品获取二级分类
+    */
+    public function getcid()
+    {
+        $cateid = intval($_REQUEST['cateid']);
+        $catelist = M('china_city')->where('tid='.intval($cateid))->field('id,name')->select();
+        echo json_encode(array('catelist'=>$catelist));
+        exit();
+    }
+
 }
