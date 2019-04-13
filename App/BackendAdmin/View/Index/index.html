@@ -147,7 +147,12 @@
     </header>
 
     <!-- 左侧菜单 -->
+    <if condition="4 === intval($_SESSION['admininfo']['qx']) ">
     <include File='Page/adminusermenu' />
+    <else />
+    <include File='Page/shopusermenu' />
+    </if>
+    
     <!-- /左侧菜单 -->
 
     <!-- 这个是menu隐藏显示按钮 -->

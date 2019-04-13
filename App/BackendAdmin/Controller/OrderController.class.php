@@ -41,15 +41,15 @@ class OrderController extends PublicController
 
         //获取商家id
 
-        if (4 != intval($_SESSION['admininfo']['qx'])) {
-            $shop_id = intval(M('adminuser')->where('id='.intval($_SESSION['admininfo']['id']))->getField('shop_id'));
+        // if (4 != intval($_SESSION['admininfo']['qx'])) {
+        //     $shop_id = intval(M('adminuser')->where('id='.intval($_SESSION['admininfo']['id']))->getField('shop_id'));
 
-            if (0 == $shop_id) {
-                $this->error('非法操作.');
-            }
-        } else {
-            $shop_id = intval($_REQUEST['shop_id']);
-        }
+        //     if (0 == $shop_id) {
+        //         $this->error('非法操作.');
+        //     }
+        // } else {
+        //     $shop_id = intval($_REQUEST['shop_id']);
+        // }
 
         $pay_type = trim($_REQUEST['pay_type']); //支付类型
 
@@ -342,6 +342,7 @@ class OrderController extends PublicController
                 $post_info = M('post')->where('id='.intval($order_info['post']))->find();
             }
 
+            //快递100接口
             $client = new Client();
             //$response = $client->request('GET', 'http://sp0.baidu.com/9_Q4sjW91Qh3otqbppnN2DJv/pae/channel/data/asyncqury?appid=4001&com=&nu=3369785056558');
             $url = "http://www.kuaidi100.com/query?type=shentong&postid=".$order_info['kuaidi_num'];
@@ -349,12 +350,30 @@ class OrderController extends PublicController
             $a = $response->getBody()->getContents();
             $b = json_decode($a);
             //dump($b->data);
-            $steps = [];
-            foreach ($b->data as $key => $value) {
-                $steps[$key]['title'] = $value->time;
-                $steps[$key]['desc'] = $value->context;
-            }
+            // $steps = [];
+            // foreach ($b->data as $key => $value) {
+            //     $steps[$key]['title'] = $value->time;
+            //     $steps[$key]['desc'] = $value->context;
+            // }
             //dump($steps);
+            
+            //快递api接口   这个接口已经到期
+            // $response = $client->request('GET', 'http://www.kuaidiapi.cn/rest/?uid=104580&key=21980b725d774e44b247072f89d516cb&id=shentong&order='.$order_info['kuaidi_num']);
+            // //dump($response->getBody()->getContents());
+
+            // if ($response) {
+            //     $a = $response->getBody()->getContents();
+            //     $b = json_decode($a);
+            //     dump($b->data);
+            //     $steps = [];
+            //     foreach ($b->data as $key => $value) {
+            //         $b->data[$key]->context=$value->content;
+            //         // $steps[$key]['time'] = $value->time;
+            //         // $steps[$key]['context'] = $value->content;
+            //     }
+            //     $express = $b->data;
+            //     goto end;
+            // }
 
             $express = $b->data;
             $this->assign('express', $express);

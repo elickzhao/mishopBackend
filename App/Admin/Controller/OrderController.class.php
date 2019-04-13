@@ -31,14 +31,14 @@ class OrderController extends PublicController
     {
         //搜索
         //获取商家id
-        if (4 != intval($_SESSION['admininfo']['qx'])) {
-            $shop_id = intval(M('adminuser')->where('id='.intval($_SESSION['admininfo']['id']))->getField('shop_id'));
-            if (0 == $shop_id) {
-                $this->error('非法操作.');
-            }
-        } else {
-            $shop_id = intval($_REQUEST['shop_id']);
-        }
+        // if (4 != intval($_SESSION['admininfo']['qx'])) {
+        //     $shop_id = intval(M('adminuser')->where('id='.intval($_SESSION['admininfo']['id']))->getField('shop_id'));
+        //     if (0 == $shop_id) {
+        //         $this->error('非法操作.');
+        //     }
+        // } else {
+        //     $shop_id = intval($_REQUEST['shop_id']);
+        // }
         $pay_type = trim($_REQUEST['pay_type']); //支付类型
         $pay_status = intval($_REQUEST['pay_status']); //订单状态
         $start_time = intval(strtotime($_REQUEST['start_time'])); //订单状态
