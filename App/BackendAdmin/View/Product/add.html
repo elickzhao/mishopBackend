@@ -557,11 +557,19 @@
             }
         })
 
+        function getProNumber(){
+            var pn = $("#pro_number").val();
+            if (pn == "" || pn == 0) {
+                return pr()
+            } 
+            // console.log(pn, '+++++++++++++++++++')
+            return pn
+        }
+
         /*----------  生成商品编号 并用于建立商品详情内容图片上传的目录  ----------*/
         function pr() {
             return Math.round(new Date().getTime() / 10000);
         }
-
         /*=============================================
         =            富文本编辑及上传图片              =
         =============================================*/
@@ -569,7 +577,7 @@
         var E = window.wangEditor
         var editor = new E('#editor')
         // 配置服务器端地址
-        var url = '{:U("Upload/contentImage?flag=")}' + '?flag=' + pro_number;
+        var url = '{:U("Upload/contentImage?flag=")}' + '?flag=' + getProNumber();
         editor.customConfig.uploadImgServer = url;
         // 将图片大小限制为 3M
         editor.customConfig.uploadImgMaxSize = 2 * 1024 * 1024;

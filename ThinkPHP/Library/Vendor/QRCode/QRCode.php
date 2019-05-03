@@ -46,7 +46,7 @@ class QRCode
 
         $url = "https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=" . $token;
         // $body = ["scene" => 'id='.$id, "page" => "pages/goods_detail", "auto_color" => true, "is_hyaline" => true];
-        $body = ["scene" => "'id':'".$id."'", "page" => "pages/goods_detail", "auto_color" => true, "is_hyaline" => true];
+        $body = ["scene" => "'id':'".$id."'", "page" => "pages/goods/goods_detail", "auto_color" => true, "is_hyaline" => true];
         $response = $client -> request('POST', $url, ['json' => $body, 'verify' => false]);
         $b = $response -> getBody() -> getContents();
         // 靠 是dump的问题 dump() 不显示返回的jpg编码 只显示 错误信息 估计是string格式

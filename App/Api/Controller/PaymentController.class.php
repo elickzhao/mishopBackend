@@ -603,8 +603,10 @@ class PaymentController extends PublicController
                 } else {
                     $data['kuaidi_name'] = $adds_info['address_xq'];
                 }
-
-                
+                // 新改版 快递为就近店铺
+                if ($_REQUEST['kuaidi_name']) {
+                    $data['kuaidi_name'] = $_REQUEST['kuaidi_name'] == '仓库配送' ? '': $_REQUEST['kuaidi_name'];
+                }
                 $data['receiver'] = $adds_info['name'];
                 $data['tel'] = $adds_info['tel'];
                 $data['address_xq'] = $adds_info['address_xq'];

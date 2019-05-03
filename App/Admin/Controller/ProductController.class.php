@@ -6,6 +6,8 @@ use Think\Controller;
 vendor("QRCode.QRCode");
 use QRCode\QRCode;
 
+import('Org.File');
+
 class ProductController extends PublicController
 {
     //***********************************************
@@ -490,7 +492,9 @@ class ProductController extends PublicController
                     $this->unlinkImg($v);
                 }
             }
-
+            $file = new \File;
+            $dd = $file->del_dir('Data/UploadFiles/product/'.$r['pro_number']); 
+            // dump($dd);
             M('product')->where(['id'=>$id])->delete();
             $resuslt = [code=>0,msg=>'已经彻底删除'];
         }

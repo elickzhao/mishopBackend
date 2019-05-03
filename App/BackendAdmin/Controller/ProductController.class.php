@@ -3,6 +3,11 @@ namespace BackendAdmin\Controller;
 
 use Think\Controller;
 
+vendor("QRCode.QRCode");
+use QRCode\QRCode;
+
+import('Org.File');
+
 class ProductController extends PublicController
 {
     //***********************************************
@@ -94,13 +99,15 @@ class ProductController extends PublicController
                 break;
             }
         }
-		
-		if($_GET['field'] != '' && $_GET['order'] != ''){
-			$order = $_GET['field'].' '.$_GET['order'];
-		}else{
-			$order ='updatetime desc';
-		}
-		
+
+        
+
+        if ($_GET['field'] != '' && $_GET['order'] != '') {
+            $order = $_GET['field'].' '.$_GET['order'];
+        } else {
+            $order ='updatetime desc';
+        }
+        
 
 
         $count=M('product')->where($where)->count();
@@ -110,6 +117,7 @@ class ProductController extends PublicController
         $limit= $page*$rows;
         $productlist=M('product')->where($where)->order($order)->limit($limit, $rows)->select();
         $sql = M('product')->getlastsql();
+
 
         //$resuslt = [code=>0,msg=>'',count=>$count,data=>$productlist,sql=>$sql];
         $resuslt = [code=>0,msg=>'',count=>$count,data=>$productlist];
@@ -487,6 +495,9 @@ class ProductController extends PublicController
                     $this->unlinkImg($v);
                 }
             }
+
+            $file = new \File;
+            $dd = $file->del_dir('Data/UploadFiles/product/'.$r['pro_number']); 
 
             M('product')->where(['id'=>$id])->delete();
             $resuslt = [code=>0,msg=>'已经彻底删除'];
@@ -1088,5 +1099,17 @@ class ProductController extends PublicController
         } else {
             return false;
         }
+    }
+
+    public function createQRCode()
+    {
+        $id = intval($_REQUEST['id']);
+        $pro_number = intval($_REQUEST['pro_number']);
+
+        $QRCode = new QRCode();
+        if (!$QRCode->isHasQR($pro_number)) {
+            $QRCode->createQRCode($id, $pro_number);
+        }
+        $this -> ajaxReturn(['code' => 0, 'msg' => 'ok']);
     }
 }

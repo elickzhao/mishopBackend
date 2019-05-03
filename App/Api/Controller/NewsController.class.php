@@ -167,7 +167,7 @@ class NewsController extends PublicController
             $conDays +=1;
             $rr = M('user_course')->add(['uid'=>$_GET['uid'],'addtime'=>time(),'age'=>$conDays]);
             if ($r && $rr) {
-                $this->ajaxReturn(['code' => 0, 'msg'=>'']);
+                $this->ajaxReturn(['code' => 0, 'msg'=>'','data'=>'ok']);
             } else {
                 $this->ajaxReturn(['code' => 1, 'msg'=>'签到失败!']);
             }
@@ -3391,5 +3391,46 @@ class NewsController extends PublicController
         /***********获取首页顶部轮播图 end************/
 
         $this->ajaxReturn(['code' => 0,'msg'=>'','data'=>$ggtop]);
+    }
+
+        /**
+     * [ggtop 首页广告swiper]
+     * @return [json] [广告滚动图]
+     */
+    public function getSwipersNew()
+    {
+        //如果缓存首页没有数据，那么就读取数据库
+        /***********获取首页顶部轮播图************/
+        $ggtop = M('guanggao')->where('position=1')->order('sort desc,id asc')->field('id,name,photo,action')->limit(10)->select();
+        foreach ($ggtop as $k => $v) {
+            if (!empty($v['action']) && M('product')->find($v['action'])) {
+                $ggtop[$k]['link'] = '/pages/goods/goods_detail?id='.$v['action'];
+            } else {
+                $ggtop[$k]['link'] = 'index';
+            }
+            $ggtop[$k]['photo'] = __DATAURL__.$v['photo'];
+            $ggtop[$k]['name'] = urlencode($v['name']);
+        }
+        /***********获取首页顶部轮播图 end************/
+
+        $this->ajaxReturn(['code' => 0,'msg'=>'','data'=>$ggtop]);
+    }
+
+    /**
+     * [getShopLocation 获取门店地理信息]
+     * @return [type] [获取门店地理信息]
+     */
+    public function getShopLocation()
+    {
+        $code = $_GET['adcode'];
+        $cityid = M('china_city')->where(['code'=>$code])->getField('tid');
+        if (!$cityid) {
+            $this->ajaxReturn(['code' => 1,'msg'=>'地址信息错误!','data'=>$cityid]);
+        }
+        $shops = M('shop')->where('city='.$cityid)->field('id,name,longitude,latitude,phone,address')->select();
+        // dump($shops);
+        // $sql = M('shop')->getlastsql();
+        // $this->ajaxReturn(['code' => 0,'msg'=>'','data'=>$shops,'sql'=>$sql,'cid'=>$cityid]);
+        $this->ajaxReturn(['code' => 0,'msg'=>'','data'=>$shops]);
     }
 }
