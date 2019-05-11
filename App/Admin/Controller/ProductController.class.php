@@ -303,6 +303,11 @@ class ProductController extends PublicController
 
         /*----------  以下为展示页面 上面为添加操作  ----------*/
         
+        // 国家国旗处理
+        $countries = C('countries');
+        $this->assign('countries', $countries);
+        // $countrys = C('countrys');
+        // $this->assign('countrys', $countrys);
 
         //=========================
         // 查询所有一级产品分类
@@ -359,7 +364,6 @@ class ProductController extends PublicController
         //面包屑
         $bc = ['产品管理','添加产品'];
         $this->assign('bc', $bc);
-
         $this->display();
     }
 
@@ -493,7 +497,7 @@ class ProductController extends PublicController
                 }
             }
             $file = new \File;
-            $dd = $file->del_dir('Data/UploadFiles/product/'.$r['pro_number']); 
+            $dd = $file->del_dir('Data/UploadFiles/product/'.$r['pro_number']);
             // dump($dd);
             M('product')->where(['id'=>$id])->delete();
             $resuslt = [code=>0,msg=>'已经彻底删除'];

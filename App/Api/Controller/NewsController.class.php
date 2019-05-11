@@ -3424,13 +3424,18 @@ class NewsController extends PublicController
     {
         $code = $_GET['adcode'];
         $cityid = M('china_city')->where(['code'=>$code])->getField('tid');
+        $districts = M('china_city')->where(['tid'=>$cityid])->getField('id,name',true);
         if (!$cityid) {
             $this->ajaxReturn(['code' => 1,'msg'=>'地址信息错误!','data'=>$cityid]);
         }
-        $shops = M('shop')->where('city='.$cityid)->field('id,name,longitude,latitude,phone,address')->select();
+        $shops = M('shop')->where('city='.$cityid)->field('id,name,longitude,latitude,phone,address,district')->select();
+        foreach ($shops as $k => $v) {
+            $shops[$k]['county'] = $districts[$v['district']];
+        }
         // dump($shops);
         // $sql = M('shop')->getlastsql();
         // $this->ajaxReturn(['code' => 0,'msg'=>'','data'=>$shops,'sql'=>$sql,'cid'=>$cityid]);
+        // $this->ajaxReturn(['code' => 0,'msg'=>'','data'=>$shops,'dist'=>$districts]);
         $this->ajaxReturn(['code' => 0,'msg'=>'','data'=>$shops]);
     }
 }
