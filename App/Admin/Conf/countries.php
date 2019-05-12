@@ -466,7 +466,7 @@ return array(
         'code'=> 'KP'
     ],
     [
-        'name'=> '韩国,共和国',
+        'name'=> '韩国',
         'code'=> 'KR'
     ],
     [

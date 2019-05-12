@@ -6,6 +6,9 @@ use Think\Controller;
 vendor("QRCode.QRCode");
 use QRCode\QRCode;
 
+vendor("Underscore.Underscore");
+use Underscore\Types\Arrays;
+
 import('Org.File');
 
 class ProductController extends PublicController
@@ -306,8 +309,24 @@ class ProductController extends PublicController
         // 国家国旗处理
         $countries = C('countries');
         $this->assign('countries', $countries);
+
+        // $str = 'CN';
+        // $kk = Arrays::find($countries, function($value) use($str) {
+        //     if($value['code'] == $str){
+        //         return $value;
+        //     }
+        // });
+
+        // dump($kk);
         // $countrys = C('countrys');
         // $this->assign('countrys', $countrys);
+        // $str = '美国';
+        // $kk = Arrays::find($countrys, function($value) use($str) {
+        //     if($value['Name_zh'] == $str){
+        //         return $value;
+        //     }
+        // });
+        // dump($kk);
 
         //=========================
         // 查询所有一级产品分类
@@ -333,6 +352,18 @@ class ProductController extends PublicController
         if ($pro_allinfo['photo_string']) {
             $img_str = explode(',', trim($pro_allinfo['photo_string'], ','));
             $this->assign('img_str', $img_str);
+        }
+
+        // 做个兼容 把输入中文的产地 返回国家编码
+        if (preg_match("/^[\x7f-\xff]+$/", $pro_allinfo['intro'])) {
+            // 中文;
+            $str =  $pro_allinfo['intro'];
+            $country = Arrays::find($countries, function ($value) use ($str) {
+                if ($value['name'] == $str) {
+                    return $value;
+                }
+            });
+            $pro_allinfo['intro'] = $country['code'];
         }
 
         //=========================

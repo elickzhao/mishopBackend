@@ -765,10 +765,40 @@ class NewsController extends PublicController
                 $pro['collect'] = 0;
             }
 
+            // 判断国旗
+            if ($pro['intro'] != '') {
+                // $country = $this->getFlag($pro['intro']);
+                $pro['country'] = $this->getFlag($pro['intro']);
+            }
+
             $this->ajaxReturn(['code' => 0, 'msg'=>'','data' => $pro, 'commodityAttr' => $commodityAttr, 'attrValueList' => $attrValueList]);
         } else {
             $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
+    }
+
+    public function getFlag($str)
+    {
+        // $code = Arrays::pluck($list, 'id');
+        // $str = 'CN';
+        // $country = '';
+        $countrys = C('countrys');
+        if (preg_match("/^[\x7f-\xff]+$/", $str)) {
+            // 中文;
+            $country = Arrays::find($countrys, function ($value) use ($str) {
+                if ($value['Name_zh'] == $str) {
+                    return $value;
+                }
+            });
+        } else {
+            // 英文;
+            $country = Arrays::find($countrys, function ($value) use ($str) {
+                if ($value['_id'] == $str) {
+                    return $value;
+                }
+            });
+        }
+        return $country;
     }
 
 
@@ -3393,7 +3423,7 @@ class NewsController extends PublicController
         $this->ajaxReturn(['code' => 0,'msg'=>'','data'=>$ggtop]);
     }
 
-        /**
+    /**
      * [ggtop 首页广告swiper]
      * @return [json] [广告滚动图]
      */
@@ -3424,7 +3454,7 @@ class NewsController extends PublicController
     {
         $code = $_GET['adcode'];
         $cityid = M('china_city')->where(['code'=>$code])->getField('tid');
-        $districts = M('china_city')->where(['tid'=>$cityid])->getField('id,name',true);
+        $districts = M('china_city')->where(['tid'=>$cityid])->getField('id,name', true);
         if (!$cityid) {
             $this->ajaxReturn(['code' => 1,'msg'=>'地址信息错误!','data'=>$cityid]);
         }
@@ -3432,10 +3462,6 @@ class NewsController extends PublicController
         foreach ($shops as $k => $v) {
             $shops[$k]['county'] = $districts[$v['district']];
         }
-        // dump($shops);
-        // $sql = M('shop')->getlastsql();
-        // $this->ajaxReturn(['code' => 0,'msg'=>'','data'=>$shops,'sql'=>$sql,'cid'=>$cityid]);
-        // $this->ajaxReturn(['code' => 0,'msg'=>'','data'=>$shops,'dist'=>$districts]);
         $this->ajaxReturn(['code' => 0,'msg'=>'','data'=>$shops]);
     }
 }
