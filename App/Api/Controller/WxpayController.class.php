@@ -44,15 +44,17 @@ class WxpayController extends Controller
             exit();
         }
         
+        // APP名称
+        $name = M('program')->where('id=1')->getField('title');
         //②、统一下单
         $input = new \WxPayUnifiedOrder();
-        $input->SetBody("环球集市海购购买_".trim($order_info['order_sn']));
-        $input->SetAttach("环球集市海购购买_".trim($order_info['order_sn']));
+        $input->SetBody($name."购买_".trim($order_info['order_sn']));
+        $input->SetAttach($name."购买_".trim($order_info['order_sn']));
         $input->SetOut_trade_no($pay_sn);
         $input->SetTotal_fee(floatval($order_info['amount'])*100);
         $input->SetTime_start(date("YmdHis"));
         $input->SetTime_expire(date("YmdHis", time() + 3600));
-        $input->SetGoods_tag("环球集市海购购买_".trim($order_info['order_sn']));
+        $input->SetGoods_tag($name."购买_".trim($order_info['order_sn']));
         $input->SetNotify_url('https://small.huanqiujishi.com/index.php/Api/Wxpay/notify');
         $input->SetTrade_type("JSAPI");
         $input->SetOpenid($openId);
@@ -111,15 +113,17 @@ class WxpayController extends Controller
             $this->ajaxReturn(['code' => 1, 'status'=>0,'msg'=>'用户状态异常！','err'=>__LINE__]);
         }
         
+        // APP名称
+        $name = M('program')->where('id=1')->getField('title');
         //②、统一下单
         $input = new \WxPayUnifiedOrder();
-        $input->SetBody("环球集市海购购买_".trim($order_info['order_sn']));
-        $input->SetAttach("环球集市海购购买_".trim($order_info['order_sn']));
+        $input->SetBody( $name."购买_".trim($order_info['order_sn']));
+        $input->SetAttach( $name."购买_".trim($order_info['order_sn']));
         $input->SetOut_trade_no($pay_sn);
         $input->SetTotal_fee(floatval($order_info['amount'])*100);
         $input->SetTime_start(date("YmdHis"));
         $input->SetTime_expire(date("YmdHis", time() + 3600));
-        $input->SetGoods_tag("环球集市海购购买_".trim($order_info['order_sn']));
+        $input->SetGoods_tag( $name."购买_".trim($order_info['order_sn']));
         $input->SetNotify_url('https://small.huanqiujishi.com/index.php/Api/Wxpay/notify');
         $input->SetTrade_type("JSAPI");
         $input->SetOpenid($openId);

@@ -1006,7 +1006,9 @@ class NewsController extends PublicController
     {
         if (IS_GET) {
             $m = F('ORDER_MSG');
-            $this->ajaxReturn(['code' => 0, 'msg'=>'','data'=> $m]);
+            $name = M('program')->where('id=1')->getField('title');
+            $data = array_merge($m,['name'=>$name]);
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','data'=> $data]);
         } else {
             $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
@@ -3225,6 +3227,11 @@ class NewsController extends PublicController
                 $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
             }
 
+            // 购物车商品
+            $goods = M('shopping_char')->where('uid='.$uid)->getField('pid',true);
+            array_unshift($goods,'all');
+            // dump($goods);
+
 
             //好像失效状态没什么意义 没有监控 只有这时再改变一下看过期的给与一个状态 但也好像没必要
             // if($flag == 1){
@@ -3269,11 +3276,16 @@ class NewsController extends PublicController
                     $res[$k]['status'] = ($flag == 1) ? 2 : 3;
                 }
                 
-
+                // 判断是否存在指定商品的优惠券
+                if(!in_array($res[$k]['proid'],$goods)){
+                    unset($res[$k]);
+                }
+                
                 //$res[$k]['percent'] = (intval($v['receive_num']) / intval($v['count'])) * 100;
             }
 
-            $this->ajaxReturn(['code' => 0, 'msg'=>'','data'=>['list'=>$res,'sql'=>$strVids]]);
+            // $this->ajaxReturn(['code' => 0, 'msg'=>'','data'=>['list'=>$res,'sql'=>$strVids]]);
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','data'=>['list'=>$res,'sql'=>$goods]]);
         } else {
             $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
