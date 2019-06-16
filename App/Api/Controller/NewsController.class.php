@@ -860,7 +860,7 @@ class NewsController extends PublicController
                 $arr['NickName'] = $_GET['NickName'];
                 $arr['avatarUrl'] = $_GET['avatarUrl'];
                 $this->ajaxReturn(['code' => 0, 'msg'=>'','data'=> $arr]);
-                // echo json_encode(array('status'=>1,'arr'=>$err));
+            // echo json_encode(array('status'=>1,'arr'=>$err));
                 // exit();
             } else {
                 $data = array();
@@ -886,7 +886,7 @@ class NewsController extends PublicController
                     $arr['NickName'] = $data['name'];
                     $arr['avatarUrl'] = $data['photo'];
                     $this->ajaxReturn(['code' => 0, 'msg'=>'','data'=> $arr]);
-                    // echo json_encode(array('status'=>1,'arr'=>$err));
+                // echo json_encode(array('status'=>1,'arr'=>$err));
                     // exit();
                 } else {
                     $this->ajaxReturn(['code' => 1, 'msg'=>'授权失败！'.__LINE__]);
@@ -958,7 +958,7 @@ class NewsController extends PublicController
                 $arr['ID'] = intval($uid);
                 $arr['openid'] = $_GET['openId'];
                 $this->ajaxReturn(['code' => 0, 'msg'=>'','data'=> $arr]);
-                // echo json_encode(array('status'=>1,'arr'=>$err));
+            // echo json_encode(array('status'=>1,'arr'=>$err));
                 // exit();
             } else {
                 $data = array();
@@ -985,7 +985,7 @@ class NewsController extends PublicController
                     $arr['avatarUrl'] = $data['photo'];
                     $arr['openid'] = $data['openId'];
                     $this->ajaxReturn(['code' => 0, 'msg'=>'','data'=> $arr]);
-                    // echo json_encode(array('status'=>1,'arr'=>$err));
+                // echo json_encode(array('status'=>1,'arr'=>$err));
                     // exit();
                 } else {
                     $this->ajaxReturn(['code' => 1, 'msg'=>'授权失败！'.__LINE__]);
@@ -1007,7 +1007,7 @@ class NewsController extends PublicController
         if (IS_GET) {
             $m = F('ORDER_MSG');
             $name = M('program')->where('id=1')->getField('title');
-            $data = array_merge($m,['name'=>$name]);
+            $data = array_merge($m, ['name'=>$name]);
             $this->ajaxReturn(['code' => 0, 'msg'=>'','data'=> $data]);
         } else {
             $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
@@ -2351,7 +2351,7 @@ class NewsController extends PublicController
             //vou 优惠券 price总价 adds收货地址 addemt 是否存在收货地址
             //$this->ajaxReturn(['code' => 0, 'msg'=>'','list'=>$pro,'vou' => $vou, 'price' => floatval($price), 'adds' => $add, 'addemt' => $addemt,'userScore'=>intval($userScore)]);
             $this->ajaxReturn(['code' => 0, 'msg'=>'','list'=>$pro,'vou' => $vou, 'price' => floatval($price), 'adds' => $add, 'addemt' => $addemt,'userScore'=>intval($userScore), 'limitPrice'=>floatval(number_format($limitPrice, 2))]);
-            // echo json_encode(array('status' => 1, 'vou' => $vou, 'price' => floatval($price), 'pro' => $pro, 'adds' => $add, 'addemt' => $addemt));
+        // echo json_encode(array('status' => 1, 'vou' => $vou, 'price' => floatval($price), 'pro' => $pro, 'adds' => $add, 'addemt' => $addemt));
             // exit();
         } else {
             $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
@@ -2448,7 +2448,7 @@ class NewsController extends PublicController
             //vou 优惠券 price总价 adds收货地址 addemt 是否存在收货地址
             //$this->ajaxReturn(['code' => 0, 'msg'=>'','list'=>$pro,'vou' => $vou, 'price' => floatval($price), 'adds' => $add, 'addemt' => $addemt,'userScore'=>intval($userScore)]);
             $this->ajaxReturn(['code' => 0, 'msg'=>'','data'=>['list'=>$pro,'vou' => $vou, 'price' => floatval($price), 'adds' => $add, 'addemt' => $addemt,'userScore'=>intval($userScore), 'limitPrice'=>floatval(number_format($limitPrice, 2))]]);
-            // echo json_encode(array('status' => 1, 'vou' => $vou, 'price' => floatval($price), 'pro' => $pro, 'adds' => $add, 'addemt' => $addemt));
+        // echo json_encode(array('status' => 1, 'vou' => $vou, 'price' => floatval($price), 'pro' => $pro, 'adds' => $add, 'addemt' => $addemt));
             // exit();
         } else {
             $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
@@ -3107,8 +3107,15 @@ class NewsController extends PublicController
                 $this->ajaxReturn(['code' => 1, 'msg'=>'参数错误!']);
             }
 
-            
             $voucher = M('voucher')->where(['id'=>$vid,'del'=>0])->find();
+
+            if($voucher['point'] > 0){
+              $userPoint = M('user')->where(['id'=>$uid])->getField('jifen');
+              if( $userPoint < $voucher['point']){
+                $this->ajaxReturn(['code' => 1, 'msg'=>'您的积分不够!']);
+              }
+            }
+
             //这里删除的验证
             if (!$voucher) {
                 $this->ajaxReturn(['code' => 1, 'msg'=>'活动已下线!']);
@@ -3135,7 +3142,9 @@ class NewsController extends PublicController
             $data['status']=1;
 
             $res = M('user_voucher')->data($data)->add();
-
+            if ($voucher['point'] > 0) {
+                M('user')->where(['id'=>$uid])->setDec('jifen', $voucher['point']);
+            }
             if ($res === false) {
                 $this->ajaxReturn(['code' => 1, 'msg'=>'查询失败!']);
             }
@@ -3228,10 +3237,8 @@ class NewsController extends PublicController
             }
 
             // 购物车商品
-            $goods = M('shopping_char')->where('uid='.$uid)->getField('pid',true);
-            array_unshift($goods,'all');
-            // dump($goods);
-
+            $goods = M('shopping_char')->where('uid='.$uid)->getField('pid', true);
+            array_unshift($goods, 'all');
 
             //好像失效状态没什么意义 没有监控 只有这时再改变一下看过期的给与一个状态 但也好像没必要
             // if($flag == 1){
@@ -3245,7 +3252,7 @@ class NewsController extends PublicController
             }
             
             if ($totalPrice) {
-                $where = 'uid='.$uid.' and status=1 and end_time > UNIX_TIMESTAMP(NOW()) AND  full_money <'.$totalPrice;
+                $where = 'uid='.$uid.' and status=1 and end_time > UNIX_TIMESTAMP(NOW()) AND  full_money <= '.$totalPrice;
             } else {
                 $where['uid'] = $uid;
                 $where['status'] = $flag;
@@ -3277,15 +3284,14 @@ class NewsController extends PublicController
                 }
                 
                 // 判断是否存在指定商品的优惠券
-                if(!in_array($res[$k]['proid'],$goods)){
+                if (!in_array($res[$k]['proid'], $goods)) {
                     unset($res[$k]);
                 }
                 
                 //$res[$k]['percent'] = (intval($v['receive_num']) / intval($v['count'])) * 100;
             }
 
-            // $this->ajaxReturn(['code' => 0, 'msg'=>'','data'=>['list'=>$res,'sql'=>$strVids]]);
-            $this->ajaxReturn(['code' => 0, 'msg'=>'','data'=>['list'=>$res,'sql'=>$goods]]);
+            $this->ajaxReturn(['code' => 0, 'msg'=>'','data'=>['list'=>$res,'sql'=>$strVids]]);
         } else {
             $this->ajaxReturn(['code' => 1, 'msg'=>'非法请求!']);
         }
