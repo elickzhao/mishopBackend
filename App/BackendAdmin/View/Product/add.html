@@ -272,6 +272,24 @@
 
                     <div class="hr-line-dashed"></div>
 
+                    <!--note  因为天极积分思路改变 所以暂时不要这个 add 时  积分同步优惠价 -->
+                    <!-- 积分 -->
+                    <!-- <div class="row cl">
+                        <div class="col-xs-4 col-sm-2 ml-30">
+                            <label class="layui-form-label">积分：</label>
+                        </div>
+                        <div class="formControls col-xs-8 col-sm-4">
+                            <input type="text" class="input-text number" placeholder="积分" name="price_jf" id="price_jf"
+                                value="{$pro_allinfo.price_jf}" lay-verify="price_jf" required>
+                        </div>
+                        <label class="layui-form-label">
+                            <span class="c-red text-l">*</span>
+                        </label>
+                    </div> -->
+                    <!-- /积分 -->
+
+                    <div class="hr-line-dashed"></div>
+
                     <!-- 销量 -->
                     <div class="row cl">
                         <div class="col-xs-4 col-sm-2 ml-30">
@@ -590,6 +608,15 @@
             } else {
                 pro_number = pn;
             }
+
+            // <!--note  因为天极积分思路改变 所以暂时不要这个 add 时  积分同步优惠价 -->
+            /* 同步出售价相同的积分 */
+            // if($('#price_jf').val() == ''){
+            //   $('#price_yh').focusout(function(){
+            //     var sss = $('#price_yh').val()
+            //     $('#price_jf').val(Math.floor(sss))
+            //   })
+            // }
         })
 
         function getProNumber() {

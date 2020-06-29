@@ -252,7 +252,7 @@ class OrderController extends PublicController
         }
         //$sql = M('order')->getlastsql();
         //$resuslt = [code=>0,msg=>'',count=>$count,data=>$orderlist,sql=>$sql];
-        $resuslt = [code=>0,msg=>'',count=>$count,data=>$orderlist];
+        $resuslt = ['code'=>0,'msg'=>'','count'=>$count,'data'=>$orderlist];
 
         $this->ajaxReturn($resuslt);
     }
@@ -391,13 +391,16 @@ class OrderController extends PublicController
     }
 
     /*
-
     *
-
     * 修改订单状态，添加物流名称、物流单号
-
+    * XXX 增加个添加积分吧 如果订单状态为完成 则增加积分  订单状态完成为下单收货后24小时订单改变状态为完成 然后增加积分 24小时内退货可以 完成后不能改变状态  
+    看来还是需要个流水表啊 有订单号的积分不能增加两次或者订单表也可以 订单表里的积分字段为0可以增加 如果状态改变 可以把积分字段减为0
+    todo 改下思路 把订单的总价直接改成积分  不在设商品定积分 一来是订单表里现在不显示积分 二来 如果一个订单有几件 0.99的商品 会扣除蛮多 几元钱 免得造成争议
+    这个可以后面再改
     */
 
+    //done 增加个添加积分已经完成
+    // tag 如果积分思路更换的话这里还得需要修改
     public function sms_up()
     {
         $oid = intval($_POST['oid']);
@@ -424,31 +427,51 @@ class OrderController extends PublicController
 
         if ($o_info['kuaidi_name'] == $kuaidi_name && $o_info['kuaidi_num'] == $kuaidi_num && intval($o_info['status']) == $order_status) {
             $arr = array();
-
             $arr = array('returns' => 0, 'message' => '修改信息未发生变化.');
-
             echo json_encode($arr);
-
             exit();
         }
 
         try {
             if (('' == $kuaidi_name || '' == $kuaidi_num) && 30 == $order_status) {
-                throw new Exception('参数不正确');
+                throw new \Exception('参数不正确');
             }
 
             /*$msg = '您的订单（编号:%s）,已发货，送货快递:%s，运单号:%s 【%s】';
 
             $msg = sprintf($msg,$id,$kuaidi_name,$kuaidi_num,$partner_info['name']);*/
 
-            //修改快递信息
-
+            
             $data = array();
 
+            if (50 == $order_status) {
+              $arr = array();
+              $arr = array('returns' => 1, 'message' => '订单完成,增加积分','info'=>$o_info);
+              $r = M('news')->where(['digest'=>$o_info['order_sn']])->find();
+              if ($r) {
+                throw new \Exception('积分记录表订单已存在,不能重复改写订单完成状态,操作积分');  
+              }
+
+              // 2019060849529710
+              // note price_h 是实际支付价格  但是页面显示的是订单价格 但有优惠券的存在会让实际支付价格比订单价格还低 所以不能用订单价格 要不优惠券还给积分的话 会赔双倍的钱
+              $jifen =  intval($o_info['price_h']);
+              $uid = $o_info['uid'];
+              $name = $o_info['receiver'];
+              $order_sn = $o_info['order_sn'];
+              $price_h = $o_info['price_h'];  // 特别主要这是实际支付价格 不是订单价
+    
+              M('user')->where(['id'=>$uid])->setInc('jifen',$jifen);
+              $userScore = M('user')->where(['id'=>$uid])->getField('jifen');
+              M('news')->add(['cid'=>$uid,'name'=>$name,'digest'=>$order_sn,'content'=>$price_h,'click'=>$jifen,'pinglun'=>$userScore,'addtime'=>time()]);
+
+              // echo json_encode($arr);
+              // exit();
+            }
+            
             if ($order_status) {
                 $data['status'] = $order_status;
             }
-
+            //修改快递信息
             if ($kuaidi_name) {
                 $data['kuaidi_name'] = $kuaidi_name;
             }
@@ -470,7 +493,7 @@ class OrderController extends PublicController
 
                 $json['returns'] = 0;
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $json = array('returns' => 0, 'message' => $e->getMessage());
         }
 
@@ -480,11 +503,8 @@ class OrderController extends PublicController
     }
 
     /*
-
     *
-
     *  确认退款  修改退款状态
-
     */
 
     public function back()
@@ -603,14 +623,11 @@ class OrderController extends PublicController
         }
     }
 
+    
     /*
-
     *
-
     *  订单统计功能
-
     */
-
     public function order_count()
     {
         //查询类型 d日视图  m月视图

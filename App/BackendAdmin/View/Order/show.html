@@ -357,6 +357,7 @@
                     <table class=" table table-border table-hover mt-5" style="border-top:0px">
                         <thead>
                             <tr class="text-c">
+                              <!-- XXX 这个商品价格和总价应该有所区分  一个是未优惠券前的价格  一个应该是优惠后的价格 -->
                                 <th width="150">商品名称</th>
                                 <th width="40">商品价格</th>
                                 <th width="40">数量</th>
@@ -397,6 +398,7 @@
                         <td>收货人： {$order_info.receiver}</td>
                         <td>联系电话： {$order_info.tel}</td>
                         <td>收货地址： {$order_info.address_xq}</td>
+                        <!-- XXX 这里也有问题 这里是订单价格 但不是实际支付价格  因为有优惠券的存在 实际支付价格会比订单价格还低  这都以后再说吧 -->
                         <td>订单总价: ￥
                             <?php echo number_format($order_info['price'],2); ?>
                         </td>
@@ -560,7 +562,8 @@
                 $('#kuaidi_name').attr('disabled', true);
                 $('#kuaidi_num').attr('disabled', true);
             }
-            if ($('.font_color').data('status') == 51) {
+            // done 增加了完成订单也锁死下拉框  因为完成订单会给积分, 如果改变完成会减积分  但是担心拿积分兑换现金后 再退款 所以一天后完成订单 原则上不给退了 退了就得记得改积分
+            if ($('.font_color').data('status') == 51 || $('.font_color').data('status') == 50 ) {
                 $('#zt_order_update').attr('disabled', true);
             }
 
