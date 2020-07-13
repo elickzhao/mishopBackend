@@ -233,10 +233,10 @@ class NewsController extends PublicController
 
             $score = M('user')->where("id = '".$_GET['uid']."'")->getField("jifen");
             $r = M('user_course')->field("DATE(FROM_UNIXTIME(ADDTIME)) as dtime,age")->where("uid = '".$_GET['uid']."'")->order('id desc')->find();
-            //当第一次签到
-            if (!$r) {
-                $this->ajaxReturn(['code' => 0, 'msg'=>'','conDays'=>0,'hasSign'=>0,'score'=>0,'list'=>[]]);
-            }
+            //当第一次签到  // note 已经不用签到了 这个以前的写法估计是配合返回值不同
+            // if (!$r) {
+            //     $this->ajaxReturn(['code' => 0, 'msg'=>'','conDays'=>0,'hasSign'=>0,'score'=>0,'list'=>[]]);
+            // }
             //$sql = M('user_course')->getlastsql();
             $conDays = $r['age']?$r['age']:0; //连续签到天数
             //$dt = $date = new Carbon($r['dtime']);
